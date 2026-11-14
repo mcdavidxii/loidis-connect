@@ -1,0 +1,3 @@
+visit_id,client_id,weekday,start,window_mins,duration_mins,carers_needed,required_skills,assigned_carer_ids
+V0001,C001,mon,08:00,30,45,2,hoist,K001;K002
+V0002,C002,mon,12:30,15,30,1,,K001

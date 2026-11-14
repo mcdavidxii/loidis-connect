@@ -1,0 +1,4 @@
+carer_id,weekday,start,end,type
+K001,mon,07:00,14:00,available
+K001,mon,17:00,22:00,available
+K002,tue,00:00,23:59,leave

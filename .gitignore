@@ -1,0 +1,15 @@
+# Real client or staff data must never be committed
+data/private/
+*.xlsx
+*.xls
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
