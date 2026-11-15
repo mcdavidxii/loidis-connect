@@ -35,7 +35,7 @@ cd ../engine && python -m pytest -q
 
 | Measure | Result |
 |---|---|
-| Visits filled | 819 of 924 (89%); shortages are the 08:00 peak and some sleep-ins |
+| Visits filled | 822 of 924 (89%); shortages are the 08:00 peak and some sleep-ins |
 | Run time | about 1 minute for the week (8 s per day) |
 | Sickness cover (K021, Wednesday) | 8 of 13 visits re-covered; 0 other visits changed |
 

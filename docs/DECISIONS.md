@@ -6,7 +6,7 @@ Newest first. Each entry: decision, why, and what it rules out.
 |---|---|---|---|
 | 2026-11-15 | Do-not-send stays a hard rule; when it blocks a visit the carer is suggested to the coordinator. Separate safeguarding bar is never suggested | Loidis: hard rule but sometimes worth suggesting; safeguarding restrictions must not be offered | Decided |
 | 2026-11-15 | Priorities: travel and carers' hours first, continuity as a tie-breaker | Loidis's answer; continuity still kept because clients and CQC value it | Decided |
-| 2026-11-15 | Night shifts modelled as sleep-ins; their weight towards hours is a setting (default 0) | Loidis uses sleep-ins; sleep-in pay and hours treatment to confirm | Decided |
+| 2026-11-15 | Night shifts modelled as sleep-ins that count in full towards carers' hours (setting) | Matches CareLineLive's rota, which shows the full block in the carer's hours; pay handled later in payroll | Decided |
 | 2026-11-15 | Sickness cover never drops a planned visit to cover another | Otherwise it only moves the problem to another client | Decided |
 | 2026-11-15 | Replace CareLineLive in stages (A rota companion, B own rota and carer app, C full replacement); see PLAN.md | Lowest risk for a live care service; rota delivers value first | Decided |
 | 2026-11-15 | Rota engine in Python with Google OR-Tools, as a separate service from the web app | Strongest free solver for visit routing with time windows; keeps the engine independent of the web stack | Decided |

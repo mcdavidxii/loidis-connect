@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T06:32:56+00:00",
+ "generated_at": "2026-11-15T06:53:12+00:00",
  "week_start": "2026-11-16",
  "days": [
   "mon",
@@ -17,22 +17,22 @@
   "continuity_penalty_pence": 60,
   "under_target_pence_per_min": 21,
   "over_contract_pence_per_min": 15,
-  "sleep_in_counted_minutes": 0,
+  "sleep_in_counted_minutes": null,
   "rest_after_sleep_in_minutes": 660,
   "unfilled_penalty": 10000000
  },
  "note": "",
  "metrics": {
   "visits": 924,
-  "filled": 819,
-  "unfilled": 105,
-  "fill_rate": 0.886,
-  "care_hours": 566.0,
-  "travel_hours": 175.2,
-  "miles": 1392.9,
-  "mileage_pounds": 626.81,
-  "continuity_rate": 0.327,
-  "clients_short": 39,
+  "filled": 822,
+  "unfilled": 102,
+  "fill_rate": 0.89,
+  "care_hours": 666.5,
+  "travel_hours": 174.0,
+  "miles": 1388.2,
+  "mileage_pounds": 624.62,
+  "continuity_rate": 0.33,
+  "clients_short": 38,
   "sleep_ins": 14,
   "sleep_ins_filled": 11
  },
@@ -52,11 +52,11 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 930,
+   "scheduled_minutes": 915,
    "sleep_ins": 0,
-   "travel_minutes": 304,
-   "miles": 65.3,
-   "mileage_pence": 2938,
+   "travel_minutes": 311,
+   "miles": 66.0,
+   "mileage_pence": 2972,
    "availability": [
     {
      "day": 1,
@@ -102,11 +102,11 @@
    },
    "contracted_minutes": 1200,
    "max_minutes": 1800,
-   "scheduled_minutes": 1065,
+   "scheduled_minutes": 1080,
    "sleep_ins": 0,
-   "travel_minutes": 372,
-   "miles": 78.2,
-   "mileage_pence": 3519,
+   "travel_minutes": 375,
+   "miles": 78.9,
+   "mileage_pence": 3550,
    "availability": [
     {
      "day": 0,
@@ -154,9 +154,9 @@
    "max_minutes": 2400,
    "scheduled_minutes": 1800,
    "sleep_ins": 0,
-   "travel_minutes": 380,
-   "miles": 70.1,
-   "mileage_pence": 3156,
+   "travel_minutes": 368,
+   "miles": 66.4,
+   "mileage_pence": 2988,
    "availability": [
     {
      "day": 0,
@@ -227,11 +227,11 @@
    },
    "contracted_minutes": 2250,
    "max_minutes": 2850,
-   "scheduled_minutes": 1785,
+   "scheduled_minutes": 1605,
    "sleep_ins": 0,
-   "travel_minutes": 415,
-   "miles": 78.7,
-   "mileage_pence": 3542,
+   "travel_minutes": 375,
+   "miles": 70.9,
+   "mileage_pence": 3189,
    "availability": [
     {
      "day": 0,
@@ -362,11 +362,11 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 1155,
+   "scheduled_minutes": 1215,
    "sleep_ins": 0,
-   "travel_minutes": 241,
-   "miles": 43.5,
-   "mileage_pence": 1957,
+   "travel_minutes": 256,
+   "miles": 47.0,
+   "mileage_pence": 2115,
    "availability": [
     {
      "day": 0,
@@ -414,7 +414,7 @@
    "max_minutes": 2850,
    "scheduled_minutes": 330,
    "sleep_ins": 0,
-   "travel_minutes": 202,
+   "travel_minutes": 224,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -462,11 +462,11 @@
    },
    "contracted_minutes": 960,
    "max_minutes": 1560,
-   "scheduled_minutes": 960,
+   "scheduled_minutes": 975,
    "sleep_ins": 0,
-   "travel_minutes": 338,
-   "miles": 73.9,
-   "mileage_pence": 3327,
+   "travel_minutes": 336,
+   "miles": 73.1,
+   "mileage_pence": 3288,
    "availability": [
     {
      "day": 0,
@@ -509,11 +509,11 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 420,
+   "scheduled_minutes": 375,
    "sleep_ins": 0,
-   "travel_minutes": 150,
-   "miles": 31.8,
-   "mileage_pence": 1430,
+   "travel_minutes": 140,
+   "miles": 30.9,
+   "mileage_pence": 1392,
    "availability": [
     {
      "day": 0,
@@ -610,11 +610,11 @@
    },
    "contracted_minutes": 960,
    "max_minutes": 1560,
-   "scheduled_minutes": 1155,
+   "scheduled_minutes": 1290,
    "sleep_ins": 0,
-   "travel_minutes": 208,
-   "miles": 30.8,
-   "mileage_pence": 1386,
+   "travel_minutes": 238,
+   "miles": 36.3,
+   "mileage_pence": 1635,
    "availability": [
     {
      "day": 0,
@@ -685,11 +685,11 @@
    },
    "contracted_minutes": 1440,
    "max_minutes": 2040,
-   "scheduled_minutes": 1395,
+   "scheduled_minutes": 1425,
    "sleep_ins": 0,
-   "travel_minutes": 265,
-   "miles": 43.1,
-   "mileage_pence": 1940,
+   "travel_minutes": 257,
+   "miles": 41.4,
+   "mileage_pence": 1865,
    "availability": [
     {
      "day": 1,
@@ -734,11 +734,11 @@
    },
    "contracted_minutes": 1440,
    "max_minutes": 2040,
-   "scheduled_minutes": 1095,
+   "scheduled_minutes": 1110,
    "sleep_ins": 0,
-   "travel_minutes": 229,
-   "miles": 36.2,
-   "mileage_pence": 1629,
+   "travel_minutes": 239,
+   "miles": 38.5,
+   "mileage_pence": 1732,
    "availability": [
     {
      "day": 0,
@@ -783,11 +783,11 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 1605,
+   "scheduled_minutes": 1620,
    "sleep_ins": 0,
-   "travel_minutes": 251,
-   "miles": 39.9,
-   "mileage_pence": 1795,
+   "travel_minutes": 255,
+   "miles": 41.1,
+   "mileage_pence": 1848,
    "availability": [
     {
      "day": 0,
@@ -834,9 +834,9 @@
    "max_minutes": 1560,
    "scheduled_minutes": 540,
    "sleep_ins": 0,
-   "travel_minutes": 231,
-   "miles": 51.1,
-   "mileage_pence": 2301,
+   "travel_minutes": 229,
+   "miles": 50.9,
+   "mileage_pence": 2288,
    "availability": [
     {
      "day": 0,
@@ -881,11 +881,11 @@
    },
    "contracted_minutes": 1200,
    "max_minutes": 1800,
-   "scheduled_minutes": 1305,
+   "scheduled_minutes": 1320,
    "sleep_ins": 0,
-   "travel_minutes": 411,
-   "miles": 84.6,
-   "mileage_pence": 3809,
+   "travel_minutes": 407,
+   "miles": 83.4,
+   "mileage_pence": 3752,
    "availability": [
     {
      "day": 0,
@@ -956,9 +956,9 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 1140,
+   "scheduled_minutes": 1155,
    "sleep_ins": 0,
-   "travel_minutes": 798,
+   "travel_minutes": 708,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -1031,11 +1031,11 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 840,
+   "scheduled_minutes": 855,
    "sleep_ins": 0,
-   "travel_minutes": 239,
-   "miles": 43.2,
-   "mileage_pence": 1944,
+   "travel_minutes": 242,
+   "miles": 43.7,
+   "mileage_pence": 1967,
    "availability": [
     {
      "day": 1,
@@ -1081,9 +1081,9 @@
    },
    "contracted_minutes": 1200,
    "max_minutes": 1800,
-   "scheduled_minutes": 1080,
+   "scheduled_minutes": 1110,
    "sleep_ins": 0,
-   "travel_minutes": 726,
+   "travel_minutes": 690,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -1131,9 +1131,9 @@
    },
    "contracted_minutes": 1800,
    "max_minutes": 2400,
-   "scheduled_minutes": 960,
+   "scheduled_minutes": 975,
    "sleep_ins": 0,
-   "travel_minutes": 300,
+   "travel_minutes": 317,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -1180,11 +1180,11 @@
    },
    "contracted_minutes": 2250,
    "max_minutes": 2850,
-   "scheduled_minutes": 2145,
+   "scheduled_minutes": 2085,
    "sleep_ins": 0,
-   "travel_minutes": 443,
-   "miles": 74.5,
-   "mileage_pence": 3352,
+   "travel_minutes": 349,
+   "miles": 48.6,
+   "mileage_pence": 2187,
    "availability": [
     {
      "day": 1,
@@ -1255,11 +1255,11 @@
    },
    "contracted_minutes": 1440,
    "max_minutes": 2040,
-   "scheduled_minutes": 1440,
+   "scheduled_minutes": 1455,
    "sleep_ins": 0,
-   "travel_minutes": 347,
-   "miles": 66.8,
-   "mileage_pence": 3004,
+   "travel_minutes": 360,
+   "miles": 71.2,
+   "mileage_pence": 3202,
    "availability": [
     {
      "day": 0,
@@ -1331,7 +1331,7 @@
    "max_minutes": 1800,
    "scheduled_minutes": 270,
    "sleep_ins": 0,
-   "travel_minutes": 105,
+   "travel_minutes": 126,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -1379,11 +1379,11 @@
    },
    "contracted_minutes": 1440,
    "max_minutes": 2040,
-   "scheduled_minutes": 645,
+   "scheduled_minutes": 720,
    "sleep_ins": 0,
-   "travel_minutes": 230,
-   "miles": 49.0,
-   "mileage_pence": 2207,
+   "travel_minutes": 263,
+   "miles": 56.7,
+   "mileage_pence": 2552,
    "availability": [
     {
      "day": 0,
@@ -1586,11 +1586,11 @@
    },
    "contracted_minutes": 1200,
    "max_minutes": 1800,
-   "scheduled_minutes": 1335,
+   "scheduled_minutes": 1245,
    "sleep_ins": 0,
-   "travel_minutes": 326,
-   "miles": 62.8,
-   "mileage_pence": 2827,
+   "travel_minutes": 332,
+   "miles": 66.0,
+   "mileage_pence": 2970,
    "availability": [
     {
      "day": 0,
@@ -1660,11 +1660,11 @@
    },
    "contracted_minutes": 960,
    "max_minutes": 1560,
-   "scheduled_minutes": 960,
+   "scheduled_minutes": 945,
    "sleep_ins": 0,
-   "travel_minutes": 325,
-   "miles": 70.5,
-   "mileage_pence": 3172,
+   "travel_minutes": 321,
+   "miles": 68.9,
+   "mileage_pence": 3101,
    "availability": [
     {
      "day": 0,
@@ -1711,9 +1711,9 @@
    "max_minutes": 1560,
    "scheduled_minutes": 810,
    "sleep_ins": 0,
-   "travel_minutes": 272,
-   "miles": 55.7,
-   "mileage_pence": 2506,
+   "travel_minutes": 237,
+   "miles": 45.7,
+   "mileage_pence": 2057,
    "availability": [
     {
      "day": 0,
@@ -1760,7 +1760,7 @@
    "max_minutes": 1560,
    "scheduled_minutes": 870,
    "sleep_ins": 0,
-   "travel_minutes": 421,
+   "travel_minutes": 414,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -1857,9 +1857,9 @@
    },
    "contracted_minutes": 1440,
    "max_minutes": 2040,
-   "scheduled_minutes": 1245,
+   "scheduled_minutes": 1275,
    "sleep_ins": 0,
-   "travel_minutes": 598,
+   "travel_minutes": 627,
    "miles": 0.0,
    "mileage_pence": 0,
    "availability": [
@@ -1934,9 +1934,9 @@
    "max_minutes": 2850,
    "scheduled_minutes": 2055,
    "sleep_ins": 0,
-   "travel_minutes": 496,
-   "miles": 98.0,
-   "mileage_pence": 4410,
+   "travel_minutes": 492,
+   "miles": 95.9,
+   "mileage_pence": 4316,
    "availability": [
     {
      "day": 2,
@@ -1983,9 +1983,9 @@
    "max_minutes": 2040,
    "scheduled_minutes": 1440,
    "sleep_ins": 0,
-   "travel_minutes": 333,
-   "miles": 59.9,
-   "mileage_pence": 2694,
+   "travel_minutes": 351,
+   "miles": 66.1,
+   "mileage_pence": 2973,
    "availability": [
     {
      "day": 1,
@@ -2029,13 +2029,13 @@
     "lat": 50.64011,
     "lon": -2.4021
    },
-   "contracted_minutes": 1800,
-   "max_minutes": 2400,
-   "scheduled_minutes": 0,
-   "sleep_ins": 3,
-   "travel_minutes": 90,
-   "miles": 20.8,
-   "mileage_pence": 937,
+   "contracted_minutes": 2250,
+   "max_minutes": 2880,
+   "scheduled_minutes": 2160,
+   "sleep_ins": 4,
+   "travel_minutes": 120,
+   "miles": 27.8,
+   "mileage_pence": 1249,
    "availability": [
     {
      "day": 1,
@@ -2084,13 +2084,13 @@
     "lat": 50.62224,
     "lon": -2.5062
    },
-   "contracted_minutes": 1800,
-   "max_minutes": 2400,
-   "scheduled_minutes": 105,
-   "sleep_ins": 4,
-   "travel_minutes": 125,
-   "miles": 25.6,
-   "mileage_pence": 1150,
+   "contracted_minutes": 2250,
+   "max_minutes": 2880,
+   "scheduled_minutes": 1620,
+   "sleep_ins": 3,
+   "travel_minutes": 78,
+   "miles": 17.1,
+   "mileage_pence": 770,
    "availability": [
     {
      "day": 4,
@@ -2140,13 +2140,13 @@
     "lat": 50.71817,
     "lon": -2.43484
    },
-   "contracted_minutes": 1440,
-   "max_minutes": 2040,
-   "scheduled_minutes": 510,
+   "contracted_minutes": 2250,
+   "max_minutes": 2880,
+   "scheduled_minutes": 525,
    "sleep_ins": 0,
-   "travel_minutes": 99,
-   "miles": 17.0,
-   "mileage_pence": 765,
+   "travel_minutes": 129,
+   "miles": 27.4,
+   "mileage_pence": 1233,
    "availability": [
     {
      "day": 2,
@@ -2205,13 +2205,13 @@
     "lat": 50.61434,
     "lon": -2.45776
    },
-   "contracted_minutes": 960,
-   "max_minutes": 1560,
-   "scheduled_minutes": 165,
+   "contracted_minutes": 2250,
+   "max_minutes": 2880,
+   "scheduled_minutes": 2415,
    "sleep_ins": 4,
-   "travel_minutes": 81,
-   "miles": 13.3,
-   "mileage_pence": 597,
+   "travel_minutes": 112,
+   "miles": 19.7,
+   "mileage_pence": 884,
    "availability": [
     {
      "day": 3,
@@ -2265,8 +2265,8 @@
     "K034"
    ],
    "commissioned_minutes": 945,
-   "scheduled_minutes": 810,
-   "gap_minutes": 135,
+   "scheduled_minutes": 720,
+   "gap_minutes": 225,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2289,8 +2289,8 @@
     "K025"
    ],
    "commissioned_minutes": 420,
-   "scheduled_minutes": 240,
-   "gap_minutes": 180,
+   "scheduled_minutes": 180,
+   "gap_minutes": 240,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2331,8 +2331,8 @@
     "K028"
    ],
    "commissioned_minutes": 525,
-   "scheduled_minutes": 255,
-   "gap_minutes": 270,
+   "scheduled_minutes": 210,
+   "gap_minutes": 315,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2394,8 +2394,8 @@
     "K019"
    ],
    "commissioned_minutes": 945,
-   "scheduled_minutes": 585,
-   "gap_minutes": 360,
+   "scheduled_minutes": 645,
+   "gap_minutes": 300,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2415,8 +2415,8 @@
     "K014"
    ],
    "commissioned_minutes": 90,
-   "scheduled_minutes": 60,
-   "gap_minutes": 30,
+   "scheduled_minutes": 90,
+   "gap_minutes": 0,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2502,8 +2502,8 @@
     "K013"
    ],
    "commissioned_minutes": 420,
-   "scheduled_minutes": 360,
-   "gap_minutes": 60,
+   "scheduled_minutes": 420,
+   "gap_minutes": 0,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2607,8 +2607,8 @@
     "K036"
    ],
    "commissioned_minutes": 225,
-   "scheduled_minutes": 45,
-   "gap_minutes": 180,
+   "scheduled_minutes": 90,
+   "gap_minutes": 135,
    "sleep_ins_needed": 7,
    "sleep_ins_covered": 7
   },
@@ -2648,8 +2648,8 @@
     "K021"
    ],
    "commissioned_minutes": 420,
-   "scheduled_minutes": 390,
-   "gap_minutes": 30,
+   "scheduled_minutes": 420,
+   "gap_minutes": 0,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2691,8 +2691,8 @@
     "K004"
    ],
    "commissioned_minutes": 1155,
-   "scheduled_minutes": 1155,
-   "gap_minutes": 0,
+   "scheduled_minutes": 1110,
+   "gap_minutes": 45,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2757,8 +2757,8 @@
     "K029"
    ],
    "commissioned_minutes": 495,
-   "scheduled_minutes": 315,
-   "gap_minutes": 180,
+   "scheduled_minutes": 405,
+   "gap_minutes": 90,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2836,8 +2836,8 @@
     "K005"
    ],
    "commissioned_minutes": 315,
-   "scheduled_minutes": 90,
-   "gap_minutes": 225,
+   "scheduled_minutes": 180,
+   "gap_minutes": 135,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2944,8 +2944,8 @@
     "K001"
    ],
    "commissioned_minutes": 735,
-   "scheduled_minutes": 735,
-   "gap_minutes": 0,
+   "scheduled_minutes": 690,
+   "gap_minutes": 45,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -2964,8 +2964,8 @@
     "K012"
    ],
    "commissioned_minutes": 225,
-   "scheduled_minutes": 90,
-   "gap_minutes": 135,
+   "scheduled_minutes": 135,
+   "gap_minutes": 90,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3030,8 +3030,8 @@
     "K025"
    ],
    "commissioned_minutes": 1155,
-   "scheduled_minutes": 885,
-   "gap_minutes": 270,
+   "scheduled_minutes": 930,
+   "gap_minutes": 225,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3051,8 +3051,8 @@
     "K007"
    ],
    "commissioned_minutes": 840,
-   "scheduled_minutes": 840,
-   "gap_minutes": 0,
+   "scheduled_minutes": 780,
+   "gap_minutes": 60,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3115,8 +3115,8 @@
     "K027"
    ],
    "commissioned_minutes": 630,
-   "scheduled_minutes": 540,
-   "gap_minutes": 90,
+   "scheduled_minutes": 495,
+   "gap_minutes": 135,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3137,8 +3137,8 @@
     "K010"
    ],
    "commissioned_minutes": 1155,
-   "scheduled_minutes": 1155,
-   "gap_minutes": 0,
+   "scheduled_minutes": 1065,
+   "gap_minutes": 90,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3224,8 +3224,8 @@
     "K025"
    ],
    "commissioned_minutes": 525,
-   "scheduled_minutes": 480,
-   "gap_minutes": 45,
+   "scheduled_minutes": 525,
+   "gap_minutes": 0,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3246,8 +3246,8 @@
     "K032"
    ],
    "commissioned_minutes": 525,
-   "scheduled_minutes": 525,
-   "gap_minutes": 0,
+   "scheduled_minutes": 480,
+   "gap_minutes": 45,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3289,8 +3289,8 @@
     "K018"
    ],
    "commissioned_minutes": 735,
-   "scheduled_minutes": 510,
-   "gap_minutes": 225,
+   "scheduled_minutes": 555,
+   "gap_minutes": 180,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3371,8 +3371,8 @@
     "K028"
    ],
    "commissioned_minutes": 630,
-   "scheduled_minutes": 330,
-   "gap_minutes": 300,
+   "scheduled_minutes": 390,
+   "gap_minutes": 240,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3393,8 +3393,8 @@
     "K022"
    ],
    "commissioned_minutes": 945,
-   "scheduled_minutes": 900,
-   "gap_minutes": 45,
+   "scheduled_minutes": 945,
+   "gap_minutes": 0,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3459,8 +3459,8 @@
     "K015"
    ],
    "commissioned_minutes": 420,
-   "scheduled_minutes": 360,
-   "gap_minutes": 60,
+   "scheduled_minutes": 300,
+   "gap_minutes": 120,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   },
@@ -3524,8 +3524,8 @@
     "K029"
    ],
    "commissioned_minutes": 675,
-   "scheduled_minutes": 645,
-   "gap_minutes": 30,
+   "scheduled_minutes": 675,
+   "gap_minutes": 0,
    "sleep_ins_needed": 0,
    "sleep_ins_covered": 0
   }
@@ -3660,7 +3660,7 @@
    "unfilled_detail": [
     "K022 busy 07:40\u201308:10 with C035",
     "K020 busy 07:37\u201308:37 with C025",
-    "K012 busy 07:48\u201308:48 with C022"
+    "K012 busy 07:57\u201308:57 with C022"
    ],
    "override_suggestions": []
   },
@@ -3696,7 +3696,7 @@
     "K002",
     "K024"
    ],
-   "start": 1246
+   "start": 1247
   },
   {
    "id": "V00010",
@@ -3764,11 +3764,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K020",
-    "K027"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "6 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K027 busy 07:31\u201308:16 with C017",
+    "K020 busy 07:30\u201308:00 with C019",
+    "K033 busy 07:31\u201308:16 with C017"
    ],
-   "start": 479
+   "override_suggestions": []
   },
   {
    "id": "V00014",
@@ -3798,15 +3802,11 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K027 busy 19:25\u201320:10 with C059",
-    "K001 busy 19:25\u201320:10 with C059",
-    "K033 busy 19:50\u201320:35 with C016"
+   "assigned": [
+    "K002",
+    "K007"
    ],
-   "override_suggestions": []
+   "start": 1246
   },
   {
    "id": "V00016",
@@ -3821,11 +3821,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K022",
-    "K032"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K022 busy 07:18\u201308:03 with C037",
+    "K003 busy 07:58\u201308:58 with C002",
+    "K012 busy 07:18\u201308:03 with C037"
    ],
-   "start": 488
+   "override_suggestions": []
   },
   {
    "id": "V00017",
@@ -3874,11 +3878,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K008",
-    "K012"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "10 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K022 busy 07:35\u201308:35 with C012",
+    "K027 busy 08:30\u201309:15 with C044",
+    "K003 busy 07:15\u201308:00 with C037"
    ],
-   "start": 488
+   "override_suggestions": []
   },
   {
    "id": "V00020",
@@ -3909,10 +3917,10 @@
    ],
    "kind": "care",
    "assigned": [
-    "K027",
-    "K032"
+    "K001",
+    "K027"
    ],
-   "start": 1240
+   "start": 1224
   },
   {
    "id": "V00022",
@@ -3958,7 +3966,7 @@
    "start": null,
    "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K012 busy 07:48\u201308:48 with C022",
+    "K012 busy 07:57\u201308:57 with C022",
     "K016 busy 07:49\u201308:34 with C033",
     "K022 busy 07:40\u201308:10 with C035"
    ],
@@ -3999,8 +4007,8 @@
    "unfilled_reason": "13 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K036 free but cannot reach in time between other visits",
-    "K016 busy 07:26\u201308:26 with C038",
-    "K014 busy 07:12\u201307:42 with C031"
+    "K016 busy 07:31\u201308:31 with C015",
+    "K014 busy 07:14\u201307:44 with C031"
    ],
    "override_suggestions": []
   },
@@ -4015,9 +4023,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K012"
+    "K003"
    ],
-   "start": 485
+   "start": 478
   },
   {
    "id": "V00028",
@@ -4029,10 +4037,15 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [
-    "K004"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "16 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K012 busy 07:15\u201308:00 with C037",
+    "K003 busy 07:15\u201308:00 with C037",
+    "K022 busy 07:35\u201308:35 with C012"
    ],
-   "start": 485
+   "override_suggestions": []
   },
   {
    "id": "V00029",
@@ -4105,9 +4118,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K014"
+    "K028"
    ],
-   "start": 536
+   "start": 594
   },
   {
    "id": "V00034",
@@ -4120,9 +4133,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K034"
    ],
-   "start": 576
+   "start": 595
   },
   {
    "id": "V00035",
@@ -4137,7 +4150,7 @@
    "assigned": [
     "K003"
    ],
-   "start": 594
+   "start": 588
   },
   {
    "id": "V00036",
@@ -4234,7 +4247,7 @@
    "unfilled_detail": [
     "K037 busy 07:35\u201308:35 with C053",
     "K033 busy 07:19\u201307:49 with C045",
-    "K012 busy 07:48\u201308:48 with C022"
+    "K012 busy 07:57\u201308:57 with C022"
    ],
    "override_suggestions": []
   },
@@ -4249,9 +4262,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K037"
+    "K016"
    ],
-   "start": 1078
+   "start": 1080
   },
   {
    "id": "V00042",
@@ -4308,9 +4321,9 @@
    "start": null,
    "unfilled_reason": "6 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K033 busy 07:39\u201308:24 with C033",
-    "K027 busy 07:23\u201307:53 with C019",
-    "K008 busy 07:21\u201308:06 with C055"
+    "K033 busy 07:31\u201308:16 with C017",
+    "K027 busy 07:31\u201308:16 with C017",
+    "K008 busy 07:36\u201308:21 with C055"
    ],
    "override_suggestions": []
   },
@@ -4347,7 +4360,7 @@
    "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K033 busy 07:36\u201308:21 with C056",
-    "K003 busy 08:06\u201309:06 with C015",
+    "K003 busy 07:21\u201307:51 with C043",
     "K004 busy 07:23\u201307:53 with C019"
    ],
    "override_suggestions": []
@@ -4380,11 +4393,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K027",
-    "K037"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K037 busy 07:20\u201308:20 with C053",
+    "K033 busy 07:36\u201308:21 with C056",
+    "K027 busy 08:30\u201309:15 with C044"
    ],
-   "start": 462
+   "override_suggestions": []
   },
   {
    "id": "V00049",
@@ -4558,7 +4575,7 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K008 busy 07:21\u201308:06 with C055",
+    "K008 busy 07:36\u201308:21 with C055",
     "K011 busy 07:45\u201308:30 with C049",
     "K019 busy 07:30\u201308:15 with C051"
    ],
@@ -4611,9 +4628,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K029"
+    "K034"
    ],
-   "start": 1261
+   "start": 1225
   },
   {
    "id": "V00062",
@@ -4630,7 +4647,7 @@
    "assigned": [
     "K011"
    ],
-   "start": 490
+   "start": 500
   },
   {
    "id": "V00063",
@@ -4645,7 +4662,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K011"
    ],
    "start": 1240
   },
@@ -4811,7 +4828,7 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K008 busy 08:32\u201309:02 with C020",
+    "K008 busy 08:47\u201309:17 with C020",
     "K011 busy 08:37\u201309:22 with C050",
     "K019 busy 08:50\u201309:35 with C013"
    ],
@@ -4849,7 +4866,7 @@
    "assigned": [
     "K008"
    ],
-   "start": 561
+   "start": 542
   },
   {
    "id": "V00075",
@@ -4881,9 +4898,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K006"
+    "K011"
    ],
-   "start": 575
+   "start": 555
   },
   {
    "id": "V00077",
@@ -5111,7 +5128,7 @@
    "start": null,
    "unfilled_reason": "13 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K008 busy 07:21\u201308:06 with C055",
+    "K008 busy 07:36\u201308:21 with C055",
     "K011 busy 07:45\u201308:30 with C049",
     "K019 busy 07:30\u201308:15 with C051"
    ],
@@ -5143,7 +5160,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K018"
+    "K011"
    ],
    "start": 1184
   },
@@ -5157,15 +5174,10 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "14 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K008 busy 08:09\u201309:09 with C009",
-    "K006 busy 07:35\u201308:20 with C051",
-    "K004 busy 07:58\u201308:58 with C025"
+   "assigned": [
+    "K017"
    ],
-   "override_suggestions": []
+   "start": 540
   },
   {
    "id": "V00094",
@@ -5178,7 +5190,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K006"
+    "K017"
    ],
    "start": 690
   },
@@ -5211,9 +5223,9 @@
    "start": null,
    "unfilled_reason": "16 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K008 busy 08:08\u201308:53 with C001",
-    "K011 busy 08:10\u201308:55 with C005",
-    "K006 busy 07:35\u201308:20 with C051"
+    "K008 busy 08:03\u201308:48 with C021",
+    "K011 busy 07:30\u201308:15 with C051",
+    "K006 busy 07:18\u201308:03 with C055"
    ],
    "override_suggestions": []
   },
@@ -5228,7 +5240,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K019"
+    "K006"
    ],
    "start": 690
   },
@@ -5276,15 +5288,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K014 busy 07:41\u201308:41 with C038",
-    "K021 busy 07:11\u201307:41 with C031",
-    "K016 busy 07:49\u201308:34 with C033"
+   "assigned": [
+    "K021"
    ],
-   "override_suggestions": []
+   "start": 480
   },
   {
    "id": "V00101",
@@ -5299,9 +5306,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K027"
    ],
-   "start": 503
+   "start": 505
   },
   {
    "id": "V00102",
@@ -5382,7 +5389,7 @@
    "start": null,
    "unfilled_reason": "13 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K008 busy 07:21\u201308:06 with C055",
+    "K008 busy 07:36\u201308:21 with C055",
     "K011 busy 07:45\u201308:30 with C049",
     "K019 busy 07:30\u201308:15 with C051"
    ],
@@ -5399,9 +5406,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K008"
+    "K017"
    ],
-   "start": 489
+   "start": 470
   },
   {
    "id": "V00108",
@@ -5416,7 +5423,7 @@
    "assigned": [
     "K006"
    ],
-   "start": 503
+   "start": 492
   },
   {
    "id": "V00109",
@@ -5512,7 +5519,7 @@
    "assigned": [
     "K023"
    ],
-   "start": 999
+   "start": 1020
   },
   {
    "id": "V00115",
@@ -5559,7 +5566,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K034"
    ],
    "start": 585
   },
@@ -5574,9 +5581,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K033"
    ],
-   "start": 1008
+   "start": 960
   },
   {
    "id": "V00119",
@@ -5591,9 +5598,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K034"
    ],
-   "start": 585
+   "start": 543
   },
   {
    "id": "V00120",
@@ -5623,7 +5630,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K021"
    ],
    "start": 585
   },
@@ -5640,7 +5647,7 @@
    "assigned": [
     "K013"
    ],
-   "start": 1020
+   "start": 1018
   },
   {
    "id": "V00123",
@@ -5694,9 +5701,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K027"
    ],
-   "start": 540
+   "start": 542
   },
   {
    "id": "V00126",
@@ -5771,7 +5778,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 510
+   "start": 501
   },
   {
    "id": "V00131",
@@ -5784,9 +5791,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K022"
    ],
-   "start": 514
+   "start": 493
   },
   {
    "id": "V00132",
@@ -5798,15 +5805,10 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "5 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K022 busy 07:55\u201308:40 with C054",
-    "K012 busy 07:10\u201307:55 with C037",
-    "K033 busy 07:36\u201308:21 with C056"
+   "assigned": [
+    "K022"
    ],
-   "override_suggestions": []
+   "start": 455
   },
   {
    "id": "V00133",
@@ -5951,7 +5953,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K037"
+    "K016"
    ],
    "start": 1204
   },
@@ -6005,9 +6007,9 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K033 busy 07:39\u201308:24 with C033",
-    "K016 busy 07:26\u201308:26 with C038",
-    "K027 busy 07:59\u201308:44 with C001"
+    "K033 busy 07:31\u201308:16 with C017",
+    "K016 busy 07:31\u201308:31 with C015",
+    "K027 busy 07:31\u201308:16 with C017"
    ],
    "override_suggestions": []
   },
@@ -6024,7 +6026,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K027"
    ],
    "start": 1204
   },
@@ -6060,7 +6062,7 @@
    "assigned": [
     "K016"
    ],
-   "start": 1240
+   "start": 1185
   },
   {
    "id": "V00148",
@@ -6239,9 +6241,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K024"
+    "K033"
    ],
-   "start": 1198
+   "start": 1247
   },
   {
    "id": "V00159",
@@ -6304,15 +6306,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K027 busy 07:23\u201307:53 with C019",
-    "K033 busy 07:39\u201308:24 with C033",
-    "K016 busy 07:26\u201308:26 with C038"
+   "assigned": [
+    "K016"
    ],
-   "override_suggestions": []
+   "start": 451
   },
   {
    "id": "V00163",
@@ -6325,9 +6322,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K028"
+    "K027"
    ],
-   "start": 785
+   "start": 769
   },
   {
    "id": "V00164",
@@ -6342,9 +6339,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K001"
    ],
-   "start": 1217
+   "start": 1195
   },
   {
    "id": "V00165",
@@ -6358,10 +6355,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K003"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K033 busy 07:36\u201308:21 with C056",
+    "K016 busy 07:25\u201308:25 with C038",
+    "K021 busy 07:40\u201308:10 with C035"
    ],
-   "start": 486
+   "override_suggestions": []
   },
   {
    "id": "V00166",
@@ -6376,7 +6378,7 @@
    "assigned": [
     "K028"
    ],
-   "start": 771
+   "start": 805
   },
   {
    "id": "V00167",
@@ -6408,9 +6410,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K019"
+    "K021"
    ],
-   "start": 494
+   "start": 464
   },
   {
    "id": "V00169",
@@ -6423,7 +6425,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K008"
+    "K030"
    ],
    "start": 760
   },
@@ -6603,9 +6605,9 @@
    "kind": "care",
    "assigned": [
     "K002",
-    "K022"
+    "K024"
    ],
-   "start": 1195
+   "start": 1196
   },
   {
    "id": "V00180",
@@ -6692,7 +6694,7 @@
    "assigned": [
     "K030"
    ],
-   "start": 740
+   "start": 755
   },
   {
    "id": "V00185",
@@ -6708,10 +6710,10 @@
    ],
    "kind": "care",
    "assigned": [
-    "K017",
+    "K002",
     "K033"
    ],
-   "start": 1190
+   "start": 1195
   },
   {
    "id": "V00186",
@@ -6780,10 +6782,10 @@
    ],
    "kind": "care",
    "assigned": [
-    "K003",
-    "K012"
+    "K004",
+    "K008"
    ],
-   "start": 539
+   "start": 536
   },
   {
    "id": "V00190",
@@ -6796,9 +6798,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K012"
+    "K021"
    ],
-   "start": 740
+   "start": 751
   },
   {
    "id": "V00191",
@@ -6814,10 +6816,10 @@
    ],
    "kind": "care",
    "assigned": [
-    "K001",
-    "K003"
+    "K003",
+    "K032"
    ],
-   "start": 1235
+   "start": 1246
   },
   {
    "id": "V00192",
@@ -6879,7 +6881,7 @@
    "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K022 busy 07:40\u201308:10 with C035",
-    "K012 busy 07:48\u201308:48 with C022",
+    "K012 busy 07:57\u201308:57 with C022",
     "K032 busy 07:38\u201308:38 with C015"
    ],
    "override_suggestions": []
@@ -6920,15 +6922,11 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "6 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K027 busy 07:23\u201307:53 with C019",
-    "K033 busy 07:39\u201308:24 with C033",
-    "K008 busy 07:21\u201308:06 with C055"
+   "assigned": [
+    "K027",
+    "K033"
    ],
-   "override_suggestions": []
+   "start": 451
   },
   {
    "id": "V00197",
@@ -7011,9 +7009,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K016"
    ],
-   "start": 580
+   "start": 572
   },
   {
    "id": "V00202",
@@ -7045,7 +7043,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K019"
    ],
    "start": 580
   },
@@ -7125,15 +7123,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K021 busy 07:11\u201307:41 with C031",
-    "K014 busy 07:41\u201308:41 with C038",
-    "K016 busy 07:49\u201308:34 with C033"
+   "assigned": [
+    "K021"
    ],
-   "override_suggestions": []
+   "start": 443
   },
   {
    "id": "V00209",
@@ -7146,9 +7139,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K021"
    ],
-   "start": 1080
+   "start": 1051
   },
   {
    "id": "V00210",
@@ -7195,9 +7188,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K020"
    ],
-   "start": 443
+   "start": 450
   },
   {
    "id": "V00213",
@@ -7259,9 +7252,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K019"
    ],
-   "start": 496
+   "start": 483
   },
   {
    "id": "V00217",
@@ -7274,7 +7267,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K032"
    ],
    "start": 1080
   },
@@ -7378,7 +7371,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 1199
+   "start": 1150
   },
   {
    "id": "V00224",
@@ -7429,7 +7422,7 @@
    "assigned": [
     "K008"
    ],
-   "start": 512
+   "start": 527
   },
   {
    "id": "V00227",
@@ -7444,9 +7437,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K036"
+    "K034"
    ],
-   "start": 1150
+   "start": 1199
   },
   {
    "id": "V00228",
@@ -7461,9 +7454,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K012"
+    "K016"
    ],
-   "start": 551
+   "start": 514
   },
   {
    "id": "V00229",
@@ -7480,7 +7473,7 @@
    "assigned": [
     "K029"
    ],
-   "start": 1150
+   "start": 1179
   },
   {
    "id": "V00230",
@@ -7495,9 +7488,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K022"
    ],
-   "start": 551
+   "start": 528
   },
   {
    "id": "V00231",
@@ -7512,9 +7505,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K013"
    ],
-   "start": 1150
+   "start": 1193
   },
   {
    "id": "V00232",
@@ -7646,10 +7639,15 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [
-    "K021"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K022 busy 07:40\u201308:10 with C035",
+    "K014 busy 07:14\u201307:44 with C031",
+    "K021 busy 07:23\u201307:53 with C019"
    ],
-   "start": 465
+   "override_suggestions": []
   },
   {
    "id": "V00241",
@@ -7677,9 +7675,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K023"
+    "K018"
    ],
-   "start": 1050
+   "start": 1041
   },
   {
    "id": "V00243",
@@ -7692,9 +7690,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K023"
+    "K021"
    ],
-   "start": 1170
+   "start": 1194
   },
   {
    "id": "V00244",
@@ -7769,7 +7767,7 @@
    "assigned": [
     "K017"
    ],
-   "start": 465
+   "start": 475
   },
   {
    "id": "V00249",
@@ -7784,7 +7782,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 819
+   "start": 779
   },
   {
    "id": "V00250",
@@ -7797,9 +7795,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K009"
+    "K017"
    ],
-   "start": 1003
+   "start": 1036
   },
   {
    "id": "V00251",
@@ -7812,9 +7810,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K009"
+    "K017"
    ],
-   "start": 1201
+   "start": 1199
   },
   {
    "id": "V00252",
@@ -7827,9 +7825,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K028"
+    "K032"
    ],
-   "start": 520
+   "start": 493
   },
   {
    "id": "V00253",
@@ -7842,9 +7840,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K021"
    ],
-   "start": 754
+   "start": 753
   },
   {
    "id": "V00254",
@@ -7887,9 +7885,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K008"
    ],
-   "start": 507
+   "start": 483
   },
   {
    "id": "V00257",
@@ -7902,9 +7900,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K004"
    ],
-   "start": 735
+   "start": 748
   },
   {
    "id": "V00258",
@@ -7917,9 +7915,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K021"
    ],
-   "start": 1003
+   "start": 1050
   },
   {
    "id": "V00259",
@@ -7932,9 +7930,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K013"
+    "K021"
    ],
-   "start": 1230
+   "start": 1170
   },
   {
    "id": "V00260",
@@ -7985,7 +7983,7 @@
    "assigned": [
     "K012"
    ],
-   "start": 468
+   "start": 477
   },
   {
    "id": "V00263",
@@ -8000,7 +7998,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K023"
    ],
    "start": 1145
   },
@@ -8017,9 +8015,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K014"
+    "K034"
    ],
-   "start": 469
+   "start": 450
   },
   {
    "id": "V00265",
@@ -8034,7 +8032,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K015"
+    "K007"
    ],
    "start": 1145
   },
@@ -8141,7 +8139,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K037"
+    "K016"
    ],
    "start": 1170
   },
@@ -8195,9 +8193,9 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K033 busy 08:30\u201309:30 with C012",
-    "K016 busy 08:36\u201309:06 with C048",
-    "K027 busy 08:50\u201309:35 with C047"
+    "K033 busy 08:21\u201309:21 with C012",
+    "K016 busy 08:35\u201309:20 with C028",
+    "K027 busy 08:25\u201308:55 with C008"
    ],
    "override_suggestions": []
   },
@@ -8214,7 +8212,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K027"
    ],
    "start": 1170
   },
@@ -8235,8 +8233,8 @@
    "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K033 busy 08:26\u201309:26 with C014",
-    "K016 busy 08:46\u201309:31 with C042",
-    "K034 busy 08:05\u201308:50 with C033"
+    "K016 busy 08:34\u201309:04 with C020",
+    "K034 busy 08:12\u201308:57 with C033"
    ],
    "override_suggestions": []
   },
@@ -8272,7 +8270,7 @@
    "assigned": [
     "K027"
    ],
-   "start": 568
+   "start": 563
   },
   {
    "id": "V00279",
@@ -8372,15 +8370,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K014 busy 07:41\u201308:41 with C038",
-    "K016 busy 07:49\u201308:34 with C033",
-    "K021 busy 07:11\u201307:41 with C031"
+   "assigned": [
+    "K014"
    ],
-   "override_suggestions": []
+   "start": 475
   },
   {
    "id": "V00285",
@@ -8410,7 +8403,7 @@
    "assigned": [
     "K002"
    ],
-   "start": 1025
+   "start": 999
   },
   {
    "id": "V00287",
@@ -8424,10 +8417,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K016"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K016 busy 19:30\u201320:00 with C023",
+    "K021 busy 19:20\u201319:50 with C031",
+    "K032 busy 19:25\u201320:10 with C059"
    ],
-   "start": 1160
+   "override_suggestions": []
   },
   {
    "id": "V00288",
@@ -8441,15 +8439,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K014 busy 07:12\u201307:42 with C031",
-    "K034 busy 07:46\u201308:16 with C035",
-    "K016 busy 07:26\u201308:26 with C038"
+   "assigned": [
+    "K014"
    ],
-   "override_suggestions": []
+   "start": 475
   },
   {
    "id": "V00289",
@@ -8477,7 +8470,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K007"
+    "K015"
    ],
    "start": 1025
   },
@@ -8494,7 +8487,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K007"
+    "K015"
    ],
    "start": 1160
   },
@@ -8632,9 +8625,9 @@
    "start": null,
    "unfilled_reason": "13 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K014 busy 07:12\u201307:42 with C031",
-    "K034 busy 07:46\u201308:16 with C035",
-    "K027 busy 07:23\u201307:53 with C019"
+    "K014 busy 07:14\u201307:44 with C031",
+    "K034 busy 07:30\u201308:30 with C022",
+    "K027 busy 07:31\u201308:16 with C017"
    ],
    "override_suggestions": []
   },
@@ -8649,9 +8642,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K002"
+    "K009"
    ],
-   "start": 1145
+   "start": 1202
   },
   {
    "id": "V00302",
@@ -8694,9 +8687,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K004"
    ],
-   "start": 448
+   "start": 467
   },
   {
    "id": "V00305",
@@ -8858,7 +8851,7 @@
    "unfilled_reason": "3 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K022 busy 08:20\u201308:50 with C011",
-    "K012 busy 07:48\u201308:48 with C022",
+    "K012 busy 07:57\u201308:57 with C022",
     "K033 busy 07:56\u201308:56 with C012"
    ],
    "override_suggestions": []
@@ -8908,7 +8901,7 @@
    "assigned": [
     "K022"
    ],
-   "start": 1150
+   "start": 1178
   },
   {
    "id": "V00318",
@@ -8989,7 +8982,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 575
+   "start": 566
   },
   {
    "id": "V00323",
@@ -9019,7 +9012,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 1056
+   "start": 1040
   },
   {
    "id": "V00325",
@@ -9053,7 +9046,7 @@
    "assigned": [
     "K022"
    ],
-   "start": 540
+   "start": 558
   },
   {
    "id": "V00327",
@@ -9115,7 +9108,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K008"
+    "K012"
    ],
    "start": 540
   },
@@ -9130,9 +9123,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K012"
+    "K008"
    ],
-   "start": 775
+   "start": 740
   },
   {
    "id": "V00332",
@@ -9147,7 +9140,7 @@
    "assigned": [
     "K013"
    ],
-   "start": 1057
+   "start": 1055
   },
   {
    "id": "V00333",
@@ -9306,8 +9299,8 @@
    "unfilled_reason": "9 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K011 busy 07:45\u201308:30 with C049",
-    "K014 busy 07:49\u201308:49 with C022",
-    "K034 busy 08:23\u201308:53 with C008"
+    "K014 busy 07:55\u201308:55 with C024",
+    "K034 busy 07:30\u201308:30 with C022"
    ],
    "override_suggestions": []
   },
@@ -9322,7 +9315,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K018"
+    "K011"
    ],
    "start": 1145
   },
@@ -9367,9 +9360,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K011"
+    "K006"
    ],
-   "start": 544
+   "start": 560
   },
   {
    "id": "V00347",
@@ -9382,9 +9375,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K011"
    ],
-   "start": 1145
+   "start": 1152
   },
   {
    "id": "V00348",
@@ -9443,7 +9436,7 @@
    "unfilled_detail": [
     "K033 busy 07:19\u201307:49 with C045",
     "K016 busy 07:49\u201308:34 with C033",
-    "K021 busy 07:11\u201307:41 with C031"
+    "K021 busy 07:23\u201307:53 with C019"
    ],
    "override_suggestions": []
   },
@@ -9476,15 +9469,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K033 busy 07:39\u201308:24 with C033",
-    "K027 busy 07:23\u201307:53 with C019",
-    "K016 busy 07:26\u201308:26 with C038"
+   "assigned": [
+    "K016"
    ],
-   "override_suggestions": []
+   "start": 515
   },
   {
    "id": "V00353",
@@ -9503,7 +9491,7 @@
    "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K033 busy 07:36\u201308:21 with C056",
-    "K016 busy 07:55\u201308:40 with C054",
+    "K016 busy 07:25\u201308:25 with C038",
     "K021 busy 07:40\u201308:10 with C035"
    ],
    "override_suggestions": []
@@ -9520,15 +9508,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "15 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K033 busy 07:36\u201308:21 with C056",
-    "K027 busy 07:42\u201308:27 with C004",
-    "K021 busy 07:20\u201308:05 with C052"
+   "assigned": [
+    "K032"
    ],
-   "override_suggestions": []
+   "start": 510
   },
   {
    "id": "V00355",
@@ -9630,9 +9613,9 @@
    "start": null,
    "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K028 busy 08:05\u201308:35 with C045",
-    "K033 busy 08:30\u201309:30 with C012",
-    "K027 busy 07:59\u201308:44 with C001"
+    "K028 busy 08:25\u201308:55 with C036",
+    "K033 busy 08:21\u201309:21 with C012",
+    "K027 busy 08:25\u201308:55 with C008"
    ],
    "override_suggestions": []
   },
@@ -9715,7 +9698,7 @@
    "assigned": [
     "K012"
    ],
-   "start": 585
+   "start": 543
   },
   {
    "id": "V00365",
@@ -9743,9 +9726,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K028"
    ],
-   "start": 585
+   "start": 545
   },
   {
    "id": "V00367",
@@ -9760,7 +9743,7 @@
    "assigned": [
     "K028"
    ],
-   "start": 574
+   "start": 585
   },
   {
    "id": "V00368",
@@ -9775,7 +9758,7 @@
    "assigned": [
     "K022"
    ],
-   "start": 585
+   "start": 566
   },
   {
    "id": "V00369",
@@ -9908,9 +9891,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K014"
    ],
-   "start": 431
+   "start": 434
   },
   {
    "id": "V00378",
@@ -9953,9 +9936,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K023"
+    "K021"
    ],
-   "start": 1204
+   "start": 1160
   },
   {
    "id": "V00381",
@@ -10030,7 +10013,7 @@
    "assigned": [
     "K014"
    ],
-   "start": 432
+   "start": 434
   },
   {
    "id": "V00386",
@@ -10043,9 +10026,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K014"
    ],
-   "start": 735
+   "start": 784
   },
   {
    "id": "V00387",
@@ -10058,9 +10041,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K009"
+    "K017"
    ],
-   "start": 1052
+   "start": 1090
   },
   {
    "id": "V00388",
@@ -10073,9 +10056,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K002"
+    "K017"
    ],
-   "start": 1182
+   "start": 1160
   },
   {
    "id": "V00389",
@@ -10088,9 +10071,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K032"
    ],
-   "start": 467
+   "start": 454
   },
   {
    "id": "V00390",
@@ -10103,9 +10086,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K004"
    ],
-   "start": 753
+   "start": 748
   },
   {
    "id": "V00391",
@@ -10148,9 +10131,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K004"
    ],
-   "start": 468
+   "start": 430
   },
   {
    "id": "V00394",
@@ -10163,9 +10146,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K019"
    ],
-   "start": 753
+   "start": 735
   },
   {
    "id": "V00395",
@@ -10178,9 +10161,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K024"
    ],
-   "start": 1052
+   "start": 1067
   },
   {
    "id": "V00396",
@@ -10193,9 +10176,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K021"
    ],
-   "start": 1191
+   "start": 1204
   },
   {
    "id": "V00397",
@@ -10296,7 +10279,7 @@
    "assigned": [
     "K002"
    ],
-   "start": 1081
+   "start": 1090
   },
   {
    "id": "V00403",
@@ -10358,9 +10341,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K009"
+    "K033"
    ],
-   "start": 1090
+   "start": 1075
   },
   {
    "id": "V00407",
@@ -10407,9 +10390,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K021"
    ],
-   "start": 528
+   "start": 535
   },
   {
    "id": "V00410",
@@ -10422,7 +10405,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K013"
    ],
    "start": 1090
   },
@@ -10569,9 +10552,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K022"
    ],
-   "start": 1196
+   "start": 1213
   },
   {
    "id": "V00420",
@@ -10634,10 +10617,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K033"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K016 busy 07:31\u201308:31 with C015",
+    "K014 busy 07:14\u201307:44 with C031",
+    "K027 busy 07:31\u201308:16 with C017"
    ],
-   "start": 459
+   "override_suggestions": []
   },
   {
    "id": "V00424",
@@ -10667,9 +10655,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K015"
+    "K016"
    ],
-   "start": 1196
+   "start": 1190
   },
   {
    "id": "V00426",
@@ -10686,7 +10674,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 485
+   "start": 492
   },
   {
    "id": "V00427",
@@ -10733,9 +10721,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K003"
+    "K012"
    ],
-   "start": 485
+   "start": 490
   },
   {
    "id": "V00430",
@@ -10748,7 +10736,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K034"
    ],
    "start": 730
   },
@@ -10765,9 +10753,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K013"
+    "K032"
    ],
-   "start": 1190
+   "start": 1201
   },
   {
    "id": "V00432",
@@ -10824,7 +10812,7 @@
    "start": null,
    "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K012 busy 08:55\u201309:40 with C042",
+    "K012 busy 07:57\u201308:57 with C022",
     "K022 busy 08:55\u201309:40 with C054",
     "K032 busy 08:54\u201309:39 with C059"
    ],
@@ -10866,15 +10854,11 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "6 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K027 busy 08:50\u201309:35 with C047",
-    "K008 busy 08:32\u201309:02 with C020",
-    "K033 busy 08:30\u201309:30 with C012"
+   "assigned": [
+    "K017",
+    "K027"
    ],
-   "override_suggestions": []
+   "start": 590
   },
   {
    "id": "V00437",
@@ -10968,9 +10952,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K022"
+    "K021"
    ],
-   "start": 1035
+   "start": 999
   },
   {
    "id": "V00443",
@@ -11017,9 +11001,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K020"
    ],
-   "start": 466
+   "start": 502
   },
   {
    "id": "V00446",
@@ -11032,9 +11016,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K009"
    ],
-   "start": 1035
+   "start": 1002
   },
   {
    "id": "V00447",
@@ -11083,7 +11067,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 483
+   "start": 486
   },
   {
    "id": "V00450",
@@ -11098,7 +11082,7 @@
    "assigned": [
     "K021"
    ],
-   "start": 995
+   "start": 999
   },
   {
    "id": "V00451",
@@ -11238,7 +11222,7 @@
    "assigned": [
     "K021"
    ],
-   "start": 1232
+   "start": 1267
   },
   {
    "id": "V00460",
@@ -11298,7 +11282,7 @@
    "assigned": [
     "K028"
    ],
-   "start": 450
+   "start": 505
   },
   {
    "id": "V00464",
@@ -11313,7 +11297,7 @@
    "assigned": [
     "K030"
    ],
-   "start": 781
+   "start": 796
   },
   {
    "id": "V00465",
@@ -11326,9 +11310,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K015"
+    "K016"
    ],
-   "start": 1232
+   "start": 1265
   },
   {
    "id": "V00466",
@@ -11343,7 +11327,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 449
+   "start": 456
   },
   {
    "id": "V00467",
@@ -11356,9 +11340,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K028"
    ],
-   "start": 715
+   "start": 766
   },
   {
    "id": "V00468",
@@ -11388,7 +11372,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 447
+   "start": 450
   },
   {
    "id": "V00470",
@@ -11401,9 +11385,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K030"
+    "K034"
    ],
-   "start": 738
+   "start": 766
   },
   {
    "id": "V00471",
@@ -11418,7 +11402,7 @@
    "assigned": [
     "K001"
    ],
-   "start": 1284
+   "start": 1276
   },
   {
    "id": "V00472",
@@ -11577,7 +11561,7 @@
    "start": null,
    "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K012 busy 07:48\u201308:48 with C022",
+    "K012 busy 07:57\u201308:57 with C022",
     "K022 busy 07:40\u201308:10 with C035",
     "K032 busy 07:38\u201308:38 with C015"
    ],
@@ -11609,9 +11593,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K018"
+    "K002"
    ],
-   "start": 1050
+   "start": 1049
   },
   {
    "id": "V00483",
@@ -11630,9 +11614,9 @@
    "start": null,
    "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K022 busy 19:10\u201319:40 with C026",
-    "K032 busy 19:40\u201320:10 with C042",
-    "K033 busy 19:10\u201319:55 with C060"
+    "K022 busy 19:38\u201320:08 with C026",
+    "K032 busy 19:25\u201320:10 with C059",
+    "K033 busy 19:10\u201319:40 with C020"
    ],
    "override_suggestions": []
   },
@@ -11721,9 +11705,9 @@
    "start": null,
    "unfilled_reason": "6 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K027 busy 07:23\u201307:53 with C019",
-    "K008 busy 07:21\u201308:06 with C055",
-    "K033 busy 07:39\u201308:24 with C033"
+    "K027 busy 07:31\u201308:16 with C017",
+    "K008 busy 07:36\u201308:21 with C055",
+    "K033 busy 07:31\u201308:16 with C017"
    ],
    "override_suggestions": []
   },
@@ -11738,9 +11722,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K014"
+    "K008"
    ],
-   "start": 780
+   "start": 779
   },
   {
    "id": "V00490",
@@ -11755,7 +11739,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 1014
+   "start": 998
   },
   {
    "id": "V00491",
@@ -11774,9 +11758,9 @@
    "start": null,
    "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K001 busy 19:25\u201320:10 with C059",
-    "K027 busy 19:25\u201320:10 with C059",
-    "K007 busy 19:20\u201319:50 with C024"
+    "K001 busy 19:55\u201320:25 with C015",
+    "K027 busy 19:30\u201320:00 with C023",
+    "K007 busy 19:05\u201319:50 with C022"
    ],
    "override_suggestions": []
   },
@@ -11793,15 +11777,11 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K012 busy 07:28\u201307:58 with C043",
-    "K003 busy 08:06\u201309:06 with C015",
-    "K022 busy 08:08\u201308:53 with C001"
+   "assigned": [
+    "K012",
+    "K022"
    ],
-   "override_suggestions": []
+   "start": 438
   },
   {
    "id": "V00493",
@@ -11816,7 +11796,7 @@
    "assigned": [
     "K012"
    ],
-   "start": 795
+   "start": 744
   },
   {
    "id": "V00494",
@@ -11869,7 +11849,7 @@
     "K003",
     "K012"
    ],
-   "start": 430
+   "start": 435
   },
   {
    "id": "V00497",
@@ -11882,9 +11862,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K012"
    ],
-   "start": 744
+   "start": 788
   },
   {
    "id": "V00498",
@@ -12020,10 +12000,15 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [
-    "K014"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K016 busy 07:49\u201308:34 with C033",
+    "K012 busy 07:57\u201308:57 with C022",
+    "K014 busy 07:14\u201307:44 with C031"
    ],
-   "start": 461
+   "override_suggestions": []
   },
   {
    "id": "V00507",
@@ -12051,9 +12036,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K022"
    ],
-   "start": 1198
+   "start": 1140
   },
   {
    "id": "V00509",
@@ -12111,9 +12096,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K030"
    ],
-   "start": 446
+   "start": 505
   },
   {
    "id": "V00513",
@@ -12126,9 +12111,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K033"
+    "K027"
    ],
-   "start": 778
+   "start": 725
   },
   {
    "id": "V00514",
@@ -12141,9 +12126,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K015"
    ],
-   "start": 1140
+   "start": 1198
   },
   {
    "id": "V00515",
@@ -12156,9 +12141,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K028"
+    "K016"
    ],
-   "start": 449
+   "start": 445
   },
   {
    "id": "V00516",
@@ -12171,7 +12156,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K003"
    ],
    "start": 725
   },
@@ -12186,9 +12171,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K022"
+    "K029"
    ],
-   "start": 1144
+   "start": 1140
   },
   {
    "id": "V00518",
@@ -12218,7 +12203,7 @@
    "assigned": [
     "K012"
    ],
-   "start": 813
+   "start": 749
   },
   {
    "id": "V00520",
@@ -12312,7 +12297,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K014"
+    "K012"
    ],
    "start": 595
   },
@@ -12391,7 +12376,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K015"
+    "K007"
    ],
    "start": 1030
   },
@@ -12410,7 +12395,7 @@
    "assigned": [
     "K012"
    ],
-   "start": 585
+   "start": 595
   },
   {
    "id": "V00532",
@@ -12440,7 +12425,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K004"
    ],
    "start": 595
   },
@@ -12721,15 +12706,11 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K033 busy 19:59\u201320:29 with C020",
-    "K022 busy 19:55\u201320:40 with C016",
-    "K032 busy 20:23\u201320:53 with C054"
+   "assigned": [
+    "K032",
+    "K037"
    ],
-   "override_suggestions": []
+   "start": 1226
   },
   {
    "id": "V00551",
@@ -12783,11 +12764,15 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [
-    "K027",
-    "K030"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "7 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K027 busy 09:02\u201309:32 with C011",
+    "K033 busy 08:21\u201309:21 with C012",
+    "K030 busy 08:25\u201309:25 with C038"
    ],
-   "start": 595
+   "override_suggestions": []
   },
   {
    "id": "V00554",
@@ -12805,7 +12790,7 @@
     "K001",
     "K033"
    ],
-   "start": 1246
+   "start": 1251
   },
   {
    "id": "V00555",
@@ -12819,11 +12804,15 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [
-    "K022",
-    "K030"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "9 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K033 busy 08:26\u201309:26 with C014",
+    "K004 busy 07:58\u201308:58 with C025",
+    "K022 busy 08:13\u201309:13 with C012"
    ],
-   "start": 595
+   "override_suggestions": []
   },
   {
    "id": "V00556",
@@ -12874,8 +12863,8 @@
    ],
    "kind": "care",
    "assigned": [
-    "K004",
-    "K033"
+    "K033",
+    "K038"
    ],
    "start": 1232
   },
@@ -13019,10 +13008,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K012"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K012 busy 07:57\u201308:57 with C022",
+    "K022 busy 08:20\u201308:50 with C011",
+    "K014 busy 07:55\u201308:55 with C024"
    ],
-   "start": 535
+   "override_suggestions": []
   },
   {
    "id": "V00568",
@@ -13052,7 +13046,7 @@
    "assigned": [
     "K018"
    ],
-   "start": 1001
+   "start": 988
   },
   {
    "id": "V00570",
@@ -13067,9 +13061,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K023"
    ],
-   "start": 1180
+   "start": 1212
   },
   {
    "id": "V00571",
@@ -13147,10 +13141,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K017"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K014 busy 07:55\u201308:55 with C024",
+    "K034 busy 08:36\u201309:06 with C048",
+    "K036 free but cannot reach in time between other visits"
    ],
-   "start": 528
+   "override_suggestions": []
   },
   {
    "id": "V00576",
@@ -13178,9 +13177,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K033"
+    "K015"
    ],
-   "start": 965
+   "start": 974
   },
   {
    "id": "V00578",
@@ -13195,9 +13194,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K007"
+    "K015"
    ],
-   "start": 1204
+   "start": 1237
   },
   {
    "id": "V00579",
@@ -13212,9 +13211,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K012"
    ],
-   "start": 526
+   "start": 541
   },
   {
    "id": "V00580",
@@ -13227,9 +13226,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K012"
+    "K004"
    ],
-   "start": 746
+   "start": 695
   },
   {
    "id": "V00581",
@@ -13276,9 +13275,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K003"
    ],
-   "start": 570
+   "start": 538
   },
   {
    "id": "V00584",
@@ -13291,7 +13290,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K004"
    ],
    "start": 695
   },
@@ -13441,9 +13440,9 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K012 busy 07:48\u201308:48 with C022",
+    "K012 busy 07:57\u201308:57 with C022",
     "K022 busy 07:40\u201308:10 with C035",
-    "K014 busy 07:41\u201308:41 with C038"
+    "K014 busy 07:14\u201307:44 with C031"
    ],
    "override_suggestions": []
   },
@@ -13475,9 +13474,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K033"
+    "K022"
    ],
-   "start": 1235
+   "start": 1257
   },
   {
    "id": "V00596",
@@ -13550,8 +13549,8 @@
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K036 free but cannot reach in time between other visits",
-    "K014 busy 07:12\u201307:42 with C031",
-    "K016 busy 07:26\u201308:26 with C038"
+    "K014 busy 07:14\u201307:44 with C031",
+    "K016 busy 07:31\u201308:31 with C015"
    ],
    "override_suggestions": []
   },
@@ -13583,9 +13582,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K036"
+    "K034"
    ],
-   "start": 1236
+   "start": 1235
   },
   {
    "id": "V00602",
@@ -13600,9 +13599,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K012"
+    "K003"
    ],
-   "start": 448
+   "start": 441
   },
   {
    "id": "V00603",
@@ -13634,7 +13633,7 @@
    "assigned": [
     "K029"
    ],
-   "start": 1200
+   "start": 1215
   },
   {
    "id": "V00605",
@@ -13649,9 +13648,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K017"
    ],
-   "start": 448
+   "start": 489
   },
   {
    "id": "V00606",
@@ -13664,7 +13663,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K017"
    ],
    "start": 690
   },
@@ -13681,9 +13680,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K013"
    ],
-   "start": 1200
+   "start": 1229
   },
   {
    "id": "V00608",
@@ -13780,7 +13779,7 @@
    "unfilled_detail": [
     "K037 busy 07:35\u201308:35 with C053",
     "K033 busy 07:56\u201308:56 with C012",
-    "K012 busy 07:48\u201308:48 with C022"
+    "K012 busy 07:57\u201308:57 with C022"
    ],
    "override_suggestions": []
   },
@@ -13797,7 +13796,7 @@
    "assigned": [
     "K037"
    ],
-   "start": 1025
+   "start": 1022
   },
   {
    "id": "V00614",
@@ -13854,9 +13853,9 @@
    "start": null,
    "unfilled_reason": "6 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K033 busy 07:39\u201308:24 with C033",
-    "K027 busy 07:59\u201308:44 with C001",
-    "K008 busy 07:21\u201308:06 with C055"
+    "K033 busy 07:31\u201308:16 with C017",
+    "K027 busy 07:31\u201308:16 with C017",
+    "K008 busy 07:36\u201308:21 with C055"
    ],
    "override_suggestions": []
   },
@@ -13871,7 +13870,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K027"
    ],
    "start": 1025
   },
@@ -13893,7 +13892,7 @@
    "unfilled_reason": "8 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K033 busy 07:36\u201308:21 with C056",
-    "K003 busy 08:06\u201309:06 with C015",
+    "K003 busy 07:58\u201308:58 with C002",
     "K004 busy 07:58\u201308:58 with C025"
    ],
    "override_suggestions": []
@@ -13930,7 +13929,7 @@
     "K027",
     "K037"
    ],
-   "start": 515
+   "start": 510
   },
   {
    "id": "V00621",
@@ -14020,7 +14019,7 @@
    "assigned": [
     "K028"
    ],
-   "start": 485
+   "start": 470
   },
   {
    "id": "V00627",
@@ -14092,15 +14091,10 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K012 busy 07:48\u201308:48 with C022",
-    "K022 busy 08:20\u201308:50 with C011",
-    "K014 busy 07:41\u201308:41 with C038"
+   "assigned": [
+    "K014"
    ],
-   "override_suggestions": []
+   "start": 541
   },
   {
    "id": "V00632",
@@ -14158,9 +14152,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K008"
+    "K014"
    ],
-   "start": 546
+   "start": 541
   },
   {
    "id": "V00636",
@@ -14173,9 +14167,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K015"
+    "K007"
    ],
-   "start": 996
+   "start": 990
   },
   {
    "id": "V00637",
@@ -14188,9 +14182,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K016"
    ],
-   "start": 541
+   "start": 548
   },
   {
    "id": "V00638",
@@ -14218,9 +14212,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K022"
+    "K017"
    ],
-   "start": 532
+   "start": 534
   },
   {
    "id": "V00640",
@@ -14323,9 +14317,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K021"
    ],
-   "start": 1039
+   "start": 1085
   },
   {
    "id": "V00647",
@@ -14367,10 +14361,15 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [
-    "K027"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "9 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K014 busy 07:55\u201308:55 with C024",
+    "K034 busy 07:30\u201308:30 with C022",
+    "K027 busy 07:31\u201308:16 with C017"
    ],
-   "start": 530
+   "override_suggestions": []
   },
   {
    "id": "V00650",
@@ -14428,9 +14427,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K019"
    ],
-   "start": 530
+   "start": 524
   },
   {
    "id": "V00654",
@@ -14443,9 +14442,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K032"
    ],
-   "start": 1046
+   "start": 1039
   },
   {
    "id": "V00655",
@@ -14547,7 +14546,7 @@
    "assigned": [
     "K021"
    ],
-   "start": 1269
+   "start": 1230
   },
   {
    "id": "V00661",
@@ -14596,7 +14595,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K034"
    ],
    "start": 516
   },
@@ -14613,9 +14612,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K015"
+    "K016"
    ],
-   "start": 1269
+   "start": 1228
   },
   {
    "id": "V00665",
@@ -14666,7 +14665,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 517
+   "start": 520
   },
   {
    "id": "V00668",
@@ -14681,9 +14680,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K021"
    ],
-   "start": 1247
+   "start": 1240
   },
   {
    "id": "V00669",
@@ -14923,7 +14922,7 @@
    "assigned": [
     "K009"
    ],
-   "start": 1256
+   "start": 1255
   },
   {
    "id": "V00684",
@@ -14935,15 +14934,10 @@
    "carers_needed": 1,
    "skills": [],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "14 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K006 busy 07:35\u201308:20 with C051",
-    "K008 busy 07:15\u201308:00 with C055",
-    "K004 busy 07:23\u201307:53 with C019"
+   "assigned": [
+    "K008"
    ],
-   "override_suggestions": []
+   "start": 491
   },
   {
    "id": "V00685",
@@ -14958,7 +14952,7 @@
    "assigned": [
     "K006"
    ],
-   "start": 799
+   "start": 813
   },
   {
    "id": "V00686",
@@ -14989,9 +14983,9 @@
    "start": null,
    "unfilled_reason": "16 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K006 busy 07:35\u201308:20 with C051",
-    "K008 busy 08:08\u201308:53 with C001",
-    "K011 busy 07:15\u201308:00 with C055"
+    "K006 busy 07:18\u201308:03 with C055",
+    "K008 busy 08:03\u201308:48 with C021",
+    "K011 busy 07:30\u201308:15 with C051"
    ],
    "override_suggestions": []
   },
@@ -15008,7 +15002,7 @@
    "assigned": [
     "K006"
    ],
-   "start": 725
+   "start": 801
   },
   {
    "id": "V00689",
@@ -15218,7 +15212,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K011"
+    "K018"
    ],
    "start": 1184
   },
@@ -15343,7 +15337,7 @@
    "unfilled_detail": [
     "K011 busy 07:51\u201308:36 with C055",
     "K019 busy 07:26\u201308:11 with C005",
-    "K014 busy 07:41\u201308:41 with C038"
+    "K014 busy 07:14\u201307:44 with C031"
    ],
    "override_suggestions": []
   },
@@ -15473,9 +15467,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K002"
+    "K011"
    ],
-   "start": 1230
+   "start": 1218
   },
   {
    "id": "V00717",
@@ -15507,7 +15501,7 @@
    "assigned": [
     "K006"
    ],
-   "start": 760
+   "start": 774
   },
   {
    "id": "V00719",
@@ -15539,9 +15533,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K006"
+    "K011"
    ],
-   "start": 455
+   "start": 450
   },
   {
    "id": "V00721",
@@ -15556,7 +15550,7 @@
    "assigned": [
     "K019"
    ],
-   "start": 760
+   "start": 818
   },
   {
    "id": "V00722",
@@ -15571,7 +15565,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K011"
    ],
    "start": 1190
   },
@@ -15736,7 +15730,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K032"
    ],
    "start": 1055
   },
@@ -15828,7 +15822,7 @@
    "assigned": [
     "K030"
    ],
-   "start": 464
+   "start": 439
   },
   {
    "id": "V00740",
@@ -15841,7 +15835,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K030"
    ],
    "start": 710
   },
@@ -15856,7 +15850,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K009"
    ],
    "start": 1055
   },
@@ -15888,7 +15882,7 @@
    "assigned": [
     "K030"
    ],
-   "start": 490
+   "start": 450
   },
   {
    "id": "V00744",
@@ -15903,7 +15897,7 @@
    "assigned": [
     "K030"
    ],
-   "start": 710
+   "start": 735
   },
   {
    "id": "V00745",
@@ -15946,9 +15940,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K032"
    ],
-   "start": 440
+   "start": 446
   },
   {
    "id": "V00748",
@@ -15961,9 +15955,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K030"
+    "K012"
    ],
-   "start": 780
+   "start": 710
   },
   {
    "id": "V00749",
@@ -16097,7 +16091,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K016"
    ],
    "start": 1041
   },
@@ -16149,9 +16143,9 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K033 busy 07:39\u201308:24 with C033",
-    "K016 busy 07:26\u201308:26 with C038",
-    "K027 busy 07:23\u201307:53 with C019"
+    "K033 busy 07:31\u201308:16 with C017",
+    "K016 busy 07:31\u201308:31 with C015",
+    "K027 busy 07:31\u201308:16 with C017"
    ],
    "override_suggestions": []
   },
@@ -16187,7 +16181,7 @@
    "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
     "K033 busy 07:36\u201308:21 with C056",
-    "K016 busy 07:55\u201308:40 with C054",
+    "K016 busy 07:25\u201308:25 with C038",
     "K021 busy 07:40\u201308:10 with C035"
    ],
    "override_suggestions": []
@@ -16219,15 +16213,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "15 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K037 busy 07:42\u201308:27 with C004",
-    "K033 busy 07:36\u201308:21 with C056",
-    "K027 busy 07:42\u201308:27 with C004"
+   "assigned": [
+    "K037"
    ],
-   "override_suggestions": []
+   "start": 440
   },
   {
    "id": "V00764",
@@ -16432,9 +16421,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K032"
+    "K023"
    ],
-   "start": 1223
+   "start": 1259
   },
   {
    "id": "V00777",
@@ -16512,15 +16501,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K014 busy 07:49\u201308:49 with C022",
-    "K034 busy 07:46\u201308:16 with C035",
-    "K016 busy 07:26\u201308:26 with C038"
+   "assigned": [
+    "K017"
    ],
-   "override_suggestions": []
+   "start": 535
   },
   {
    "id": "V00782",
@@ -16535,7 +16519,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 787
+   "start": 755
   },
   {
    "id": "V00783",
@@ -16565,9 +16549,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K007"
+    "K015"
    ],
-   "start": 1247
+   "start": 1273
   },
   {
    "id": "V00785",
@@ -16582,9 +16566,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K012"
    ],
-   "start": 475
+   "start": 490
   },
   {
    "id": "V00786",
@@ -16597,9 +16581,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K003"
+    "K012"
    ],
-   "start": 755
+   "start": 796
   },
   {
    "id": "V00787",
@@ -16646,9 +16630,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K022"
+    "K003"
    ],
-   "start": 475
+   "start": 487
   },
   {
    "id": "V00790",
@@ -16676,9 +16660,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K013"
+    "K024"
    ],
-   "start": 982
+   "start": 1030
   },
   {
    "id": "V00792",
@@ -16695,7 +16679,7 @@
    "assigned": [
     "K013"
    ],
-   "start": 1267
+   "start": 1272
   },
   {
    "id": "V00793",
@@ -16908,7 +16892,7 @@
    "assigned": [
     "K008"
    ],
-   "start": 441
+   "start": 456
   },
   {
    "id": "V00806",
@@ -16938,7 +16922,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K011"
+    "K018"
    ],
    "start": 1145
   },
@@ -16970,7 +16954,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K017"
+    "K006"
    ],
    "start": 720
   },
@@ -17004,9 +16988,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K011"
+    "K006"
    ],
-   "start": 435
+   "start": 438
   },
   {
    "id": "V00812",
@@ -17021,7 +17005,7 @@
    "assigned": [
     "K006"
    ],
-   "start": 766
+   "start": 745
   },
   {
    "id": "V00813",
@@ -17188,7 +17172,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K037"
+    "K016"
    ],
    "start": 1239
   },
@@ -17262,9 +17246,9 @@
    "start": null,
    "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
    "unfilled_detail": [
-    "K033 busy 07:39\u201308:24 with C033",
-    "K016 busy 07:26\u201308:26 with C038",
-    "K027 busy 07:23\u201307:53 with C019"
+    "K033 busy 07:31\u201308:16 with C017",
+    "K016 busy 07:31\u201308:31 with C015",
+    "K027 busy 07:31\u201308:16 with C017"
    ],
    "override_suggestions": []
   },
@@ -17281,7 +17265,7 @@
    "assigned": [
     "K028"
    ],
-   "start": 731
+   "start": 715
   },
   {
    "id": "V00828",
@@ -17296,7 +17280,7 @@
    ],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K027"
    ],
    "start": 1239
   },
@@ -17347,7 +17331,7 @@
    "assigned": [
     "K016"
    ],
-   "start": 1205
+   "start": 1220
   },
   {
    "id": "V00832",
@@ -17452,7 +17436,7 @@
    "assigned": [
     "K014"
    ],
-   "start": 530
+   "start": 590
   },
   {
    "id": "V00838",
@@ -17500,10 +17484,15 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [
-    "K034"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "12 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K012 busy 08:10\u201308:55 with C054",
+    "K003 busy 07:58\u201308:58 with C002",
+    "K016 busy 08:34\u201309:04 with C020"
    ],
-   "start": 590
+   "override_suggestions": []
   },
   {
    "id": "V00841",
@@ -17518,9 +17507,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K004"
+    "K017"
    ],
-   "start": 586
+   "start": 590
   },
   {
    "id": "V00842",
@@ -17713,7 +17702,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K016"
+    "K034"
    ],
    "start": 551
   },
@@ -17743,7 +17732,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K034"
+    "K002"
    ],
    "start": 1160
   },
@@ -17760,7 +17749,7 @@
    "assigned": [
     "K032"
    ],
-   "start": 548
+   "start": 552
   },
   {
    "id": "V00858",
@@ -17775,7 +17764,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 764
+   "start": 745
   },
   {
    "id": "V00859",
@@ -17805,7 +17794,7 @@
    "assigned": [
     "K034"
    ],
-   "start": 552
+   "start": 555
   },
   {
    "id": "V00861",
@@ -17818,9 +17807,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K034"
    ],
-   "start": 767
+   "start": 803
   },
   {
    "id": "V00862",
@@ -17833,9 +17822,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K027"
+    "K034"
    ],
-   "start": 1203
+   "start": 1160
   },
   {
    "id": "V00863",
@@ -18021,7 +18010,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K021"
+    "K037"
    ],
    "start": 1095
   },
@@ -18037,15 +18026,11 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "5 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K037 busy 19:30\u201320:00 with C023",
-    "K002 busy 19:20\u201319:50 with C058",
-    "K032 busy 19:40\u201320:10 with C042"
+   "assigned": [
+    "K032",
+    "K037"
    ],
-   "override_suggestions": []
+   "start": 1165
   },
   {
    "id": "V00875",
@@ -18129,11 +18114,15 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [
-    "K028",
-    "K030"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "5 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K028 busy 08:25\u201308:55 with C036",
+    "K027 busy 08:25\u201308:55 with C008",
+    "K030 busy 08:25\u201309:25 with C038"
    ],
-   "start": 534
+   "override_suggestions": []
   },
   {
    "id": "V00880",
@@ -18148,7 +18137,7 @@
    "assigned": [
     "K028"
    ],
-   "start": 680
+   "start": 766
   },
   {
    "id": "V00881",
@@ -18177,11 +18166,15 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [
-    "K001",
-    "K027"
+   "assigned": [],
+   "start": null,
+   "unfilled_reason": "5 suitable carer(s) working, but all are booked or too far away at this time",
+   "unfilled_detail": [
+    "K027 busy 19:30\u201320:00 with C023",
+    "K001 busy 19:55\u201320:25 with C015",
+    "K002 busy 19:20\u201319:50 with C058"
    ],
-   "start": 1165
+   "override_suggestions": []
   },
   {
    "id": "V00883",
@@ -18195,15 +18188,11 @@
     "hoist"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "5 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K028 busy 08:40\u201309:25 with C021",
-    "K004 busy 07:58\u201308:58 with C025",
-    "K003 busy 08:06\u201309:06 with C015"
+   "assigned": [
+    "K028",
+    "K030"
    ],
-   "override_suggestions": []
+   "start": 520
   },
   {
    "id": "V00884",
@@ -18216,7 +18205,7 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K003"
+    "K030"
    ],
    "start": 680
   },
@@ -18266,8 +18255,8 @@
    ],
    "kind": "care",
    "assigned": [
-    "K019",
-    "K030"
+    "K030",
+    "K032"
    ],
    "start": 570
   },
@@ -18315,7 +18304,7 @@
    "kind": "care",
    "assigned": [
     "K001",
-    "K004"
+    "K038"
    ],
    "start": 1165
   },
@@ -18490,9 +18479,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K002"
+    "K022"
    ],
-   "start": 990
+   "start": 1030
   },
   {
    "id": "V00902",
@@ -18509,7 +18498,7 @@
    "assigned": [
     "K033"
    ],
-   "start": 1150
+   "start": 1184
   },
   {
    "id": "V00903",
@@ -18587,15 +18576,10 @@
     "medication"
    ],
    "kind": "care",
-   "assigned": [],
-   "start": null,
-   "unfilled_reason": "11 suitable carer(s) working, but all are booked or too far away at this time",
-   "unfilled_detail": [
-    "K036 free but cannot reach in time between other visits",
-    "K014 busy 08:56\u201309:41 with C003",
-    "K016 busy 08:36\u201309:06 with C048"
+   "assigned": [
+    "K008"
    ],
-   "override_suggestions": []
+   "start": 561
   },
   {
    "id": "V00908",
@@ -18623,9 +18607,9 @@
    "skills": [],
    "kind": "care",
    "assigned": [
-    "K007"
+    "K034"
    ],
-   "start": 983
+   "start": 1011
   },
   {
    "id": "V00910",
@@ -18640,9 +18624,9 @@
    ],
    "kind": "care",
    "assigned": [
-    "K036"
+    "K034"
    ],
-   "start": 1184
+   "start": 1150
   },
   {
    "id": "V00911",
@@ -18742,7 +18726,7 @@
    ],
    "kind": "sleep_in",
    "assigned": [
-    "K036"
+    "K038"
    ],
    "start": 1320
   },
@@ -18869,7 +18853,7 @@
    ],
    "kind": "sleep_in",
    "assigned": [
-    "K038"
+    "K035"
    ],
    "start": 1320
   },
@@ -19027,23 +19011,21 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00882",
-     "client_id": "C059",
-     "start": 1165,
-     "end": 1210,
-     "travel_before": 0,
-     "miles_before": 0.0,
-     "shared_with": [
-      "K027"
-     ]
+     "visit_id": "V00164",
+     "client_id": "C015",
+     "start": 1195,
+     "end": 1225,
+     "travel_before": 7,
+     "miles_before": 1.11,
+     "shared_with": []
     },
     {
      "visit_id": "V00554",
      "client_id": "C041",
-     "start": 1246,
-     "end": 1291,
-     "travel_before": 7,
-     "miles_before": 1.15,
+     "start": 1251,
+     "end": 1296,
+     "travel_before": 4,
+     "miles_before": 0.17,
      "shared_with": [
       "K033"
      ]
@@ -19127,27 +19109,27 @@
      "travel_before": 0,
      "miles_before": 0.0,
      "shared_with": [
-      "K004"
+      "K038"
      ]
     },
     {
-     "visit_id": "V00191",
-     "client_id": "C016",
-     "start": 1235,
-     "end": 1280,
+     "visit_id": "V00021",
+     "client_id": "C001",
+     "start": 1224,
+     "end": 1269,
      "travel_before": 14,
-     "miles_before": 3.31,
+     "miles_before": 3.33,
      "shared_with": [
-      "K003"
+      "K027"
      ]
     },
     {
      "visit_id": "V00471",
      "client_id": "C036",
-     "start": 1284,
-     "end": 1314,
-     "travel_before": 4,
-     "miles_before": 0.43,
+     "start": 1276,
+     "end": 1306,
+     "travel_before": 7,
+     "miles_before": 1.03,
      "shared_with": []
     }
    ]
@@ -19269,30 +19251,30 @@
    ],
    "wed": [
     {
-     "visit_id": "V00901",
-     "client_id": "C060",
-     "start": 990,
-     "end": 1020,
-     "travel_before": 29,
-     "miles_before": 7.42,
+     "visit_id": "V00286",
+     "client_id": "C024",
+     "start": 999,
+     "end": 1044,
+     "travel_before": 27,
+     "miles_before": 6.84,
      "shared_with": []
     },
     {
-     "visit_id": "V00286",
-     "client_id": "C024",
-     "start": 1025,
-     "end": 1070,
+     "visit_id": "V00482",
+     "client_id": "C037",
+     "start": 1049,
+     "end": 1079,
      "travel_before": 5,
-     "miles_before": 0.59,
+     "miles_before": 0.58,
      "shared_with": []
     },
     {
      "visit_id": "V00402",
      "client_id": "C032",
-     "start": 1081,
-     "end": 1126,
+     "start": 1090,
+     "end": 1135,
      "travel_before": 11,
-     "miles_before": 2.27,
+     "miles_before": 2.18,
      "shared_with": []
     },
     {
@@ -19307,19 +19289,19 @@
     {
      "visit_id": "V00179",
      "client_id": "C016",
-     "start": 1195,
-     "end": 1240,
+     "start": 1196,
+     "end": 1241,
      "travel_before": 5,
      "miles_before": 0.65,
      "shared_with": [
-      "K022"
+      "K024"
      ]
     },
     {
      "visit_id": "V00009",
      "client_id": "C001",
-     "start": 1246,
-     "end": 1291,
+     "start": 1247,
+     "end": 1292,
      "travel_before": 6,
      "miles_before": 0.75,
      "shared_with": [
@@ -19414,31 +19396,35 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00301",
-     "client_id": "C025",
-     "start": 1145,
-     "end": 1175,
-     "travel_before": 4,
-     "miles_before": 0.37,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00388",
-     "client_id": "C031",
-     "start": 1182,
-     "end": 1212,
+     "visit_id": "V00856",
+     "client_id": "C058",
+     "start": 1160,
+     "end": 1190,
      "travel_before": 7,
-     "miles_before": 1.09,
+     "miles_before": 1.17,
      "shared_with": []
     },
     {
-     "visit_id": "V00716",
-     "client_id": "C051",
-     "start": 1230,
-     "end": 1275,
-     "travel_before": 18,
-     "miles_before": 4.35,
-     "shared_with": []
+     "visit_id": "V00185",
+     "client_id": "C016",
+     "start": 1195,
+     "end": 1240,
+     "travel_before": 5,
+     "miles_before": 0.65,
+     "shared_with": [
+      "K033"
+     ]
+    },
+    {
+     "visit_id": "V00015",
+     "client_id": "C001",
+     "start": 1246,
+     "end": 1291,
+     "travel_before": 6,
+     "miles_before": 0.75,
+     "shared_with": [
+      "K007"
+     ]
     }
    ]
   },
@@ -19712,12 +19698,21 @@
    ],
    "sat": [
     {
-     "visit_id": "V00165",
-     "client_id": "C015",
-     "start": 486,
-     "end": 546,
-     "travel_before": 16,
-     "miles_before": 3.74,
+     "visit_id": "V00602",
+     "client_id": "C043",
+     "start": 441,
+     "end": 471,
+     "travel_before": 12,
+     "miles_before": 2.67,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00027",
+     "client_id": "C002",
+     "start": 478,
+     "end": 538,
+     "travel_before": 7,
+     "miles_before": 1.08,
      "shared_with": []
     },
     {
@@ -19725,28 +19720,19 @@
      "client_id": "C029",
      "start": 570,
      "end": 630,
-     "travel_before": 24,
-     "miles_before": 6.16,
+     "travel_before": 32,
+     "miles_before": 8.43,
      "shared_with": [
       "K033"
      ]
     },
     {
-     "visit_id": "V00884",
-     "client_id": "C059",
-     "start": 680,
-     "end": 710,
-     "travel_before": 22,
-     "miles_before": 5.37,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00786",
-     "client_id": "C054",
-     "start": 755,
-     "end": 785,
-     "travel_before": 22,
-     "miles_before": 5.53,
+     "visit_id": "V00516",
+     "client_id": "C038",
+     "start": 725,
+     "end": 755,
+     "travel_before": 29,
+     "miles_before": 7.65,
      "shared_with": []
     },
     {
@@ -19794,8 +19780,8 @@
     {
      "visit_id": "V00496",
      "client_id": "C037",
-     "start": 430,
-     "end": 475,
+     "start": 435,
+     "end": 480,
      "travel_before": 6,
      "miles_before": 0.9,
      "shared_with": [
@@ -19803,32 +19789,30 @@
      ]
     },
     {
-     "visit_id": "V00429",
-     "client_id": "C033",
-     "start": 485,
-     "end": 530,
-     "travel_before": 10,
-     "miles_before": 2.08,
+     "visit_id": "V00789",
+     "client_id": "C054",
+     "start": 487,
+     "end": 532,
+     "travel_before": 7,
+     "miles_before": 1.06,
      "shared_with": []
     },
     {
-     "visit_id": "V00189",
-     "client_id": "C016",
-     "start": 539,
-     "end": 584,
+     "visit_id": "V00583",
+     "client_id": "C042",
+     "start": 538,
+     "end": 583,
      "travel_before": 6,
-     "miles_before": 0.96,
-     "shared_with": [
-      "K012"
-     ]
+     "miles_before": 0.79,
+     "shared_with": []
     },
     {
      "visit_id": "V00035",
      "client_id": "C003",
-     "start": 594,
-     "end": 639,
-     "travel_before": 10,
-     "miles_before": 2.09,
+     "start": 588,
+     "end": 633,
+     "travel_before": 5,
+     "miles_before": 0.5,
      "shared_with": []
     },
     {
@@ -19872,12 +19856,12 @@
     {
      "visit_id": "V00191",
      "client_id": "C016",
-     "start": 1235,
-     "end": 1280,
+     "start": 1246,
+     "end": 1291,
      "travel_before": 11,
      "miles_before": 2.46,
      "shared_with": [
-      "K001"
+      "K032"
      ]
     }
    ]
@@ -20137,21 +20121,21 @@
      ]
     },
     {
-     "visit_id": "V00467",
-     "client_id": "C036",
-     "start": 715,
-     "end": 745,
-     "travel_before": 4,
-     "miles_before": 0.43,
+     "visit_id": "V00580",
+     "client_id": "C042",
+     "start": 695,
+     "end": 740,
+     "travel_before": 10,
+     "miles_before": 2.09,
      "shared_with": []
     },
     {
-     "visit_id": "V00253",
-     "client_id": "C021",
-     "start": 754,
-     "end": 799,
-     "travel_before": 9,
-     "miles_before": 1.85,
+     "visit_id": "V00390",
+     "client_id": "C031",
+     "start": 748,
+     "end": 793,
+     "travel_before": 8,
+     "miles_before": 1.52,
      "shared_with": []
     },
     {
@@ -20213,107 +20197,60 @@
    ],
    "sun": [
     {
-     "visit_id": "V00605",
-     "client_id": "C043",
-     "start": 448,
-     "end": 478,
-     "travel_before": 18,
-     "miles_before": 4.49,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00028",
-     "client_id": "C002",
-     "start": 485,
-     "end": 545,
-     "travel_before": 7,
-     "miles_before": 1.08,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00230",
-     "client_id": "C020",
-     "start": 551,
-     "end": 581,
-     "travel_before": 6,
-     "miles_before": 0.89,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00841",
-     "client_id": "C057",
-     "start": 586,
-     "end": 646,
-     "travel_before": 5,
-     "miles_before": 0.54,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00606",
-     "client_id": "C043",
-     "start": 690,
-     "end": 735,
-     "travel_before": 7,
-     "miles_before": 1.12,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00497",
-     "client_id": "C037",
-     "start": 744,
-     "end": 789,
-     "travel_before": 9,
-     "miles_before": 1.85,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00258",
-     "client_id": "C021",
-     "start": 1003,
-     "end": 1048,
-     "travel_before": 6,
-     "miles_before": 0.95,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00395",
+     "visit_id": "V00393",
      "client_id": "C031",
-     "start": 1052,
-     "end": 1082,
-     "travel_before": 4,
-     "miles_before": 0.18,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00410",
-     "client_id": "C032",
-     "start": 1090,
-     "end": 1135,
-     "travel_before": 8,
-     "miles_before": 1.41,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00890",
-     "client_id": "C059",
-     "start": 1165,
-     "end": 1210,
-     "travel_before": 15,
-     "miles_before": 3.57,
-     "shared_with": [
-      "K001"
-     ]
-    },
-    {
-     "visit_id": "V00558",
-     "client_id": "C041",
-     "start": 1232,
-     "end": 1277,
+     "start": 430,
+     "end": 460,
      "travel_before": 7,
-     "miles_before": 1.15,
+     "miles_before": 1.03,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00304",
+     "client_id": "C025",
+     "start": 467,
+     "end": 527,
+     "travel_before": 7,
+     "miles_before": 1.09,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00189",
+     "client_id": "C016",
+     "start": 536,
+     "end": 581,
+     "travel_before": 9,
+     "miles_before": 1.72,
      "shared_with": [
-      "K033"
+      "K008"
      ]
+    },
+    {
+     "visit_id": "V00533",
+     "client_id": "C039",
+     "start": 595,
+     "end": 655,
+     "travel_before": 14,
+     "miles_before": 3.13,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00584",
+     "client_id": "C042",
+     "start": 695,
+     "end": 740,
+     "travel_before": 9,
+     "miles_before": 1.61,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00257",
+     "client_id": "C021",
+     "start": 748,
+     "end": 793,
+     "travel_before": 8,
+     "miles_before": 1.47,
+     "shared_with": []
     }
    ]
   },
@@ -20489,7 +20426,63 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00094",
+     "visit_id": "V00809",
+     "client_id": "C055",
+     "start": 720,
+     "end": 765,
+     "travel_before": 4,
+     "miles_before": 0.36,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00718",
+     "client_id": "C051",
+     "start": 774,
+     "end": 804,
+     "travel_before": 9,
+     "miles_before": 1.79,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00685",
+     "client_id": "C049",
+     "start": 813,
+     "end": 843,
+     "travel_before": 9,
+     "miles_before": 1.82,
+     "shared_with": []
+    }
+   ],
+   "sun": [
+    {
+     "visit_id": "V00811",
+     "client_id": "C055",
+     "start": 438,
+     "end": 483,
+     "travel_before": 6,
+     "miles_before": 0.77,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00108",
+     "client_id": "C009",
+     "start": 492,
+     "end": 552,
+     "travel_before": 9,
+     "miles_before": 1.82,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00346",
+     "client_id": "C027",
+     "start": 560,
+     "end": 620,
+     "travel_before": 8,
+     "miles_before": 1.47,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00097",
      "client_id": "C007",
      "start": 690,
      "end": 735,
@@ -20498,66 +20491,19 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00718",
-     "client_id": "C051",
-     "start": 760,
+     "visit_id": "V00812",
+     "client_id": "C055",
+     "start": 745,
      "end": 790,
-     "travel_before": 4,
-     "miles_before": 0.31,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00685",
-     "client_id": "C049",
-     "start": 799,
-     "end": 829,
-     "travel_before": 9,
-     "miles_before": 1.82,
-     "shared_with": []
-    }
-   ],
-   "sun": [
-    {
-     "visit_id": "V00720",
-     "client_id": "C051",
-     "start": 455,
-     "end": 500,
      "travel_before": 10,
-     "miles_before": 2.14,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00108",
-     "client_id": "C009",
-     "start": 503,
-     "end": 563,
-     "travel_before": 3,
-     "miles_before": 0.05,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00076",
-     "client_id": "C006",
-     "start": 575,
-     "end": 620,
-     "travel_before": 12,
-     "miles_before": 2.49,
+     "miles_before": 2.01,
      "shared_with": []
     },
     {
      "visit_id": "V00688",
      "client_id": "C049",
-     "start": 725,
-     "end": 755,
-     "travel_before": 6,
-     "miles_before": 1.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00812",
-     "client_id": "C055",
-     "start": 766,
-     "end": 811,
+     "start": 801,
+     "end": 831,
      "travel_before": 11,
      "miles_before": 2.37,
      "shared_with": []
@@ -20609,49 +20555,42 @@
    ],
    "fri": [
     {
-     "visit_id": "V00909",
-     "client_id": "C060",
-     "start": 983,
-     "end": 1013,
-     "travel_before": 12,
+     "visit_id": "V00636",
+     "client_id": "C046",
+     "start": 990,
+     "end": 1020,
+     "travel_before": 15,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00290",
-     "client_id": "C024",
-     "start": 1025,
-     "end": 1070,
-     "travel_before": 12,
+     "visit_id": "V00530",
+     "client_id": "C039",
+     "start": 1030,
+     "end": 1075,
+     "travel_before": 10,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00291",
-     "client_id": "C024",
-     "start": 1160,
+     "visit_id": "V00265",
+     "client_id": "C022",
+     "start": 1145,
      "end": 1190,
-     "travel_before": 0,
+     "travel_before": 23,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00578",
-     "client_id": "C042",
-     "start": 1204,
-     "end": 1234,
-     "travel_before": 14,
+     "visit_id": "V00015",
+     "client_id": "C001",
+     "start": 1246,
+     "end": 1291,
+     "travel_before": 19,
      "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00784",
-     "client_id": "C054",
-     "start": 1247,
-     "end": 1277,
-     "travel_before": 13,
-     "miles_before": 0.0,
-     "shared_with": []
+     "shared_with": [
+      "K002"
+     ]
     }
    ]
   },
@@ -20758,8 +20697,8 @@
     {
      "visit_id": "V00805",
      "client_id": "C055",
-     "start": 441,
-     "end": 486,
+     "start": 456,
+     "end": 501,
      "travel_before": 4,
      "miles_before": 0.37,
      "shared_with": []
@@ -20767,19 +20706,19 @@
     {
      "visit_id": "V00226",
      "client_id": "C020",
-     "start": 512,
-     "end": 542,
+     "start": 527,
+     "end": 557,
      "travel_before": 26,
      "miles_before": 6.57,
      "shared_with": []
     },
     {
-     "visit_id": "V00635",
-     "client_id": "C046",
-     "start": 546,
+     "visit_id": "V00907",
+     "client_id": "C060",
+     "start": 561,
      "end": 591,
      "travel_before": 4,
-     "miles_before": 0.15,
+     "miles_before": 0.41,
      "shared_with": []
     },
     {
@@ -20788,7 +20727,7 @@
      "start": 595,
      "end": 655,
      "travel_before": 4,
-     "miles_before": 0.32,
+     "miles_before": 0.37,
      "shared_with": []
     },
     {
@@ -20808,6 +20747,15 @@
      "travel_before": 7,
      "miles_before": 1.25,
      "shared_with": []
+    },
+    {
+     "visit_id": "V00489",
+     "client_id": "C037",
+     "start": 779,
+     "end": 824,
+     "travel_before": 7,
+     "miles_before": 1.17,
+     "shared_with": []
     }
    ],
    "sat": [
@@ -20821,63 +20769,63 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00107",
-     "client_id": "C009",
-     "start": 489,
-     "end": 549,
-     "travel_before": 9,
-     "miles_before": 1.82,
+     "visit_id": "V00684",
+     "client_id": "C049",
+     "start": 491,
+     "end": 536,
+     "travel_before": 11,
+     "miles_before": 2.37,
      "shared_with": []
     },
     {
      "visit_id": "V00074",
      "client_id": "C006",
-     "start": 561,
-     "end": 606,
-     "travel_before": 12,
-     "miles_before": 2.49,
+     "start": 542,
+     "end": 587,
+     "travel_before": 6,
+     "miles_before": 1.0,
      "shared_with": []
     }
    ],
    "sun": [
     {
-     "visit_id": "V00019",
-     "client_id": "C001",
-     "start": 488,
-     "end": 533,
-     "travel_before": 23,
-     "miles_before": 5.79,
-     "shared_with": [
-      "K012"
-     ]
+     "visit_id": "V00256",
+     "client_id": "C021",
+     "start": 483,
+     "end": 528,
+     "travel_before": 19,
+     "miles_before": 4.76,
+     "shared_with": []
     },
     {
-     "visit_id": "V00330",
-     "client_id": "C026",
-     "start": 540,
-     "end": 585,
-     "travel_before": 7,
-     "miles_before": 1.2,
-     "shared_with": []
+     "visit_id": "V00189",
+     "client_id": "C016",
+     "start": 536,
+     "end": 581,
+     "travel_before": 8,
+     "miles_before": 1.42,
+     "shared_with": [
+      "K004"
+     ]
     },
     {
      "visit_id": "V00557",
      "client_id": "C041",
      "start": 595,
      "end": 640,
-     "travel_before": 10,
-     "miles_before": 1.9,
+     "travel_before": 11,
+     "miles_before": 2.18,
      "shared_with": [
       "K012"
      ]
     },
     {
-     "visit_id": "V00169",
-     "client_id": "C015",
-     "start": 760,
-     "end": 790,
-     "travel_before": 4,
-     "miles_before": 0.17,
+     "visit_id": "V00331",
+     "client_id": "C026",
+     "start": 740,
+     "end": 770,
+     "travel_before": 10,
+     "miles_before": 1.9,
      "shared_with": []
     }
    ]
@@ -20941,30 +20889,21 @@
    ],
    "fri": [
     {
-     "visit_id": "V00250",
-     "client_id": "C021",
-     "start": 1003,
-     "end": 1048,
-     "travel_before": 24,
-     "miles_before": 6.0,
+     "visit_id": "V00446",
+     "client_id": "C035",
+     "start": 1002,
+     "end": 1047,
+     "travel_before": 26,
+     "miles_before": 6.67,
      "shared_with": []
     },
     {
-     "visit_id": "V00387",
-     "client_id": "C031",
-     "start": 1052,
-     "end": 1082,
-     "travel_before": 4,
-     "miles_before": 0.18,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00406",
-     "client_id": "C032",
-     "start": 1090,
-     "end": 1135,
+     "visit_id": "V00741",
+     "client_id": "C052",
+     "start": 1055,
+     "end": 1085,
      "travel_before": 8,
-     "miles_before": 1.41,
+     "miles_before": 1.55,
      "shared_with": []
     },
     {
@@ -20972,26 +20911,26 @@
      "client_id": "C052",
      "start": 1145,
      "end": 1190,
-     "travel_before": 7,
-     "miles_before": 1.2,
+     "travel_before": 0,
+     "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00251",
-     "client_id": "C021",
-     "start": 1201,
-     "end": 1231,
-     "travel_before": 11,
-     "miles_before": 2.42,
+     "visit_id": "V00301",
+     "client_id": "C025",
+     "start": 1202,
+     "end": 1232,
+     "travel_before": 12,
+     "miles_before": 2.61,
      "shared_with": []
     },
     {
      "visit_id": "V00683",
      "client_id": "C049",
-     "start": 1256,
-     "end": 1286,
-     "travel_before": 25,
-     "miles_before": 6.24,
+     "start": 1255,
+     "end": 1285,
+     "travel_before": 23,
+     "miles_before": 5.78,
      "shared_with": []
     }
    ]
@@ -21270,50 +21209,86 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00807",
-     "client_id": "C055",
+     "visit_id": "V00343",
+     "client_id": "C027",
      "start": 1145,
      "end": 1175,
-     "travel_before": 4,
-     "miles_before": 0.22,
+     "travel_before": 5,
+     "miles_before": 0.47,
      "shared_with": []
     },
     {
-     "visit_id": "V00701",
-     "client_id": "C050",
+     "visit_id": "V00092",
+     "client_id": "C007",
      "start": 1184,
      "end": 1214,
      "travel_before": 9,
-     "miles_before": 1.61,
+     "miles_before": 1.67,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00716",
+     "client_id": "C051",
+     "start": 1218,
+     "end": 1263,
+     "travel_before": 4,
+     "miles_before": 0.31,
      "shared_with": []
     }
    ],
    "sun": [
     {
-     "visit_id": "V00811",
-     "client_id": "C055",
-     "start": 435,
-     "end": 480,
-     "travel_before": 4,
-     "miles_before": 0.22,
+     "visit_id": "V00720",
+     "client_id": "C051",
+     "start": 450,
+     "end": 495,
+     "travel_before": 9,
+     "miles_before": 1.81,
      "shared_with": []
     },
     {
      "visit_id": "V00062",
      "client_id": "C005",
-     "start": 490,
-     "end": 535,
-     "travel_before": 10,
-     "miles_before": 1.95,
+     "start": 500,
+     "end": 545,
+     "travel_before": 5,
+     "miles_before": 0.58,
      "shared_with": []
     },
     {
-     "visit_id": "V00346",
+     "visit_id": "V00076",
+     "client_id": "C006",
+     "start": 555,
+     "end": 600,
+     "travel_before": 10,
+     "miles_before": 2.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00347",
      "client_id": "C027",
-     "start": 544,
-     "end": 604,
-     "travel_before": 9,
-     "miles_before": 1.64,
+     "start": 1152,
+     "end": 1182,
+     "travel_before": 5,
+     "miles_before": 0.47,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00722",
+     "client_id": "C051",
+     "start": 1190,
+     "end": 1235,
+     "travel_before": 8,
+     "miles_before": 1.44,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00063",
+     "client_id": "C005",
+     "start": 1240,
+     "end": 1270,
+     "travel_before": 5,
+     "miles_before": 0.58,
      "shared_with": []
     }
    ]
@@ -21394,28 +21369,28 @@
     {
      "visit_id": "V00262",
      "client_id": "C022",
-     "start": 468,
-     "end": 528,
+     "start": 477,
+     "end": 537,
      "travel_before": 7,
      "miles_before": 1.14,
      "shared_with": []
     },
     {
-     "visit_id": "V00567",
-     "client_id": "C042",
-     "start": 535,
-     "end": 580,
-     "travel_before": 7,
-     "miles_before": 1.03,
+     "visit_id": "V00364",
+     "client_id": "C030",
+     "start": 543,
+     "end": 588,
+     "travel_before": 6,
+     "miles_before": 0.95,
      "shared_with": []
     },
     {
-     "visit_id": "V00364",
-     "client_id": "C030",
-     "start": 585,
-     "end": 630,
-     "travel_before": 5,
-     "miles_before": 0.56,
+     "visit_id": "V00525",
+     "client_id": "C039",
+     "start": 595,
+     "end": 655,
+     "travel_before": 7,
+     "miles_before": 1.3,
      "shared_with": []
     },
     {
@@ -21423,8 +21398,8 @@
      "client_id": "C043",
      "start": 690,
      "end": 735,
-     "travel_before": 10,
-     "miles_before": 2.07,
+     "travel_before": 6,
+     "miles_before": 0.88,
      "shared_with": []
     },
     {
@@ -21506,39 +21481,41 @@
    ],
    "sat": [
     {
-     "visit_id": "V00602",
-     "client_id": "C043",
-     "start": 448,
-     "end": 478,
-     "travel_before": 10,
-     "miles_before": 2.0,
-     "shared_with": []
+     "visit_id": "V00492",
+     "client_id": "C037",
+     "start": 438,
+     "end": 483,
+     "travel_before": 4,
+     "miles_before": 0.28,
+     "shared_with": [
+      "K022"
+     ]
     },
     {
-     "visit_id": "V00027",
-     "client_id": "C002",
-     "start": 485,
-     "end": 545,
+     "visit_id": "V00785",
+     "client_id": "C054",
+     "start": 490,
+     "end": 535,
      "travel_before": 7,
-     "miles_before": 1.08,
+     "miles_before": 1.06,
      "shared_with": []
     },
     {
-     "visit_id": "V00228",
-     "client_id": "C020",
-     "start": 551,
-     "end": 581,
+     "visit_id": "V00579",
+     "client_id": "C042",
+     "start": 541,
+     "end": 586,
      "travel_before": 6,
-     "miles_before": 0.89,
+     "miles_before": 0.79,
      "shared_with": []
     },
     {
      "visit_id": "V00531",
      "client_id": "C039",
-     "start": 585,
-     "end": 645,
-     "travel_before": 4,
-     "miles_before": 0.17,
+     "start": 595,
+     "end": 655,
+     "travel_before": 9,
+     "miles_before": 1.61,
      "shared_with": []
     },
     {
@@ -21551,21 +21528,21 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00580",
-     "client_id": "C042",
-     "start": 746,
-     "end": 791,
-     "travel_before": 11,
-     "miles_before": 2.24,
+     "visit_id": "V00493",
+     "client_id": "C037",
+     "start": 744,
+     "end": 789,
+     "travel_before": 9,
+     "miles_before": 1.85,
      "shared_with": []
     },
     {
-     "visit_id": "V00493",
-     "client_id": "C037",
-     "start": 795,
-     "end": 840,
-     "travel_before": 4,
-     "miles_before": 0.41,
+     "visit_id": "V00786",
+     "client_id": "C054",
+     "start": 796,
+     "end": 826,
+     "travel_before": 7,
+     "miles_before": 1.06,
      "shared_with": []
     }
    ],
@@ -21573,8 +21550,8 @@
     {
      "visit_id": "V00496",
      "client_id": "C037",
-     "start": 430,
-     "end": 475,
+     "start": 435,
+     "end": 480,
      "travel_before": 4,
      "miles_before": 0.28,
      "shared_with": [
@@ -21582,63 +21559,59 @@
      ]
     },
     {
-     "visit_id": "V00019",
-     "client_id": "C001",
-     "start": 488,
-     "end": 533,
-     "travel_before": 13,
-     "miles_before": 2.96,
-     "shared_with": [
-      "K008"
-     ]
+     "visit_id": "V00429",
+     "client_id": "C033",
+     "start": 490,
+     "end": 535,
+     "travel_before": 10,
+     "miles_before": 2.08,
+     "shared_with": []
     },
     {
-     "visit_id": "V00189",
-     "client_id": "C016",
-     "start": 539,
-     "end": 584,
-     "travel_before": 6,
-     "miles_before": 0.75,
-     "shared_with": [
-      "K003"
-     ]
+     "visit_id": "V00330",
+     "client_id": "C026",
+     "start": 540,
+     "end": 585,
+     "travel_before": 5,
+     "miles_before": 0.63,
+     "shared_with": []
     },
     {
      "visit_id": "V00557",
      "client_id": "C041",
      "start": 595,
      "end": 640,
-     "travel_before": 11,
-     "miles_before": 2.18,
+     "travel_before": 10,
+     "miles_before": 1.9,
      "shared_with": [
       "K008"
      ]
     },
     {
-     "visit_id": "V00190",
-     "client_id": "C016",
-     "start": 740,
-     "end": 770,
-     "travel_before": 11,
-     "miles_before": 2.18,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00331",
-     "client_id": "C026",
-     "start": 775,
-     "end": 805,
-     "travel_before": 5,
-     "miles_before": 0.52,
+     "visit_id": "V00748",
+     "client_id": "C052",
+     "start": 710,
+     "end": 740,
+     "travel_before": 7,
+     "miles_before": 1.27,
      "shared_with": []
     },
     {
      "visit_id": "V00519",
      "client_id": "C038",
-     "start": 813,
-     "end": 843,
-     "travel_before": 8,
-     "miles_before": 1.4,
+     "start": 749,
+     "end": 779,
+     "travel_before": 9,
+     "miles_before": 1.82,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00497",
+     "client_id": "C037",
+     "start": 788,
+     "end": 833,
+     "travel_before": 9,
+     "miles_before": 1.73,
      "shared_with": []
     }
    ]
@@ -21897,30 +21870,30 @@
    ],
    "sun": [
     {
-     "visit_id": "V00791",
-     "client_id": "C054",
-     "start": 982,
-     "end": 1012,
-     "travel_before": 7,
-     "miles_before": 1.26,
-     "shared_with": []
-    },
-    {
      "visit_id": "V00122",
      "client_id": "C010",
-     "start": 1020,
-     "end": 1050,
-     "travel_before": 8,
-     "miles_before": 1.4,
+     "start": 1018,
+     "end": 1048,
+     "travel_before": 5,
+     "miles_before": 0.52,
      "shared_with": []
     },
     {
      "visit_id": "V00332",
      "client_id": "C026",
-     "start": 1057,
-     "end": 1087,
+     "start": 1055,
+     "end": 1085,
      "travel_before": 7,
      "miles_before": 1.12,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00410",
+     "client_id": "C032",
+     "start": 1090,
+     "end": 1135,
+     "travel_before": 5,
+     "miles_before": 0.63,
      "shared_with": []
     },
     {
@@ -21928,35 +21901,35 @@
      "client_id": "C026",
      "start": 1150,
      "end": 1180,
-     "travel_before": 0,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00431",
-     "client_id": "C033",
-     "start": 1190,
-     "end": 1220,
      "travel_before": 5,
      "miles_before": 0.63,
      "shared_with": []
     },
     {
-     "visit_id": "V00259",
-     "client_id": "C021",
-     "start": 1230,
-     "end": 1260,
-     "travel_before": 10,
-     "miles_before": 1.92,
+     "visit_id": "V00231",
+     "client_id": "C020",
+     "start": 1193,
+     "end": 1223,
+     "travel_before": 13,
+     "miles_before": 3.02,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00607",
+     "client_id": "C043",
+     "start": 1229,
+     "end": 1259,
+     "travel_before": 6,
+     "miles_before": 0.9,
      "shared_with": []
     },
     {
      "visit_id": "V00792",
      "client_id": "C054",
-     "start": 1267,
-     "end": 1297,
-     "travel_before": 7,
-     "miles_before": 1.09,
+     "start": 1272,
+     "end": 1302,
+     "travel_before": 13,
+     "miles_before": 2.88,
      "shared_with": []
     }
    ]
@@ -22103,30 +22076,39 @@
    ],
    "wed": [
     {
-     "visit_id": "V00506",
-     "client_id": "C038",
-     "start": 461,
-     "end": 521,
-     "travel_before": 9,
-     "miles_before": 1.64,
+     "visit_id": "V00377",
+     "client_id": "C031",
+     "start": 434,
+     "end": 464,
+     "travel_before": 6,
+     "miles_before": 1.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00284",
+     "client_id": "C024",
+     "start": 475,
+     "end": 535,
+     "travel_before": 11,
+     "miles_before": 2.34,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00631",
+     "client_id": "C046",
+     "start": 541,
+     "end": 586,
+     "travel_before": 6,
+     "miles_before": 1.0,
      "shared_with": []
     },
     {
      "visit_id": "V00837",
      "client_id": "C057",
-     "start": 530,
-     "end": 590,
-     "travel_before": 9,
-     "miles_before": 1.76,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00525",
-     "client_id": "C039",
-     "start": 595,
-     "end": 655,
-     "travel_before": 5,
-     "miles_before": 0.7,
+     "start": 590,
+     "end": 650,
+     "travel_before": 4,
+     "miles_before": 0.4,
      "shared_with": []
     },
     {
@@ -22134,8 +22116,8 @@
      "client_id": "C024",
      "start": 695,
      "end": 725,
-     "travel_before": 6,
-     "miles_before": 0.77,
+     "travel_before": 8,
+     "miles_before": 1.39,
      "shared_with": []
     },
     {
@@ -22235,28 +22217,28 @@
     {
      "visit_id": "V00385",
      "client_id": "C031",
-     "start": 432,
-     "end": 462,
+     "start": 434,
+     "end": 464,
      "travel_before": 6,
      "miles_before": 1.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00264",
-     "client_id": "C022",
-     "start": 469,
-     "end": 529,
-     "travel_before": 7,
-     "miles_before": 1.2,
+     "visit_id": "V00288",
+     "client_id": "C024",
+     "start": 475,
+     "end": 535,
+     "travel_before": 11,
+     "miles_before": 2.34,
      "shared_with": []
     },
     {
-     "visit_id": "V00033",
-     "client_id": "C003",
-     "start": 536,
-     "end": 581,
-     "travel_before": 7,
-     "miles_before": 1.07,
+     "visit_id": "V00635",
+     "client_id": "C046",
+     "start": 541,
+     "end": 586,
+     "travel_before": 6,
+     "miles_before": 1.0,
      "shared_with": []
     },
     {
@@ -22264,8 +22246,8 @@
      "client_id": "C057",
      "start": 590,
      "end": 650,
-     "travel_before": 9,
-     "miles_before": 1.76,
+     "travel_before": 4,
+     "miles_before": 0.4,
      "shared_with": []
     },
     {
@@ -22287,12 +22269,12 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00489",
-     "client_id": "C037",
-     "start": 780,
-     "end": 825,
-     "travel_before": 4,
-     "miles_before": 0.41,
+     "visit_id": "V00386",
+     "client_id": "C031",
+     "start": 784,
+     "end": 829,
+     "travel_before": 8,
+     "miles_before": 1.52,
      "shared_with": []
     },
     {
@@ -22300,8 +22282,8 @@
      "client_id": "C058",
      "start": 835,
      "end": 865,
-     "travel_before": 10,
-     "miles_before": 1.92,
+     "travel_before": 6,
+     "miles_before": 1.01,
      "shared_with": []
     }
    ]
@@ -22403,57 +22385,57 @@
    ],
    "fri": [
     {
-     "visit_id": "V00636",
-     "client_id": "C046",
-     "start": 996,
-     "end": 1026,
-     "travel_before": 8,
-     "miles_before": 1.49,
+     "visit_id": "V00577",
+     "client_id": "C042",
+     "start": 974,
+     "end": 1019,
+     "travel_before": 10,
+     "miles_before": 1.9,
      "shared_with": []
     },
     {
-     "visit_id": "V00530",
-     "client_id": "C039",
-     "start": 1030,
-     "end": 1075,
-     "travel_before": 4,
-     "miles_before": 0.32,
+     "visit_id": "V00290",
+     "client_id": "C024",
+     "start": 1025,
+     "end": 1070,
+     "travel_before": 6,
+     "miles_before": 0.85,
      "shared_with": []
     },
     {
-     "visit_id": "V00265",
-     "client_id": "C022",
-     "start": 1145,
+     "visit_id": "V00291",
+     "client_id": "C024",
+     "start": 1160,
      "end": 1190,
-     "travel_before": 11,
-     "miles_before": 2.22,
+     "travel_before": 0,
+     "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00425",
-     "client_id": "C033",
-     "start": 1196,
-     "end": 1226,
+     "visit_id": "V00514",
+     "client_id": "C038",
+     "start": 1198,
+     "end": 1228,
+     "travel_before": 8,
+     "miles_before": 1.4,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00578",
+     "client_id": "C042",
+     "start": 1237,
+     "end": 1267,
+     "travel_before": 9,
+     "miles_before": 1.62,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00784",
+     "client_id": "C054",
+     "start": 1273,
+     "end": 1303,
      "travel_before": 6,
-     "miles_before": 0.98,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00465",
-     "client_id": "C036",
-     "start": 1232,
-     "end": 1262,
-     "travel_before": 6,
-     "miles_before": 0.83,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00664",
-     "client_id": "C048",
-     "start": 1269,
-     "end": 1299,
-     "travel_before": 7,
-     "miles_before": 1.16,
+     "miles_before": 0.79,
      "shared_with": []
     }
    ]
@@ -22571,30 +22553,48 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00733",
-     "client_id": "C052",
-     "start": 1055,
-     "end": 1085,
+     "visit_id": "V00756",
+     "client_id": "C053",
+     "start": 1041,
+     "end": 1071,
+     "travel_before": 28,
+     "miles_before": 7.17,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00041",
+     "client_id": "C004",
+     "start": 1080,
+     "end": 1110,
+     "travel_before": 9,
+     "miles_before": 1.73,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00271",
+     "client_id": "C023",
+     "start": 1170,
+     "end": 1200,
+     "travel_before": 10,
+     "miles_before": 2.1,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00141",
+     "client_id": "C014",
+     "start": 1204,
+     "end": 1234,
+     "travel_before": 4,
+     "miles_before": 0.41,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00822",
+     "client_id": "C056",
+     "start": 1239,
+     "end": 1269,
      "travel_before": 5,
-     "miles_before": 0.71,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00287",
-     "client_id": "C024",
-     "start": 1160,
-     "end": 1190,
-     "travel_before": 14,
-     "miles_before": 3.06,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00508",
-     "client_id": "C038",
-     "start": 1198,
-     "end": 1228,
-     "travel_before": 8,
-     "miles_before": 1.4,
+     "miles_before": 0.48,
      "shared_with": []
     }
    ],
@@ -22665,39 +22665,30 @@
    ],
    "fri": [
     {
-     "visit_id": "V00512",
-     "client_id": "C038",
-     "start": 446,
-     "end": 506,
-     "travel_before": 7,
-     "miles_before": 1.21,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00663",
-     "client_id": "C048",
-     "start": 516,
-     "end": 546,
+     "visit_id": "V00162",
+     "client_id": "C015",
+     "start": 451,
+     "end": 511,
      "travel_before": 10,
-     "miles_before": 2.08,
+     "miles_before": 1.89,
      "shared_with": []
     },
     {
-     "visit_id": "V00854",
-     "client_id": "C058",
-     "start": 551,
-     "end": 581,
-     "travel_before": 5,
-     "miles_before": 0.45,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00117",
-     "client_id": "C010",
-     "start": 585,
-     "end": 630,
+     "visit_id": "V00352",
+     "client_id": "C028",
+     "start": 515,
+     "end": 560,
      "travel_before": 4,
-     "miles_before": 0.41,
+     "miles_before": 0.29,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00201",
+     "client_id": "C018",
+     "start": 572,
+     "end": 632,
+     "travel_before": 12,
+     "miles_before": 2.7,
      "shared_with": []
     },
     {
@@ -22705,89 +22696,80 @@
      "client_id": "C033",
      "start": 730,
      "end": 760,
-     "travel_before": 6,
-     "miles_before": 0.96,
+     "travel_before": 9,
+     "miles_before": 1.85,
      "shared_with": []
     },
     {
-     "visit_id": "V00617",
-     "client_id": "C044",
-     "start": 1025,
-     "end": 1070,
-     "travel_before": 34,
-     "miles_before": 8.89,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00275",
-     "client_id": "C023",
-     "start": 1170,
-     "end": 1200,
-     "travel_before": 8,
-     "miles_before": 1.59,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00145",
-     "client_id": "C014",
-     "start": 1204,
-     "end": 1234,
-     "travel_before": 4,
-     "miles_before": 0.41,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00828",
-     "client_id": "C056",
-     "start": 1239,
-     "end": 1269,
+     "visit_id": "V00425",
+     "client_id": "C033",
+     "start": 1190,
+     "end": 1220,
      "travel_before": 5,
-     "miles_before": 0.48,
+     "miles_before": 0.69,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00664",
+     "client_id": "C048",
+     "start": 1228,
+     "end": 1258,
+     "travel_before": 8,
+     "miles_before": 1.49,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00465",
+     "client_id": "C036",
+     "start": 1265,
+     "end": 1295,
+     "travel_before": 7,
+     "miles_before": 1.16,
      "shared_with": []
     }
    ],
    "sat": [
     {
-     "visit_id": "V00785",
-     "client_id": "C054",
-     "start": 475,
-     "end": 520,
-     "travel_before": 13,
-     "miles_before": 2.97,
+     "visit_id": "V00515",
+     "client_id": "C038",
+     "start": 445,
+     "end": 505,
+     "travel_before": 7,
+     "miles_before": 1.21,
      "shared_with": []
     },
     {
-     "visit_id": "V00579",
-     "client_id": "C042",
-     "start": 526,
-     "end": 571,
-     "travel_before": 6,
-     "miles_before": 0.79,
+     "visit_id": "V00228",
+     "client_id": "C020",
+     "start": 514,
+     "end": 544,
+     "travel_before": 9,
+     "miles_before": 1.67,
      "shared_with": []
     },
     {
-     "visit_id": "V00034",
-     "client_id": "C003",
-     "start": 576,
-     "end": 621,
-     "travel_before": 5,
-     "miles_before": 0.5,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00831",
-     "client_id": "C056",
-     "start": 1205,
-     "end": 1235,
-     "travel_before": 26,
-     "miles_before": 6.54,
+     "visit_id": "V00637",
+     "client_id": "C046",
+     "start": 548,
+     "end": 593,
+     "travel_before": 4,
+     "miles_before": 0.15,
      "shared_with": []
     },
     {
      "visit_id": "V00147",
      "client_id": "C014",
-     "start": 1240,
-     "end": 1270,
+     "start": 1185,
+     "end": 1215,
+     "travel_before": 27,
+     "miles_before": 6.91,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00831",
+     "client_id": "C056",
+     "start": 1220,
+     "end": 1250,
      "travel_before": 5,
      "miles_before": 0.48,
      "shared_with": []
@@ -22877,36 +22859,38 @@
     {
      "visit_id": "V00248",
      "client_id": "C021",
-     "start": 465,
-     "end": 510,
+     "start": 475,
+     "end": 520,
      "travel_before": 37,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00575",
-     "client_id": "C042",
-     "start": 528,
-     "end": 573,
-     "travel_before": 18,
+     "visit_id": "V00781",
+     "client_id": "C054",
+     "start": 535,
+     "end": 580,
+     "travel_before": 15,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00366",
-     "client_id": "C030",
-     "start": 585,
-     "end": 630,
-     "travel_before": 12,
+     "visit_id": "V00436",
+     "client_id": "C034",
+     "start": 590,
+     "end": 635,
+     "travel_before": 10,
      "miles_before": 0.0,
-     "shared_with": []
+     "shared_with": [
+      "K027"
+     ]
     },
     {
      "visit_id": "V00699",
      "client_id": "C050",
      "start": 690,
      "end": 735,
-     "travel_before": 57,
+     "travel_before": 48,
      "miles_before": 0.0,
      "shared_with": []
     },
@@ -22920,69 +22904,67 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00446",
-     "client_id": "C035",
-     "start": 1035,
-     "end": 1080,
-     "travel_before": 43,
+     "visit_id": "V00250",
+     "client_id": "C021",
+     "start": 1036,
+     "end": 1081,
+     "travel_before": 37,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00514",
-     "client_id": "C038",
-     "start": 1140,
-     "end": 1170,
-     "travel_before": 22,
+     "visit_id": "V00387",
+     "client_id": "C031",
+     "start": 1090,
+     "end": 1120,
+     "travel_before": 9,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00185",
-     "client_id": "C016",
-     "start": 1190,
-     "end": 1235,
-     "travel_before": 20,
+     "visit_id": "V00388",
+     "client_id": "C031",
+     "start": 1160,
+     "end": 1190,
+     "travel_before": 0,
      "miles_before": 0.0,
-     "shared_with": [
-      "K033"
-     ]
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00251",
+     "client_id": "C021",
+     "start": 1199,
+     "end": 1229,
+     "travel_before": 9,
+     "miles_before": 0.0,
+     "shared_with": []
     }
    ],
    "sat": [
     {
-     "visit_id": "V00389",
-     "client_id": "C031",
-     "start": 467,
-     "end": 497,
-     "travel_before": 36,
+     "visit_id": "V00107",
+     "client_id": "C009",
+     "start": 470,
+     "end": 530,
+     "travel_before": 20,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00131",
-     "client_id": "C012",
-     "start": 514,
-     "end": 574,
-     "travel_before": 17,
+     "visit_id": "V00093",
+     "client_id": "C007",
+     "start": 540,
+     "end": 600,
+     "travel_before": 10,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00119",
-     "client_id": "C010",
-     "start": 585,
-     "end": 630,
-     "travel_before": 11,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00809",
-     "client_id": "C055",
-     "start": 720,
-     "end": 765,
-     "travel_before": 45,
+     "visit_id": "V00094",
+     "client_id": "C007",
+     "start": 690,
+     "end": 735,
+     "travel_before": 0,
      "miles_before": 0.0,
      "shared_with": []
     },
@@ -23007,38 +22989,38 @@
    ],
    "sun": [
     {
-     "visit_id": "V00393",
-     "client_id": "C031",
-     "start": 468,
-     "end": 498,
-     "travel_before": 36,
+     "visit_id": "V00605",
+     "client_id": "C043",
+     "start": 489,
+     "end": 519,
+     "travel_before": 52,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00256",
-     "client_id": "C021",
-     "start": 507,
-     "end": 552,
-     "travel_before": 9,
+     "visit_id": "V00639",
+     "client_id": "C046",
+     "start": 534,
+     "end": 579,
+     "travel_before": 15,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00583",
-     "client_id": "C042",
-     "start": 570,
-     "end": 615,
-     "travel_before": 18,
+     "visit_id": "V00841",
+     "client_id": "C057",
+     "start": 590,
+     "end": 650,
+     "travel_before": 11,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00584",
-     "client_id": "C042",
-     "start": 695,
-     "end": 740,
-     "travel_before": 0,
+     "visit_id": "V00606",
+     "client_id": "C043",
+     "start": 690,
+     "end": 735,
+     "travel_before": 16,
      "miles_before": 0.0,
      "shared_with": []
     }
@@ -23087,19 +23069,19 @@
     {
      "visit_id": "V00569",
      "client_id": "C042",
-     "start": 1001,
-     "end": 1046,
+     "start": 988,
+     "end": 1033,
      "travel_before": 28,
      "miles_before": 7.25,
      "shared_with": []
     },
     {
-     "visit_id": "V00482",
-     "client_id": "C037",
-     "start": 1050,
-     "end": 1080,
-     "travel_before": 4,
-     "miles_before": 0.41,
+     "visit_id": "V00242",
+     "client_id": "C021",
+     "start": 1041,
+     "end": 1086,
+     "travel_before": 8,
+     "miles_before": 1.47,
      "shared_with": []
     },
     {
@@ -23107,8 +23089,8 @@
      "client_id": "C031",
      "start": 1090,
      "end": 1120,
-     "travel_before": 10,
-     "miles_before": 1.91,
+     "travel_before": 4,
+     "miles_before": 0.18,
      "shared_with": []
     },
     {
@@ -23206,21 +23188,21 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00343",
-     "client_id": "C027",
+     "visit_id": "V00807",
+     "client_id": "C055",
      "start": 1145,
      "end": 1175,
      "travel_before": 9,
-     "miles_before": 1.6,
+     "miles_before": 1.61,
      "shared_with": []
     },
     {
-     "visit_id": "V00092",
-     "client_id": "C007",
+     "visit_id": "V00701",
+     "client_id": "C050",
      "start": 1184,
      "end": 1214,
      "travel_before": 9,
-     "miles_before": 1.67,
+     "miles_before": 1.61,
      "shared_with": []
     },
     {
@@ -23228,8 +23210,8 @@
      "client_id": "C005",
      "start": 1225,
      "end": 1255,
-     "travel_before": 4,
-     "miles_before": 0.39,
+     "travel_before": 9,
+     "miles_before": 1.62,
      "shared_with": []
     },
     {
@@ -23496,40 +23478,47 @@
    ],
    "sun": [
     {
-     "visit_id": "V00168",
-     "client_id": "C015",
-     "start": 494,
-     "end": 554,
-     "travel_before": 67,
+     "visit_id": "V00216",
+     "client_id": "C019",
+     "start": 483,
+     "end": 513,
+     "travel_before": 47,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00887",
-     "client_id": "C059",
-     "start": 570,
-     "end": 615,
-     "travel_before": 16,
+     "visit_id": "V00653",
+     "client_id": "C047",
+     "start": 524,
+     "end": 569,
+     "travel_before": 11,
      "miles_before": 0.0,
-     "shared_with": [
-      "K030"
-     ]
+     "shared_with": []
     },
     {
-     "visit_id": "V00097",
-     "client_id": "C007",
-     "start": 690,
-     "end": 735,
-     "travel_before": 66,
+     "visit_id": "V00203",
+     "client_id": "C018",
+     "start": 580,
+     "end": 640,
+     "travel_before": 11,
+     "miles_before": 0.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00394",
+     "client_id": "C031",
+     "start": 735,
+     "end": 780,
+     "travel_before": 16,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
      "visit_id": "V00721",
      "client_id": "C051",
-     "start": 760,
-     "end": 790,
-     "travel_before": 10,
+     "start": 818,
+     "end": 848,
+     "travel_before": 38,
      "miles_before": 0.0,
      "shared_with": []
     }
@@ -23694,22 +23683,29 @@
    ],
    "fri": [
     {
-     "visit_id": "V00013",
-     "client_id": "C001",
-     "start": 479,
-     "end": 524,
-     "travel_before": 9,
+     "visit_id": "V00212",
+     "client_id": "C019",
+     "start": 450,
+     "end": 480,
+     "travel_before": 12,
      "miles_before": 0.0,
-     "shared_with": [
-      "K027"
-     ]
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00445",
+     "client_id": "C035",
+     "start": 502,
+     "end": 532,
+     "travel_before": 22,
+     "miles_before": 0.0,
+     "shared_with": []
     },
     {
      "visit_id": "V00405",
      "client_id": "C032",
      "start": 544,
      "end": 589,
-     "travel_before": 20,
+     "travel_before": 12,
      "miles_before": 0.0,
      "shared_with": []
     },
@@ -23794,21 +23790,21 @@
    ],
    "wed": [
     {
-     "visit_id": "V00377",
-     "client_id": "C031",
-     "start": 431,
-     "end": 461,
+     "visit_id": "V00208",
+     "client_id": "C019",
+     "start": 443,
+     "end": 473,
      "travel_before": 7,
-     "miles_before": 1.13,
+     "miles_before": 1.17,
      "shared_with": []
     },
     {
-     "visit_id": "V00240",
-     "client_id": "C021",
-     "start": 465,
+     "visit_id": "V00100",
+     "client_id": "C008",
+     "start": 480,
      "end": 510,
-     "travel_before": 4,
-     "miles_before": 0.18,
+     "travel_before": 7,
+     "miles_before": 1.14,
      "shared_with": []
     },
     {
@@ -23817,7 +23813,7 @@
      "start": 516,
      "end": 546,
      "travel_before": 6,
-     "miles_before": 0.77,
+     "miles_before": 0.86,
      "shared_with": []
     },
     {
@@ -23857,55 +23853,64 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00756",
-     "client_id": "C053",
-     "start": 1041,
-     "end": 1071,
-     "travel_before": 33,
-     "miles_before": 8.81,
+     "visit_id": "V00442",
+     "client_id": "C035",
+     "start": 999,
+     "end": 1044,
+     "travel_before": 3,
+     "miles_before": 0.13,
      "shared_with": []
     },
     {
-     "visit_id": "V00873",
-     "client_id": "C059",
-     "start": 1095,
-     "end": 1125,
-     "travel_before": 24,
-     "miles_before": 6.16,
+     "visit_id": "V00209",
+     "client_id": "C019",
+     "start": 1051,
+     "end": 1081,
+     "travel_before": 7,
+     "miles_before": 1.04,
      "shared_with": []
     },
     {
-     "visit_id": "V00263",
-     "client_id": "C022",
-     "start": 1145,
+     "visit_id": "V00646",
+     "client_id": "C047",
+     "start": 1085,
+     "end": 1115,
+     "travel_before": 4,
+     "miles_before": 0.41,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00380",
+     "client_id": "C031",
+     "start": 1160,
      "end": 1190,
-     "travel_before": 18,
-     "miles_before": 4.27,
+     "travel_before": 7,
+     "miles_before": 1.02,
      "shared_with": []
     },
     {
-     "visit_id": "V00419",
-     "client_id": "C033",
-     "start": 1196,
-     "end": 1226,
-     "travel_before": 6,
-     "miles_before": 0.98,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00459",
-     "client_id": "C036",
-     "start": 1232,
-     "end": 1262,
-     "travel_before": 6,
-     "miles_before": 0.83,
+     "visit_id": "V00243",
+     "client_id": "C021",
+     "start": 1194,
+     "end": 1224,
+     "travel_before": 4,
+     "miles_before": 0.18,
      "shared_with": []
     },
     {
      "visit_id": "V00660",
      "client_id": "C048",
-     "start": 1269,
-     "end": 1299,
+     "start": 1230,
+     "end": 1260,
+     "travel_before": 6,
+     "miles_before": 0.77,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00459",
+     "client_id": "C036",
+     "start": 1267,
+     "end": 1297,
      "travel_before": 7,
      "miles_before": 1.16,
      "shared_with": []
@@ -24086,12 +24091,12 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00390",
-     "client_id": "C031",
+     "visit_id": "V00253",
+     "client_id": "C021",
      "start": 753,
      "end": 798,
      "travel_before": 8,
-     "miles_before": 1.57,
+     "miles_before": 1.44,
      "shared_with": []
     },
     {
@@ -24160,39 +24165,30 @@
    ],
    "sun": [
     {
-     "visit_id": "V00747",
-     "client_id": "C052",
-     "start": 440,
-     "end": 485,
-     "travel_before": 8,
-     "miles_before": 1.49,
+     "visit_id": "V00168",
+     "client_id": "C015",
+     "start": 464,
+     "end": 524,
+     "travel_before": 12,
+     "miles_before": 2.61,
      "shared_with": []
     },
     {
-     "visit_id": "V00216",
-     "client_id": "C019",
-     "start": 496,
-     "end": 526,
+     "visit_id": "V00409",
+     "client_id": "C032",
+     "start": 535,
+     "end": 580,
      "travel_before": 11,
-     "miles_before": 2.3,
+     "miles_before": 2.46,
      "shared_with": []
     },
     {
-     "visit_id": "V00653",
-     "client_id": "C047",
-     "start": 530,
-     "end": 575,
-     "travel_before": 4,
-     "miles_before": 0.41,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00203",
-     "client_id": "C018",
-     "start": 580,
-     "end": 640,
+     "visit_id": "V00121",
+     "client_id": "C010",
+     "start": 585,
+     "end": 630,
      "travel_before": 5,
-     "miles_before": 0.46,
+     "miles_before": 0.63,
      "shared_with": []
     },
     {
@@ -24200,71 +24196,62 @@
      "client_id": "C001",
      "start": 700,
      "end": 745,
-     "travel_before": 4,
-     "miles_before": 0.41,
+     "travel_before": 8,
+     "miles_before": 1.43,
      "shared_with": []
     },
     {
-     "visit_id": "V00394",
-     "client_id": "C031",
-     "start": 753,
-     "end": 798,
-     "travel_before": 8,
-     "miles_before": 1.57,
+     "visit_id": "V00190",
+     "client_id": "C016",
+     "start": 751,
+     "end": 781,
+     "travel_before": 6,
+     "miles_before": 0.75,
      "shared_with": []
     },
     {
      "visit_id": "V00450",
      "client_id": "C035",
-     "start": 995,
-     "end": 1040,
+     "start": 999,
+     "end": 1044,
      "travel_before": 3,
      "miles_before": 0.13,
      "shared_with": []
     },
     {
-     "visit_id": "V00654",
-     "client_id": "C047",
-     "start": 1046,
-     "end": 1076,
+     "visit_id": "V00258",
+     "client_id": "C021",
+     "start": 1050,
+     "end": 1095,
      "travel_before": 6,
-     "miles_before": 0.79,
+     "miles_before": 0.96,
      "shared_with": []
     },
     {
-     "visit_id": "V00217",
-     "client_id": "C019",
-     "start": 1080,
-     "end": 1110,
+     "visit_id": "V00259",
+     "client_id": "C021",
+     "start": 1170,
+     "end": 1200,
+     "travel_before": 0,
+     "miles_before": 0.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00396",
+     "client_id": "C031",
+     "start": 1204,
+     "end": 1234,
      "travel_before": 4,
-     "miles_before": 0.41,
+     "miles_before": 0.18,
      "shared_with": []
     },
     {
-     "visit_id": "V00347",
-     "client_id": "C027",
-     "start": 1145,
-     "end": 1175,
-     "travel_before": 19,
-     "miles_before": 4.6,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00722",
-     "client_id": "C051",
-     "start": 1190,
-     "end": 1235,
-     "travel_before": 8,
-     "miles_before": 1.44,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00063",
-     "client_id": "C005",
+     "visit_id": "V00668",
+     "client_id": "C048",
      "start": 1240,
      "end": 1270,
-     "travel_before": 5,
-     "miles_before": 0.58,
+     "travel_before": 6,
+     "miles_before": 0.93,
      "shared_with": []
     }
    ]
@@ -24466,83 +24453,88 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00442",
-     "client_id": "C035",
-     "start": 1035,
-     "end": 1080,
-     "travel_before": 6,
-     "miles_before": 0.89,
+     "visit_id": "V00901",
+     "client_id": "C060",
+     "start": 1030,
+     "end": 1060,
+     "travel_before": 11,
+     "miles_before": 2.3,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00508",
+     "client_id": "C038",
+     "start": 1140,
+     "end": 1170,
+     "travel_before": 8,
+     "miles_before": 1.31,
      "shared_with": []
     },
     {
      "visit_id": "V00317",
      "client_id": "C026",
-     "start": 1150,
-     "end": 1180,
-     "travel_before": 7,
-     "miles_before": 1.1,
+     "start": 1178,
+     "end": 1208,
+     "travel_before": 8,
+     "miles_before": 1.4,
      "shared_with": []
     },
     {
-     "visit_id": "V00179",
-     "client_id": "C016",
-     "start": 1195,
-     "end": 1240,
+     "visit_id": "V00419",
+     "client_id": "C033",
+     "start": 1213,
+     "end": 1243,
      "travel_before": 5,
-     "miles_before": 0.52,
-     "shared_with": [
-      "K002"
-     ]
+     "miles_before": 0.63,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00595",
+     "client_id": "C043",
+     "start": 1257,
+     "end": 1287,
+     "travel_before": 14,
+     "miles_before": 3.26,
+     "shared_with": []
     }
    ],
    "sat": [
     {
-     "visit_id": "V00016",
-     "client_id": "C001",
-     "start": 488,
-     "end": 533,
+     "visit_id": "V00492",
+     "client_id": "C037",
+     "start": 438,
+     "end": 483,
      "travel_before": 8,
-     "miles_before": 1.44,
+     "miles_before": 1.56,
      "shared_with": [
-      "K032"
+      "K012"
      ]
+    },
+    {
+     "visit_id": "V00131",
+     "client_id": "C012",
+     "start": 493,
+     "end": 553,
+     "travel_before": 10,
+     "miles_before": 2.05,
+     "shared_with": []
     },
     {
      "visit_id": "V00326",
      "client_id": "C026",
-     "start": 540,
-     "end": 585,
-     "travel_before": 7,
-     "miles_before": 1.2,
+     "start": 558,
+     "end": 603,
+     "travel_before": 5,
+     "miles_before": 0.71,
      "shared_with": []
-    },
-    {
-     "visit_id": "V00555",
-     "client_id": "C041",
-     "start": 595,
-     "end": 640,
-     "travel_before": 10,
-     "miles_before": 1.9,
-     "shared_with": [
-      "K030"
-     ]
     },
     {
      "visit_id": "V00327",
      "client_id": "C026",
      "start": 740,
      "end": 770,
-     "travel_before": 10,
-     "miles_before": 1.9,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00517",
-     "client_id": "C038",
-     "start": 1144,
-     "end": 1174,
-     "travel_before": 9,
-     "miles_before": 1.76,
+     "travel_before": 0,
+     "miles_before": 0.0,
      "shared_with": []
     },
     {
@@ -24550,8 +24542,8 @@
      "client_id": "C037",
      "start": 1183,
      "end": 1228,
-     "travel_before": 9,
-     "miles_before": 1.73,
+     "travel_before": 8,
+     "miles_before": 1.56,
      "shared_with": [
       "K003"
      ]
@@ -24570,30 +24562,30 @@
    ],
    "sun": [
     {
-     "visit_id": "V00789",
-     "client_id": "C054",
-     "start": 475,
-     "end": 520,
-     "travel_before": 7,
-     "miles_before": 1.08,
+     "visit_id": "V00132",
+     "client_id": "C012",
+     "start": 455,
+     "end": 515,
+     "travel_before": 6,
+     "miles_before": 0.78,
      "shared_with": []
     },
     {
-     "visit_id": "V00639",
-     "client_id": "C046",
-     "start": 532,
-     "end": 577,
-     "travel_before": 12,
-     "miles_before": 2.61,
+     "visit_id": "V00230",
+     "client_id": "C020",
+     "start": 528,
+     "end": 558,
+     "travel_before": 13,
+     "miles_before": 2.84,
      "shared_with": []
     },
     {
      "visit_id": "V00368",
      "client_id": "C030",
-     "start": 585,
-     "end": 630,
+     "start": 566,
+     "end": 611,
      "travel_before": 8,
-     "miles_before": 1.46,
+     "miles_before": 1.4,
      "shared_with": []
     },
     {
@@ -24670,36 +24662,36 @@
     {
      "visit_id": "V00114",
      "client_id": "C010",
-     "start": 999,
-     "end": 1029,
+     "start": 1020,
+     "end": 1050,
      "travel_before": 3,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00242",
-     "client_id": "C021",
-     "start": 1050,
-     "end": 1095,
-     "travel_before": 21,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00243",
-     "client_id": "C021",
-     "start": 1170,
-     "end": 1200,
-     "travel_before": 0,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00380",
-     "client_id": "C031",
-     "start": 1204,
-     "end": 1234,
+     "visit_id": "V00263",
+     "client_id": "C022",
+     "start": 1145,
+     "end": 1190,
      "travel_before": 4,
+     "miles_before": 0.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00570",
+     "client_id": "C042",
+     "start": 1212,
+     "end": 1242,
+     "travel_before": 22,
+     "miles_before": 0.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00776",
+     "client_id": "C054",
+     "start": 1259,
+     "end": 1289,
+     "travel_before": 17,
      "miles_before": 0.0,
      "shared_with": []
     }
@@ -24824,21 +24816,23 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00158",
-     "client_id": "C015",
-     "start": 1198,
-     "end": 1228,
-     "travel_before": 8,
-     "miles_before": 1.35,
-     "shared_with": []
+     "visit_id": "V00179",
+     "client_id": "C016",
+     "start": 1196,
+     "end": 1241,
+     "travel_before": 6,
+     "miles_before": 1.0,
+     "shared_with": [
+      "K002"
+     ]
     },
     {
      "visit_id": "V00009",
      "client_id": "C001",
-     "start": 1246,
-     "end": 1291,
-     "travel_before": 11,
-     "miles_before": 2.26,
+     "start": 1247,
+     "end": 1292,
+     "travel_before": 6,
+     "miles_before": 0.75,
      "shared_with": [
       "K002"
      ]
@@ -24846,12 +24840,30 @@
    ],
    "sun": [
     {
+     "visit_id": "V00791",
+     "client_id": "C054",
+     "start": 1030,
+     "end": 1060,
+     "travel_before": 25,
+     "miles_before": 6.28,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00395",
+     "client_id": "C031",
+     "start": 1067,
+     "end": 1097,
+     "travel_before": 7,
+     "miles_before": 1.04,
+     "shared_with": []
+    },
+    {
      "visit_id": "V00813",
      "client_id": "C055",
      "start": 1145,
      "end": 1175,
-     "travel_before": 10,
-     "miles_before": 2.06,
+     "travel_before": 18,
+     "miles_before": 4.28,
      "shared_with": []
     },
     {
@@ -25072,103 +25084,108 @@
    ],
    "fri": [
     {
-     "visit_id": "V00212",
-     "client_id": "C019",
-     "start": 443,
-     "end": 473,
-     "travel_before": 11,
-     "miles_before": 2.31,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00013",
-     "client_id": "C001",
-     "start": 479,
-     "end": 524,
-     "travel_before": 6,
-     "miles_before": 0.87,
+     "visit_id": "V00196",
+     "client_id": "C017",
+     "start": 451,
+     "end": 496,
+     "travel_before": 8,
+     "miles_before": 1.46,
      "shared_with": [
-      "K020"
+      "K033"
      ]
     },
     {
-     "visit_id": "V00649",
-     "client_id": "C047",
-     "start": 530,
-     "end": 575,
-     "travel_before": 6,
-     "miles_before": 0.86,
+     "visit_id": "V00101",
+     "client_id": "C008",
+     "start": 505,
+     "end": 535,
+     "travel_before": 9,
+     "miles_before": 1.7,
      "shared_with": []
     },
     {
-     "visit_id": "V00553",
-     "client_id": "C041",
-     "start": 595,
-     "end": 640,
-     "travel_before": 14,
-     "miles_before": 3.15,
-     "shared_with": [
-      "K030"
-     ]
-    },
-    {
-     "visit_id": "V00740",
-     "client_id": "C052",
-     "start": 710,
-     "end": 740,
+     "visit_id": "V00125",
+     "client_id": "C011",
+     "start": 542,
+     "end": 572,
      "travel_before": 7,
-     "miles_before": 1.27,
+     "miles_before": 1.12,
      "shared_with": []
     },
     {
-     "visit_id": "V00741",
-     "client_id": "C052",
-     "start": 1055,
-     "end": 1085,
-     "travel_before": 3,
-     "miles_before": 0.08,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00882",
-     "client_id": "C059",
-     "start": 1165,
-     "end": 1210,
-     "travel_before": 11,
-     "miles_before": 2.43,
+     "visit_id": "V00436",
+     "client_id": "C034",
+     "start": 590,
+     "end": 635,
+     "travel_before": 5,
+     "miles_before": 0.66,
      "shared_with": [
-      "K001"
+      "K017"
      ]
     },
     {
-     "visit_id": "V00164",
+     "visit_id": "V00513",
+     "client_id": "C038",
+     "start": 725,
+     "end": 755,
+     "travel_before": 11,
+     "miles_before": 2.45,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00163",
      "client_id": "C015",
-     "start": 1217,
-     "end": 1247,
-     "travel_before": 7,
-     "miles_before": 1.11,
+     "start": 769,
+     "end": 799,
+     "travel_before": 14,
+     "miles_before": 3.1,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00617",
+     "client_id": "C044",
+     "start": 1025,
+     "end": 1070,
+     "travel_before": 34,
+     "miles_before": 8.94,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00275",
+     "client_id": "C023",
+     "start": 1170,
+     "end": 1200,
+     "travel_before": 8,
+     "miles_before": 1.59,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00145",
+     "client_id": "C014",
+     "start": 1204,
+     "end": 1234,
+     "travel_before": 4,
+     "miles_before": 0.41,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00828",
+     "client_id": "C056",
+     "start": 1239,
+     "end": 1269,
+     "travel_before": 5,
+     "miles_before": 0.48,
      "shared_with": []
     }
    ],
    "sun": [
     {
-     "visit_id": "V00048",
-     "client_id": "C004",
-     "start": 462,
-     "end": 507,
-     "travel_before": 34,
-     "miles_before": 9.07,
-     "shared_with": [
-      "K037"
-     ]
-    },
-    {
      "visit_id": "V00620",
      "client_id": "C044",
-     "start": 515,
-     "end": 560,
-     "travel_before": 8,
-     "miles_before": 1.51,
+     "start": 510,
+     "end": 555,
+     "travel_before": 34,
+     "miles_before": 8.94,
      "shared_with": [
       "K037"
      ]
@@ -25176,48 +25193,21 @@
     {
      "visit_id": "V00278",
      "client_id": "C023",
-     "start": 568,
-     "end": 613,
+     "start": 563,
+     "end": 608,
      "travel_before": 8,
      "miles_before": 1.59,
      "shared_with": []
     },
     {
-     "visit_id": "V00430",
-     "client_id": "C033",
-     "start": 730,
-     "end": 760,
-     "travel_before": 30,
-     "miles_before": 7.96,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00861",
-     "client_id": "C058",
-     "start": 767,
-     "end": 797,
-     "travel_before": 7,
-     "miles_before": 1.13,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00862",
-     "client_id": "C058",
-     "start": 1203,
-     "end": 1233,
-     "travel_before": 9,
-     "miles_before": 1.68,
-     "shared_with": []
-    },
-    {
      "visit_id": "V00021",
      "client_id": "C001",
-     "start": 1240,
-     "end": 1285,
-     "travel_before": 7,
-     "miles_before": 1.04,
+     "start": 1224,
+     "end": 1269,
+     "travel_before": 8,
+     "miles_before": 1.44,
      "shared_with": [
-      "K032"
+      "K001"
      ]
     }
    ]
@@ -25361,88 +25351,79 @@
    ],
    "fri": [
     {
-     "visit_id": "V00463",
-     "client_id": "C036",
-     "start": 450,
-     "end": 480,
-     "travel_before": 14,
-     "miles_before": 3.09,
+     "visit_id": "V00626",
+     "client_id": "C045",
+     "start": 470,
+     "end": 500,
+     "travel_before": 13,
+     "miles_before": 2.88,
      "shared_with": []
     },
     {
-     "visit_id": "V00626",
-     "client_id": "C045",
-     "start": 485,
-     "end": 515,
+     "visit_id": "V00463",
+     "client_id": "C036",
+     "start": 505,
+     "end": 535,
      "travel_before": 5,
      "miles_before": 0.68,
      "shared_with": []
     },
     {
-     "visit_id": "V00879",
-     "client_id": "C059",
-     "start": 534,
-     "end": 579,
-     "travel_before": 12,
-     "miles_before": 2.66,
-     "shared_with": [
-      "K030"
-     ]
+     "visit_id": "V00366",
+     "client_id": "C030",
+     "start": 545,
+     "end": 590,
+     "travel_before": 10,
+     "miles_before": 2.1,
+     "shared_with": []
     },
     {
-     "visit_id": "V00880",
-     "client_id": "C059",
-     "start": 680,
-     "end": 710,
-     "travel_before": 0,
-     "miles_before": 0.0,
+     "visit_id": "V00033",
+     "client_id": "C003",
+     "start": 594,
+     "end": 639,
+     "travel_before": 4,
+     "miles_before": 0.15,
      "shared_with": []
     },
     {
      "visit_id": "V00827",
      "client_id": "C056",
-     "start": 731,
-     "end": 761,
-     "travel_before": 21,
-     "miles_before": 5.33,
+     "start": 715,
+     "end": 745,
+     "travel_before": 32,
+     "miles_before": 8.41,
      "shared_with": []
     },
     {
-     "visit_id": "V00163",
-     "client_id": "C015",
-     "start": 785,
-     "end": 815,
-     "travel_before": 24,
-     "miles_before": 6.0,
+     "visit_id": "V00880",
+     "client_id": "C059",
+     "start": 766,
+     "end": 796,
+     "travel_before": 21,
+     "miles_before": 5.33,
      "shared_with": []
     }
    ],
    "sat": [
     {
-     "visit_id": "V00515",
-     "client_id": "C038",
-     "start": 449,
-     "end": 509,
-     "travel_before": 17,
-     "miles_before": 4.06,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00252",
-     "client_id": "C021",
+     "visit_id": "V00883",
+     "client_id": "C059",
      "start": 520,
      "end": 565,
-     "travel_before": 11,
-     "miles_before": 2.29,
-     "shared_with": []
+     "travel_before": 4,
+     "miles_before": 0.43,
+     "shared_with": [
+      "K030"
+     ]
     },
     {
      "visit_id": "V00367",
      "client_id": "C030",
-     "start": 574,
-     "end": 619,
-     "travel_before": 9,
-     "miles_before": 1.75,
+     "start": 585,
+     "end": 630,
+     "travel_before": 20,
+     "miles_before": 4.94,
      "shared_with": []
     },
     {
@@ -25455,12 +25436,21 @@
      "shared_with": []
     },
     {
+     "visit_id": "V00467",
+     "client_id": "C036",
+     "start": 766,
+     "end": 796,
+     "travel_before": 6,
+     "miles_before": 0.83,
+     "shared_with": []
+    },
+    {
      "visit_id": "V00166",
      "client_id": "C015",
-     "start": 771,
-     "end": 801,
-     "travel_before": 11,
-     "miles_before": 2.46,
+     "start": 805,
+     "end": 835,
+     "travel_before": 9,
+     "miles_before": 1.86,
      "shared_with": []
     }
    ]
@@ -25618,30 +25608,30 @@
      "shared_with": []
     },
     {
+     "visit_id": "V00517",
+     "client_id": "C038",
+     "start": 1140,
+     "end": 1170,
+     "travel_before": 9,
+     "miles_before": 1.68,
+     "shared_with": []
+    },
+    {
      "visit_id": "V00229",
      "client_id": "C020",
-     "start": 1150,
-     "end": 1180,
-     "travel_before": 4,
-     "miles_before": 0.17,
+     "start": 1179,
+     "end": 1209,
+     "travel_before": 9,
+     "miles_before": 1.67,
      "shared_with": []
     },
     {
      "visit_id": "V00604",
      "client_id": "C043",
-     "start": 1200,
-     "end": 1230,
+     "start": 1215,
+     "end": 1245,
      "travel_before": 6,
      "miles_before": 0.9,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00061",
-     "client_id": "C005",
-     "start": 1261,
-     "end": 1291,
-     "travel_before": 31,
-     "miles_before": 7.98,
      "shared_with": []
     }
    ],
@@ -25783,48 +25773,44 @@
     {
      "visit_id": "V00739",
      "client_id": "C052",
-     "start": 464,
-     "end": 509,
+     "start": 439,
+     "end": 484,
      "travel_before": 10,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00879",
-     "client_id": "C059",
-     "start": 534,
-     "end": 579,
-     "travel_before": 25,
+     "visit_id": "V00512",
+     "client_id": "C038",
+     "start": 505,
+     "end": 565,
+     "travel_before": 21,
      "miles_before": 0.0,
-     "shared_with": [
-      "K028"
-     ]
+     "shared_with": []
     },
     {
-     "visit_id": "V00553",
-     "client_id": "C041",
-     "start": 595,
-     "end": 640,
-     "travel_before": 16,
+     "visit_id": "V00740",
+     "client_id": "C052",
+     "start": 710,
+     "end": 740,
+     "travel_before": 21,
      "miles_before": 0.0,
-     "shared_with": [
-      "K027"
-     ]
+     "shared_with": []
     },
     {
      "visit_id": "V00184",
      "client_id": "C016",
-     "start": 740,
-     "end": 770,
-     "travel_before": 23,
+     "start": 755,
+     "end": 785,
+     "travel_before": 15,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
      "visit_id": "V00464",
      "client_id": "C036",
-     "start": 781,
-     "end": 811,
+     "start": 796,
+     "end": 826,
      "travel_before": 11,
      "miles_before": 0.0,
      "shared_with": []
@@ -25834,29 +25820,38 @@
     {
      "visit_id": "V00743",
      "client_id": "C052",
-     "start": 490,
-     "end": 535,
+     "start": 450,
+     "end": 495,
      "travel_before": 10,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00555",
-     "client_id": "C041",
-     "start": 595,
-     "end": 640,
-     "travel_before": 17,
+     "visit_id": "V00883",
+     "client_id": "C059",
+     "start": 520,
+     "end": 565,
+     "travel_before": 25,
      "miles_before": 0.0,
      "shared_with": [
-      "K022"
+      "K028"
      ]
+    },
+    {
+     "visit_id": "V00884",
+     "client_id": "C059",
+     "start": 680,
+     "end": 710,
+     "travel_before": 0,
+     "miles_before": 0.0,
+     "shared_with": []
     },
     {
      "visit_id": "V00744",
      "client_id": "C052",
-     "start": 710,
-     "end": 740,
-     "travel_before": 17,
+     "start": 735,
+     "end": 765,
+     "travel_before": 25,
      "miles_before": 0.0,
      "shared_with": []
     }
@@ -25879,7 +25874,7 @@
      "travel_before": 36,
      "miles_before": 0.0,
      "shared_with": [
-      "K019"
+      "K032"
      ]
     },
     {
@@ -25892,20 +25887,11 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00470",
-     "client_id": "C036",
-     "start": 738,
-     "end": 768,
-     "travel_before": 28,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00748",
-     "client_id": "C052",
-     "start": 780,
-     "end": 810,
-     "travel_before": 12,
+     "visit_id": "V00169",
+     "client_id": "C015",
+     "start": 760,
+     "end": 790,
+     "travel_before": 16,
      "miles_before": 0.0,
      "shared_with": []
     }
@@ -26023,40 +26009,35 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00646",
-     "client_id": "C047",
-     "start": 1039,
-     "end": 1069,
-     "travel_before": 15,
+     "visit_id": "V00733",
+     "client_id": "C052",
+     "start": 1055,
+     "end": 1085,
+     "travel_before": 21,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00209",
-     "client_id": "C019",
-     "start": 1080,
-     "end": 1110,
-     "travel_before": 11,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00570",
-     "client_id": "C042",
-     "start": 1180,
+     "visit_id": "V00874",
+     "client_id": "C059",
+     "start": 1165,
      "end": 1210,
-     "travel_before": 27,
+     "travel_before": 25,
      "miles_before": 0.0,
-     "shared_with": []
+     "shared_with": [
+      "K037"
+     ]
     },
     {
-     "visit_id": "V00776",
-     "client_id": "C054",
-     "start": 1223,
-     "end": 1253,
-     "travel_before": 13,
+     "visit_id": "V00550",
+     "client_id": "C041",
+     "start": 1226,
+     "end": 1271,
+     "travel_before": 16,
      "miles_before": 0.0,
-     "shared_with": []
+     "shared_with": [
+      "K037"
+     ]
     }
    ],
    "thu": [
@@ -26114,22 +26095,29 @@
    ],
    "sat": [
     {
-     "visit_id": "V00016",
-     "client_id": "C001",
-     "start": 488,
-     "end": 533,
-     "travel_before": 15,
+     "visit_id": "V00389",
+     "client_id": "C031",
+     "start": 454,
+     "end": 484,
+     "travel_before": 13,
      "miles_before": 0.0,
-     "shared_with": [
-      "K022"
-     ]
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00252",
+     "client_id": "C021",
+     "start": 493,
+     "end": 538,
+     "travel_before": 9,
+     "miles_before": 0.0,
+     "shared_with": []
     },
     {
      "visit_id": "V00857",
      "client_id": "C058",
-     "start": 548,
-     "end": 578,
-     "travel_before": 15,
+     "start": 552,
+     "end": 582,
+     "travel_before": 14,
      "miles_before": 0.0,
      "shared_with": []
     },
@@ -26187,38 +26175,49 @@
    ],
    "sun": [
     {
-     "visit_id": "V00304",
-     "client_id": "C025",
-     "start": 448,
-     "end": 508,
-     "travel_before": 17,
+     "visit_id": "V00747",
+     "client_id": "C052",
+     "start": 446,
+     "end": 491,
+     "travel_before": 21,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00409",
-     "client_id": "C032",
-     "start": 528,
-     "end": 573,
-     "travel_before": 20,
+     "visit_id": "V00354",
+     "client_id": "C028",
+     "start": 510,
+     "end": 555,
+     "travel_before": 19,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00121",
-     "client_id": "C010",
-     "start": 585,
-     "end": 630,
-     "travel_before": 12,
-     "miles_before": 0.0,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00257",
-     "client_id": "C021",
-     "start": 735,
-     "end": 780,
+     "visit_id": "V00887",
+     "client_id": "C059",
+     "start": 570,
+     "end": 615,
      "travel_before": 15,
+     "miles_before": 0.0,
+     "shared_with": [
+      "K030"
+     ]
+    },
+    {
+     "visit_id": "V00654",
+     "client_id": "C047",
+     "start": 1039,
+     "end": 1069,
+     "travel_before": 15,
+     "miles_before": 0.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00217",
+     "client_id": "C019",
+     "start": 1080,
+     "end": 1110,
+     "travel_before": 11,
      "miles_before": 0.0,
      "shared_with": []
     },
@@ -26227,28 +26226,28 @@
      "client_id": "C025",
      "start": 1145,
      "end": 1175,
-     "travel_before": 17,
+     "travel_before": 11,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00396",
-     "client_id": "C031",
-     "start": 1191,
-     "end": 1221,
-     "travel_before": 16,
+     "visit_id": "V00431",
+     "client_id": "C033",
+     "start": 1201,
+     "end": 1231,
+     "travel_before": 26,
      "miles_before": 0.0,
      "shared_with": []
     },
     {
-     "visit_id": "V00021",
-     "client_id": "C001",
-     "start": 1240,
-     "end": 1285,
-     "travel_before": 19,
+     "visit_id": "V00191",
+     "client_id": "C016",
+     "start": 1246,
+     "end": 1291,
+     "travel_before": 15,
      "miles_before": 0.0,
      "shared_with": [
-      "K027"
+      "K003"
      ]
     }
    ]
@@ -26339,30 +26338,30 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00902",
-     "client_id": "C060",
+     "visit_id": "V00223",
+     "client_id": "C020",
      "start": 1150,
-     "end": 1195,
+     "end": 1180,
      "travel_before": 4,
-     "miles_before": 0.37,
+     "miles_before": 0.17,
      "shared_with": []
     },
     {
-     "visit_id": "V00223",
-     "client_id": "C020",
-     "start": 1199,
+     "visit_id": "V00902",
+     "client_id": "C060",
+     "start": 1184,
      "end": 1229,
      "travel_before": 4,
      "miles_before": 0.41,
      "shared_with": []
     },
     {
-     "visit_id": "V00595",
-     "client_id": "C043",
-     "start": 1235,
-     "end": 1265,
-     "travel_before": 6,
-     "miles_before": 0.9,
+     "visit_id": "V00158",
+     "client_id": "C015",
+     "start": 1247,
+     "end": 1277,
+     "travel_before": 18,
+     "miles_before": 4.41,
      "shared_with": []
     }
    ],
@@ -26453,28 +26452,30 @@
    ],
    "fri": [
     {
-     "visit_id": "V00423",
-     "client_id": "C033",
-     "start": 459,
-     "end": 504,
-     "travel_before": 15,
-     "miles_before": 3.38,
-     "shared_with": []
+     "visit_id": "V00196",
+     "client_id": "C017",
+     "start": 451,
+     "end": 496,
+     "travel_before": 16,
+     "miles_before": 3.71,
+     "shared_with": [
+      "K027"
+     ]
     },
     {
      "visit_id": "V00130",
      "client_id": "C012",
-     "start": 510,
-     "end": 570,
-     "travel_before": 6,
-     "miles_before": 0.85,
+     "start": 501,
+     "end": 561,
+     "travel_before": 5,
+     "miles_before": 0.46,
      "shared_with": []
     },
     {
      "visit_id": "V00322",
      "client_id": "C026",
-     "start": 575,
-     "end": 620,
+     "start": 566,
+     "end": 611,
      "travel_before": 5,
      "miles_before": 0.71,
      "shared_with": []
@@ -26489,48 +26490,48 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00513",
-     "client_id": "C038",
-     "start": 778,
-     "end": 808,
-     "travel_before": 8,
-     "miles_before": 1.4,
-     "shared_with": []
-    },
-    {
      "visit_id": "V00249",
      "client_id": "C021",
-     "start": 819,
-     "end": 864,
-     "travel_before": 11,
-     "miles_before": 2.29,
+     "start": 779,
+     "end": 824,
+     "travel_before": 9,
+     "miles_before": 1.86,
      "shared_with": []
     },
     {
-     "visit_id": "V00577",
-     "client_id": "C042",
-     "start": 965,
-     "end": 1010,
-     "travel_before": 8,
-     "miles_before": 1.47,
+     "visit_id": "V00118",
+     "client_id": "C010",
+     "start": 960,
+     "end": 990,
+     "travel_before": 6,
+     "miles_before": 0.98,
      "shared_with": []
     },
     {
      "visit_id": "V00490",
      "client_id": "C037",
-     "start": 1014,
-     "end": 1044,
-     "travel_before": 4,
-     "miles_before": 0.41,
+     "start": 998,
+     "end": 1028,
+     "travel_before": 8,
+     "miles_before": 1.56,
      "shared_with": []
     },
     {
      "visit_id": "V00324",
      "client_id": "C026",
-     "start": 1056,
-     "end": 1086,
+     "start": 1040,
+     "end": 1070,
      "travel_before": 12,
      "miles_before": 2.54,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00406",
+     "client_id": "C032",
+     "start": 1075,
+     "end": 1120,
+     "travel_before": 5,
+     "miles_before": 0.63,
      "shared_with": []
     },
     {
@@ -26538,26 +26539,26 @@
      "client_id": "C026",
      "start": 1150,
      "end": 1180,
-     "travel_before": 0,
-     "miles_before": 0.0,
+     "travel_before": 5,
+     "miles_before": 0.63,
      "shared_with": []
     },
     {
      "visit_id": "V00185",
      "client_id": "C016",
-     "start": 1190,
-     "end": 1235,
+     "start": 1195,
+     "end": 1240,
      "travel_before": 5,
      "miles_before": 0.52,
      "shared_with": [
-      "K017"
+      "K002"
      ]
     },
     {
      "visit_id": "V00554",
      "client_id": "C041",
-     "start": 1246,
-     "end": 1291,
+     "start": 1251,
+     "end": 1296,
      "travel_before": 11,
      "miles_before": 2.18,
      "shared_with": [
@@ -26735,7 +26736,7 @@
      "travel_before": 4,
      "miles_before": 0.17,
      "shared_with": [
-      "K004"
+      "K038"
      ]
     }
    ]
@@ -26891,57 +26892,48 @@
    ],
    "fri": [
     {
-     "visit_id": "V00445",
-     "client_id": "C035",
-     "start": 466,
-     "end": 496,
+     "visit_id": "V00264",
+     "client_id": "C022",
+     "start": 450,
+     "end": 510,
      "travel_before": 5,
-     "miles_before": 0.48,
+     "miles_before": 0.63,
      "shared_with": []
     },
     {
-     "visit_id": "V00101",
-     "client_id": "C008",
-     "start": 503,
-     "end": 533,
-     "travel_before": 7,
-     "miles_before": 1.03,
+     "visit_id": "V00663",
+     "client_id": "C048",
+     "start": 516,
+     "end": 546,
+     "travel_before": 6,
+     "miles_before": 1.01,
      "shared_with": []
     },
     {
-     "visit_id": "V00125",
-     "client_id": "C011",
-     "start": 540,
-     "end": 570,
-     "travel_before": 7,
-     "miles_before": 1.12,
+     "visit_id": "V00854",
+     "client_id": "C058",
+     "start": 551,
+     "end": 581,
+     "travel_before": 5,
+     "miles_before": 0.45,
      "shared_with": []
     },
     {
-     "visit_id": "V00201",
-     "client_id": "C018",
-     "start": 580,
-     "end": 640,
-     "travel_before": 10,
-     "miles_before": 2.12,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00386",
-     "client_id": "C031",
-     "start": 735,
-     "end": 780,
-     "travel_before": 7,
-     "miles_before": 1.22,
+     "visit_id": "V00117",
+     "client_id": "C010",
+     "start": 585,
+     "end": 630,
+     "travel_before": 4,
+     "miles_before": 0.41,
      "shared_with": []
     },
     {
      "visit_id": "V00782",
      "client_id": "C054",
-     "start": 787,
-     "end": 817,
-     "travel_before": 7,
-     "miles_before": 1.04,
+     "start": 755,
+     "end": 785,
+     "travel_before": 8,
+     "miles_before": 1.4,
      "shared_with": []
     },
     {
@@ -26954,21 +26946,39 @@
      "shared_with": []
     },
     {
-     "visit_id": "V00118",
-     "client_id": "C010",
-     "start": 1008,
-     "end": 1038,
-     "travel_before": 8,
-     "miles_before": 1.4,
+     "visit_id": "V00909",
+     "client_id": "C060",
+     "start": 1011,
+     "end": 1041,
+     "travel_before": 11,
+     "miles_before": 2.19,
      "shared_with": []
     },
     {
-     "visit_id": "V00856",
-     "client_id": "C058",
-     "start": 1160,
-     "end": 1190,
+     "visit_id": "V00910",
+     "client_id": "C060",
+     "start": 1150,
+     "end": 1195,
+     "travel_before": 0,
+     "miles_before": 0.0,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00227",
+     "client_id": "C020",
+     "start": 1199,
+     "end": 1229,
      "travel_before": 4,
      "miles_before": 0.41,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00601",
+     "client_id": "C043",
+     "start": 1235,
+     "end": 1265,
+     "travel_before": 6,
+     "miles_before": 0.9,
      "shared_with": []
     }
    ],
@@ -26976,8 +26986,8 @@
     {
      "visit_id": "V00466",
      "client_id": "C036",
-     "start": 449,
-     "end": 479,
+     "start": 456,
+     "end": 486,
      "travel_before": 6,
      "miles_before": 0.9,
      "shared_with": []
@@ -26985,46 +26995,37 @@
     {
      "visit_id": "V00426",
      "client_id": "C033",
-     "start": 485,
-     "end": 530,
+     "start": 492,
+     "end": 537,
      "travel_before": 6,
      "miles_before": 0.83,
      "shared_with": []
     },
     {
-     "visit_id": "V00637",
-     "client_id": "C046",
-     "start": 541,
-     "end": 586,
-     "travel_before": 11,
-     "miles_before": 2.37,
+     "visit_id": "V00119",
+     "client_id": "C010",
+     "start": 543,
+     "end": 588,
+     "travel_before": 6,
+     "miles_before": 0.96,
      "shared_with": []
     },
     {
-     "visit_id": "V00840",
-     "client_id": "C057",
-     "start": 590,
-     "end": 650,
-     "travel_before": 4,
-     "miles_before": 0.4,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00516",
-     "client_id": "C038",
-     "start": 725,
-     "end": 755,
-     "travel_before": 9,
-     "miles_before": 1.76,
+     "visit_id": "V00034",
+     "client_id": "C003",
+     "start": 595,
+     "end": 640,
+     "travel_before": 7,
+     "miles_before": 1.24,
      "shared_with": []
     },
     {
      "visit_id": "V00858",
      "client_id": "C058",
-     "start": 764,
-     "end": 794,
+     "start": 745,
+     "end": 775,
      "travel_before": 9,
-     "miles_before": 1.65,
+     "miles_before": 1.64,
      "shared_with": []
     },
     {
@@ -27035,14 +27036,23 @@
      "travel_before": 0,
      "miles_before": 0.0,
      "shared_with": []
+    },
+    {
+     "visit_id": "V00061",
+     "client_id": "C005",
+     "start": 1225,
+     "end": 1255,
+     "travel_before": 23,
+     "miles_before": 5.85,
+     "shared_with": []
     }
    ],
    "sun": [
     {
      "visit_id": "V00469",
      "client_id": "C036",
-     "start": 447,
-     "end": 477,
+     "start": 450,
+     "end": 480,
      "travel_before": 6,
      "miles_before": 0.9,
      "shared_with": []
@@ -27050,8 +27060,8 @@
     {
      "visit_id": "V00449",
      "client_id": "C035",
-     "start": 483,
-     "end": 513,
+     "start": 486,
+     "end": 516,
      "travel_before": 6,
      "miles_before": 1.01,
      "shared_with": []
@@ -27059,8 +27069,8 @@
     {
      "visit_id": "V00667",
      "client_id": "C048",
-     "start": 517,
-     "end": 547,
+     "start": 520,
+     "end": 550,
      "travel_before": 4,
      "miles_before": 0.19,
      "shared_with": []
@@ -27068,46 +27078,46 @@
     {
      "visit_id": "V00860",
      "client_id": "C058",
-     "start": 552,
-     "end": 582,
+     "start": 555,
+     "end": 585,
      "travel_before": 5,
      "miles_before": 0.45,
      "shared_with": []
     },
     {
-     "visit_id": "V00533",
-     "client_id": "C039",
-     "start": 595,
-     "end": 655,
-     "travel_before": 13,
-     "miles_before": 2.79,
+     "visit_id": "V00430",
+     "client_id": "C033",
+     "start": 730,
+     "end": 760,
+     "travel_before": 7,
+     "miles_before": 1.13,
      "shared_with": []
     },
     {
-     "visit_id": "V00231",
-     "client_id": "C020",
-     "start": 1150,
-     "end": 1180,
-     "travel_before": 4,
-     "miles_before": 0.17,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00607",
-     "client_id": "C043",
-     "start": 1200,
-     "end": 1230,
+     "visit_id": "V00470",
+     "client_id": "C036",
+     "start": 766,
+     "end": 796,
      "travel_before": 6,
-     "miles_before": 0.9,
+     "miles_before": 0.83,
      "shared_with": []
     },
     {
-     "visit_id": "V00668",
-     "client_id": "C048",
-     "start": 1247,
-     "end": 1277,
-     "travel_before": 17,
-     "miles_before": 4.01,
+     "visit_id": "V00861",
+     "client_id": "C058",
+     "start": 803,
+     "end": 833,
+     "travel_before": 7,
+     "miles_before": 1.04,
+     "shared_with": []
+    },
+    {
+     "visit_id": "V00862",
+     "client_id": "C058",
+     "start": 1160,
+     "end": 1190,
+     "travel_before": 0,
+     "miles_before": 0.0,
      "shared_with": []
     }
    ]
@@ -27145,6 +27155,17 @@
      "miles_before": 3.47,
      "shared_with": []
     }
+   ],
+   "sat": [
+    {
+     "visit_id": "V00923",
+     "client_id": "C018",
+     "start": 1320,
+     "end": 1860,
+     "travel_before": 15,
+     "miles_before": 3.47,
+     "shared_with": []
+    }
    ]
   },
   "K036": {
@@ -27162,46 +27183,6 @@
    "thu": [
     {
      "visit_id": "V00914",
-     "client_id": "C017",
-     "start": 1320,
-     "end": 1860,
-     "travel_before": 13,
-     "miles_before": 2.85,
-     "shared_with": []
-    }
-   ],
-   "fri": [
-    {
-     "visit_id": "V00227",
-     "client_id": "C020",
-     "start": 1150,
-     "end": 1180,
-     "travel_before": 5,
-     "miles_before": 0.45,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00910",
-     "client_id": "C060",
-     "start": 1184,
-     "end": 1229,
-     "travel_before": 4,
-     "miles_before": 0.41,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00601",
-     "client_id": "C043",
-     "start": 1236,
-     "end": 1266,
-     "travel_before": 7,
-     "miles_before": 1.25,
-     "shared_with": []
-    }
-   ],
-   "sat": [
-    {
-     "visit_id": "V00916",
      "client_id": "C017",
      "start": 1320,
      "end": 1860,
@@ -27263,68 +27244,61 @@
     {
      "visit_id": "V00613",
      "client_id": "C044",
-     "start": 1025,
-     "end": 1070,
+     "start": 1022,
+     "end": 1067,
      "travel_before": 5,
      "miles_before": 0.7,
      "shared_with": []
     },
     {
-     "visit_id": "V00041",
-     "client_id": "C004",
-     "start": 1078,
-     "end": 1108,
-     "travel_before": 8,
-     "miles_before": 1.51,
+     "visit_id": "V00873",
+     "client_id": "C059",
+     "start": 1095,
+     "end": 1125,
+     "travel_before": 28,
+     "miles_before": 7.35,
      "shared_with": []
     },
     {
-     "visit_id": "V00271",
-     "client_id": "C023",
-     "start": 1170,
-     "end": 1200,
-     "travel_before": 10,
-     "miles_before": 2.1,
-     "shared_with": []
+     "visit_id": "V00874",
+     "client_id": "C059",
+     "start": 1165,
+     "end": 1210,
+     "travel_before": 0,
+     "miles_before": 0.0,
+     "shared_with": [
+      "K032"
+     ]
     },
     {
-     "visit_id": "V00141",
-     "client_id": "C014",
-     "start": 1204,
-     "end": 1234,
-     "travel_before": 4,
-     "miles_before": 0.41,
-     "shared_with": []
-    },
-    {
-     "visit_id": "V00822",
-     "client_id": "C056",
-     "start": 1239,
-     "end": 1269,
-     "travel_before": 5,
-     "miles_before": 0.48,
-     "shared_with": []
+     "visit_id": "V00550",
+     "client_id": "C041",
+     "start": 1226,
+     "end": 1271,
+     "travel_before": 7,
+     "miles_before": 1.15,
+     "shared_with": [
+      "K032"
+     ]
     }
    ],
    "sun": [
     {
-     "visit_id": "V00048",
-     "client_id": "C004",
-     "start": 462,
-     "end": 507,
+     "visit_id": "V00763",
+     "client_id": "C053",
+     "start": 440,
+     "end": 500,
      "travel_before": 8,
-     "miles_before": 1.4,
-     "shared_with": [
-      "K027"
-     ]
+     "miles_before": 1.44,
+     "shared_with": []
     },
     {
      "visit_id": "V00620",
      "client_id": "C044",
-     "start": 515,
-     "end": 560,
-     "travel_before": 8,
-     "miles_before": 1.51,
+     "start": 510,
+     "end": 555,
+     "travel_before": 10,
+     "miles_before": 2.11,
      "shared_with": [
       "K027"
      ]
@@ -27420,13 +27394,37 @@
    ],
    "sat": [
     {
-     "visit_id": "V00923",
-     "client_id": "C018",
+     "visit_id": "V00916",
+     "client_id": "C017",
      "start": 1320,
      "end": 1860,
-     "travel_before": 7,
-     "miles_before": 1.3,
+     "travel_before": 4,
+     "miles_before": 0.41,
      "shared_with": []
+    }
+   ],
+   "sun": [
+    {
+     "visit_id": "V00890",
+     "client_id": "C059",
+     "start": 1165,
+     "end": 1210,
+     "travel_before": 17,
+     "miles_before": 4.08,
+     "shared_with": [
+      "K001"
+     ]
+    },
+    {
+     "visit_id": "V00558",
+     "client_id": "C041",
+     "start": 1232,
+     "end": 1277,
+     "travel_before": 7,
+     "miles_before": 1.15,
+     "shared_with": [
+      "K033"
+     ]
     }
    ]
   }
@@ -27470,12 +27468,12 @@
   {
    "day": 2,
    "hour": 7,
-   "minutes": 435
+   "minutes": 375
   },
   {
    "day": 2,
    "hour": 8,
-   "minutes": 570
+   "minutes": 615
   },
   {
    "day": 2,
@@ -27485,12 +27483,12 @@
   {
    "day": 2,
    "hour": 19,
-   "minutes": 90
+   "minutes": 30
   },
   {
    "day": 2,
    "hour": 20,
-   "minutes": 180
+   "minutes": 90
   },
   {
    "day": 3,
@@ -27515,37 +27513,42 @@
   {
    "day": 4,
    "hour": 7,
-   "minutes": 555
+   "minutes": 345
   },
   {
    "day": 4,
    "hour": 8,
-   "minutes": 555
+   "minutes": 645
   },
   {
    "day": 4,
    "hour": 9,
-   "minutes": 330
+   "minutes": 435
+  },
+  {
+   "day": 4,
+   "hour": 19,
+   "minutes": 90
   },
   {
    "day": 4,
    "hour": 20,
-   "minutes": 180
+   "minutes": 90
   },
   {
    "day": 5,
    "hour": 7,
-   "minutes": 150
+   "minutes": 120
   },
   {
    "day": 5,
    "hour": 8,
-   "minutes": 330
+   "minutes": 315
   },
   {
    "day": 5,
    "hour": 9,
-   "minutes": 135
+   "minutes": 195
   },
   {
    "day": 6,
@@ -27555,7 +27558,7 @@
   {
    "day": 6,
    "hour": 8,
-   "minutes": 210
+   "minutes": 285
   },
   {
    "day": 6,

@@ -100,7 +100,9 @@ class Settings:
     continuity_penalty_pence: int = 60  # tie-breaker: travel and hours matter more (Loidis)
     under_target_pence_per_min: int = 21  # unused contracted time is paid anyway (~pay rate)
     over_contract_pence_per_min: int = 15  # carer beyond contracted hours
-    sleep_in_counted_minutes: int = 0  # how much a sleep-in counts towards carer hours
+    # minutes a sleep-in counts towards carer hours; None = its full length, as
+    # CareLineLive's rota does (sleep-in pay is a payroll question, handled later)
+    sleep_in_counted_minutes: int | None = None
     rest_after_sleep_in_minutes: int = 11 * 60  # rest before the next shift (to confirm)
     unfilled_penalty: int = 10_000_000
 
@@ -121,7 +123,7 @@ class Problem:
 
     def counted_minutes(self, visit: Visit) -> int:
         """Minutes a visit counts towards a carer's hours."""
-        if visit.kind == "sleep_in":
+        if visit.kind == "sleep_in" and self.settings.sleep_in_counted_minutes is not None:
             return self.settings.sleep_in_counted_minutes
         return visit.duration
 

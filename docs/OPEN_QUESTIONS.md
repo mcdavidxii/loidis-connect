@@ -29,8 +29,10 @@ Tick items off and record answers in `DECISIONS.md` where they lead to a decisio
 - [ ] Mileage rate per mile (engine assumes 45p) and does it include the first and last
       trip from and to home?
 - [x] Night shifts are **sleep-ins** (2026-11-15)
-- [ ] Sleep-ins: flat rate? Do they count towards contracted hours (engine: 0 minutes)?
-      Rest needed afterwards (engine: 11 hours)?
+- [x] Sleep-ins count towards carers' hours in full (CareLineLive shows a 10 h block in
+      the carer's total) (2026-11-15)
+- [ ] Sleep-in pay (flat rate or hourly): for the payroll module
+- [ ] Rest needed after a sleep-in (engine: 11 hours)?
 - [x] Late shift followed by an early shift: **allowed** (2026-11-15)
 - [ ] Breaks: is a meal break required on long shifts?
 - [ ] Hours balancing: contracted hours guaranteed, or zero-hours?

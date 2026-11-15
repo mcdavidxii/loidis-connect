@@ -113,9 +113,7 @@ def build_report(problem: Problem, week: list[DayResult], settings_note: str = "
                 }
                 for st in stops
             ]
-            care += sum(
-                st.end - st.start for st in stops if visit_by_id[st.visit_id].kind == "care"
-            )
+            care += sum(problem.counted_minutes(visit_by_id[st.visit_id]) for st in stops)
             sleep_ins += sum(1 for st in stops if visit_by_id[st.visit_id].kind == "sleep_in")
             travel += sum(st.travel_before for st in stops) + home_t
             mi += sum(st.miles_before for st in stops) + home_mi

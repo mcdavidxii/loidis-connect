@@ -205,6 +205,8 @@ def generate(
     night_carers = carers[-4:]
     for carer in night_carers:
         carer.skills = sorted(set(carer.skills) | {"nights"})
+        carer.contracted_minutes_week = int(37.5 * 60)
+        carer.max_minutes_week = 48 * 60
         nights = set(rng.sample(range(7), 4))
         carer.availability = [b for b in carer.availability if b.day not in nights]
         carer.availability += [Block(d, night_start - 30, night_end + 30) for d in sorted(nights)]

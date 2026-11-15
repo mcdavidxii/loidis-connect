@@ -2864,8 +2864,8 @@
     "nights"
    ],
    "gender": "female",
-   "contracted_minutes_week": 1800,
-   "max_minutes_week": 2400,
+   "contracted_minutes_week": 2250,
+   "max_minutes_week": 2880,
    "dbs_expiry": "2027-08-23",
    "training_expiry": "2027-04-12",
    "availability": [
@@ -2914,8 +2914,8 @@
     "nights"
    ],
    "gender": "male",
-   "contracted_minutes_week": 1800,
-   "max_minutes_week": 2400,
+   "contracted_minutes_week": 2250,
+   "max_minutes_week": 2880,
    "dbs_expiry": "2028-03-31",
    "training_expiry": "2027-03-09",
    "availability": [
@@ -2965,8 +2965,8 @@
     "nights"
    ],
    "gender": "female",
-   "contracted_minutes_week": 1440,
-   "max_minutes_week": 2040,
+   "contracted_minutes_week": 2250,
+   "max_minutes_week": 2880,
    "dbs_expiry": "2027-01-18",
    "training_expiry": "2027-04-29",
    "availability": [
@@ -3025,8 +3025,8 @@
     "nights"
    ],
    "gender": "female",
-   "contracted_minutes_week": 960,
-   "max_minutes_week": 1560,
+   "contracted_minutes_week": 2250,
+   "max_minutes_week": 2880,
    "dbs_expiry": "2028-06-12",
    "training_expiry": "2027-11-16",
    "availability": [
@@ -15162,7 +15162,7 @@
   "continuity_penalty_pence": 60,
   "under_target_pence_per_min": 21,
   "over_contract_pence_per_min": 15,
-  "sleep_in_counted_minutes": 0,
+  "sleep_in_counted_minutes": null,
   "rest_after_sleep_in_minutes": 660,
   "unfilled_penalty": 10000000
  }

@@ -29,7 +29,7 @@ published.** Prototype code: [`../engine/`](../engine/).
 | Client's do-not-send list (carers not allowed to that client) | Must; may be **suggested** to the coordinator when it blocks a visit | Built |
 | Client's safeguarding bar | Must; **never** suggested | Built |
 | Weekly maximum hours | Must | Built |
-| Sleep-ins (22:00 to 07:00 at the client's home); count towards hours as a setting (default 0) | Must | Built |
+| Sleep-ins (22:00 to 07:00 at the client's home); count towards carers' hours in full, as in CareLineLive (setting); sleep-in pay handled in payroll later | Must | Built |
 | Rest after a sleep-in before the next shift (default 11 h, to confirm) | Must | Built |
 | Late shift followed by an early shift | Allowed (Loidis) | — |
 | Meal breaks on long shifts | Must | Not yet (policy to confirm) |

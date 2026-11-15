@@ -193,7 +193,7 @@ function render() {
   for (const c of rows) {
     const stops = (R.routes[c.id] || {})[dn] || [];
     const absent = c.absences.find(a => a.day === day);
-    const mins = stops.filter(x => R.visitById[x.visit_id].kind !== "sleep_in").reduce((s, x) => s + x.end - x.start, 0);
+    const mins = stops.reduce((s, x) => s + x.end - x.start, 0);
     const sleeps = stops.filter(x => R.visitById[x.visit_id].kind === "sleep_in").length;
     let t = "";
     for (let h = 6; h <= 32; h++) t += `<i class="hourline" style="left:${pct(h*60)}"></i>`;
@@ -211,7 +211,7 @@ function render() {
     }
     const flag = c.issues.length ? ` <span class="bad" title="${esc(c.issues.join("; "))}">⚠</span>` : "";
     html += `<div class="row ${selected===c.id?"sel":""}" data-c="${c.id}">
-      <div class="who"><b>${c.id}</b>${flag} <span class="m">${MODE[c.travel_mode]} · ${hrs(mins)}h${sleeps ? " + sleep-in" : ""}</span></div>
+      <div class="who"><b>${c.id}</b>${flag} <span class="m">${MODE[c.travel_mode]} · ${hrs(mins)}h${sleeps ? " incl. sleep-in" : ""}</span></div>
       <div class="track">${t}</div></div>`;
   }
   $("grid").innerHTML = html;
