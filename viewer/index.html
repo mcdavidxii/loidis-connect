@@ -90,7 +90,7 @@ th { color: var(--muted); font-weight: 600; }
         <span><i class="sw" style="background:var(--avail)"></i>Available</span>
         <span><i class="sw" style="background:var(--visit)"></i>Visit</span>
         <span><i class="sw" style="background:var(--double)"></i>Two-carer visit</span>
-        <span><i class="sw" style="background:var(--night)"></i>Night</span>
+        <span><i class="sw" style="background:var(--night)"></i>Sleep-in</span>
         <span><i class="sw" style="background:var(--travel);height:3px"></i>Travel</span>
         <span>Click a carer to see their route on the map</span>
       </div>
@@ -153,6 +153,7 @@ async function load() {
     [`${m.care_hours} h`, "Care hours"],
     [`${m.travel_hours} h`, "Travel time"],
     [`${m.miles} mi`, `Mileage (£${m.mileage_pounds.toFixed(2)})`],
+    [`${m.sleep_ins_filled}/${m.sleep_ins}`, "Sleep-ins covered"],
     [`${Math.round(m.continuity_rate*100)}%`, "Visits by a familiar carer"],
   ].map(([v,l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
   if (R.cover) {
@@ -192,7 +193,8 @@ function render() {
   for (const c of rows) {
     const stops = (R.routes[c.id] || {})[dn] || [];
     const absent = c.absences.find(a => a.day === day);
-    const mins = stops.reduce((s, x) => s + x.end - x.start, 0);
+    const mins = stops.filter(x => R.visitById[x.visit_id].kind !== "sleep_in").reduce((s, x) => s + x.end - x.start, 0);
+    const sleeps = stops.filter(x => R.visitById[x.visit_id].kind === "sleep_in").length;
     let t = "";
     for (let h = 6; h <= 32; h++) t += `<i class="hourline" style="left:${pct(h*60)}"></i>`;
     if (absent) t += `<div class="abs">${ABS[absent.type] || "Absent"}</div>`;
@@ -200,15 +202,16 @@ function render() {
       t += `<div class="blk" style="left:${pct(b.start)};width:${w(b.end-b.start)}"></div>`;
     for (const s of stops) {
       const v = R.visitById[s.visit_id];
-      const cls = v.duration >= 300 ? "night" : (v.carers_needed > 1 ? "double" : "");
+      const cls = v.kind === "sleep_in" ? "night" : (v.carers_needed > 1 ? "double" : "");
       if (s.travel_before) t += `<div class="trav" style="left:${pct(s.start - s.travel_before)};width:${w(s.travel_before)}"></div>`;
       const tip = `${s.client_id} ${hhmm(s.start)}–${hhmm(s.end)} (wanted ${hhmm(v.preferred_start)} ±${v.window})` +
         (s.shared_with.length ? ` with ${s.shared_with.join(", ")}` : "") + ` · ${s.travel_before} min travel`;
-      t += `<div class="stop ${cls}" title="${esc(tip)}" style="left:${pct(s.start)};width:${w(s.end-s.start)}">${s.client_id}</div>`;
+      const label = v.kind === "sleep_in" ? `Sleep-in · ${s.client_id}` : s.client_id;
+      t += `<div class="stop ${cls}" title="${esc(tip)}" style="left:${pct(s.start)};width:${w(s.end-s.start)}">${label}</div>`;
     }
     const flag = c.issues.length ? ` <span class="bad" title="${esc(c.issues.join("; "))}">⚠</span>` : "";
     html += `<div class="row ${selected===c.id?"sel":""}" data-c="${c.id}">
-      <div class="who"><b>${c.id}</b>${flag} <span class="m">${MODE[c.travel_mode]} · ${hrs(mins)}h</span></div>
+      <div class="who"><b>${c.id}</b>${flag} <span class="m">${MODE[c.travel_mode]} · ${hrs(mins)}h${sleeps ? " + sleep-in" : ""}</span></div>
       <div class="track">${t}</div></div>`;
   }
   $("grid").innerHTML = html;
@@ -217,9 +220,13 @@ function render() {
   // unfilled visits
   const unf = R.visits.filter(v => v.day === day && v.unfilled_reason).sort((a,b) => a.preferred_start - b.preferred_start);
   $("unf-title").textContent = `Unfilled visits — ${DAYNAMES[day]} (${unf.length})`;
-  $("unfilled").innerHTML = unf.length ? unf.map(v => `<li><b>${v.client_id}</b> ${hhmm(v.preferred_start)} ±${v.window} min,
-      ${v.duration} min${v.carers_needed > 1 ? ", two carers" : ""}${v.skills.length ? ", needs " + v.skills.join(", ") : ""}
-      <div class="why">${esc(v.unfilled_reason)}${(v.unfilled_detail||[]).length ? "<br>Nearest: " + v.unfilled_detail.map(esc).join("; ") : ""}</div></li>`).join("")
+  $("unfilled").innerHTML = unf.length ? unf.map(v => {
+      const what = v.kind === "sleep_in" ? "sleep-in" : `${v.duration} min${v.carers_needed > 1 ? ", two carers" : ""}`;
+      const sug = (v.override_suggestions || []);
+      return `<li><b>${v.client_id}</b> ${hhmm(v.preferred_start)} ±${v.window} min, ${what}${v.skills.length ? ", needs " + v.skills.join(", ") : ""}
+      <div class="why">${esc(v.unfilled_reason)}${(v.unfilled_detail||[]).length ? "<br>Nearest: " + v.unfilled_detail.map(esc).join("; ") : ""}</div>
+      ${sug.length ? `<div class="warn">Possible if you approve: ${sug.map(esc).join(", ")} ${sug.length > 1 ? "are" : "is"} free but on this client's do-not-send list.</div>` : ""}</li>`;
+    }).join("")
     : "<li>None — every visit is covered.</li>";
 
   // shortfall by hour
@@ -273,13 +280,13 @@ function renderWeekTables() {
       <td class="num">${hrs(c.scheduled_minutes)}</td><td class="num bad">${hrs(c.gap_minutes)}</td></tr>`).join("")
       : `<tr><td colspan="6">Every client gets their commissioned hours.</td></tr>`);
   const cs = [...R.carers].sort((a, b) => (a.scheduled_minutes - a.contracted_minutes) - (b.scheduled_minutes - b.contracted_minutes));
-  $("carers").innerHTML = `<tr><th>Carer</th><th>Travels</th><th class="num">Contracted h</th><th class="num">Scheduled h</th><th class="num">Difference</th><th class="num">Travel h</th><th class="num">Miles</th><th>Notes</th></tr>` +
+  $("carers").innerHTML = `<tr><th>Carer</th><th>Travels</th><th class="num">Contracted h</th><th class="num">Scheduled h</th><th class="num">Difference</th><th class="num">Sleep-ins</th><th class="num">Travel h</th><th class="num">Miles</th><th>Notes</th></tr>` +
     cs.map(c => {
       const diff = c.scheduled_minutes - c.contracted_minutes;
       const cls = diff < -120 ? "warn" : diff > 0 ? "bad" : "ok";
       const notes = [...c.issues, ...[...new Set(c.absences.map(a => ABS[a.type]))]].join("; ");
       return `<tr><td>${c.id}</td><td>${MODE[c.travel_mode]}</td><td class="num">${hrs(c.contracted_minutes)}</td><td class="num">${hrs(c.scheduled_minutes)}</td>
-        <td class="num ${cls}">${diff > 0 ? "+" : ""}${hrs(diff)}</td><td class="num">${hrs(c.travel_minutes)}</td><td class="num">${c.travel_mode === "car" ? c.miles : "—"}</td><td>${esc(notes)}</td></tr>`;
+        <td class="num ${cls}">${diff > 0 ? "+" : ""}${hrs(diff)}</td><td class="num">${c.sleep_ins || ""}</td><td class="num">${hrs(c.travel_minutes)}</td><td class="num">${c.travel_mode === "car" ? c.miles : "—"}</td><td>${esc(notes)}</td></tr>`;
     }).join("");
 }
 

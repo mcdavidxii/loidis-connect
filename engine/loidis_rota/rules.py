@@ -16,8 +16,16 @@ def fits_block(visit: Visit, block: Block) -> bool:
     return start <= visit.latest and start + visit.duration <= block.end
 
 
-def carer_rule_failure(problem: Problem, carer: Carer, visit: Visit) -> str | None:
-    """Reason this carer can never do this visit (ignoring availability), or None."""
+DO_NOT_SEND = "on client's do-not-send list"
+
+
+def carer_rule_failure(
+    problem: Problem, carer: Carer, visit: Visit, ignore_do_not_send: bool = False
+) -> str | None:
+    """Reason this carer can never do this visit (ignoring availability), or None.
+
+    ignore_do_not_send is only for finding override suggestions; the planner never uses it.
+    """
     client: Client = problem.client_by_id[visit.client_id]
     when = problem.date_of(visit.day)
     absence = problem.absence(carer.id, visit.day)
@@ -32,8 +40,10 @@ def carer_rule_failure(problem: Problem, carer: Carer, visit: Visit) -> str | No
         return "missing skill: " + ", ".join(sorted(missing))
     if client.gender_preference and carer.gender != client.gender_preference:
         return f"client needs a {client.gender_preference} carer"
-    if carer.id in client.do_not_send:
-        return "on client's do-not-send list"
+    if carer.id in client.safeguarding_bar:
+        return "barred from this client (safeguarding)"
+    if carer.id in client.do_not_send and not ignore_do_not_send:
+        return DO_NOT_SEND
     if visit.locked_carers and carer.id not in visit.locked_carers:
         return "visit locked to other carers"
     return None

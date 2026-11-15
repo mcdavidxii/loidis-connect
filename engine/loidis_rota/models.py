@@ -26,7 +26,8 @@ class Client:
     commissioned_minutes_week: int
     funder: str  # "council" or "private"
     gender_preference: str | None = None  # "female" or "male" if the client requires it
-    do_not_send: list[str] = field(default_factory=list)
+    do_not_send: list[str] = field(default_factory=list)  # never booked; may be suggested
+    safeguarding_bar: list[str] = field(default_factory=list)  # never booked or suggested
     recent_carers: list[str] = field(default_factory=list)
 
 
@@ -68,6 +69,7 @@ class Visit:
     carers_needed: int = 1
     required_skills: list[str] = field(default_factory=list)
     locked_carers: list[str] = field(default_factory=list)
+    kind: str = "care"  # "care" or "sleep_in"
 
     @property
     def earliest(self) -> int:
@@ -95,10 +97,11 @@ class Settings:
     pay_pence_per_hour: int = 1271  # assumed carer hourly pay; used to cost travel time
     travel_time_paid: bool = True
     mileage_pence_per_mile: int = 45  # paid to car drivers
-    continuity_penalty_pence: int = 250  # per visit by a carer new to the client
+    continuity_penalty_pence: int = 60  # tie-breaker: travel and hours matter more (Loidis)
     under_target_pence_per_min: int = 21  # unused contracted time is paid anyway (~pay rate)
     over_contract_pence_per_min: int = 15  # carer beyond contracted hours
-    rest_after_night_minutes: int = 11 * 60  # rest before next shift after a night
+    sleep_in_counted_minutes: int = 0  # how much a sleep-in counts towards carer hours
+    rest_after_sleep_in_minutes: int = 11 * 60  # rest before the next shift (to confirm)
     unfilled_penalty: int = 10_000_000
 
 
@@ -114,6 +117,13 @@ class Problem:
     def __post_init__(self) -> None:
         self.client_by_id = {c.id: c for c in self.clients}
         self.carer_by_id = {c.id: c for c in self.carers}
+        self.visit_by_id = {v.id: v for v in self.visits}
+
+    def counted_minutes(self, visit: Visit) -> int:
+        """Minutes a visit counts towards a carer's hours."""
+        if visit.kind == "sleep_in":
+            return self.settings.sleep_in_counted_minutes
+        return visit.duration
 
     def absence(self, carer_id: str, day: int) -> Absence | None:
         for a in self.absences:

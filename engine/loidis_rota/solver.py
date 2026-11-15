@@ -148,7 +148,8 @@ def solve_day(
     n_veh = len(vehicles)
     locations = [carer.home for carer, _ in vehicles]
     locations += [problem.client_by_id[v.client_id].location for v, _ in stops]
-    service = [0] * n_veh + [v.duration for v, _ in stops]
+    service = [0] * n_veh + [v.duration for v, _ in stops]  # time on site
+    counted = [0] * n_veh + [problem.counted_minutes(v) for v, _ in stops]  # towards hours
     client_of = [None] * n_veh + [v.client_id for v, _ in stops]
     n = len(locations)
 
@@ -190,7 +191,7 @@ def solve_day(
             routing.SetArcCostEvaluatorOfVehicle(cost_cb[carer.id], vi)
 
         # work minutes, capped by remaining weekly maximum, softly balanced
-        work_cb = routing.RegisterUnaryTransitVector(service)
+        work_cb = routing.RegisterUnaryTransitVector(counted)
         routing.AddDimensionWithVehicleCapacity(work_cb, 0, caps, True, "Work")
         work_dim = routing.GetDimensionOrDie("Work")
         for cid, vis in by_carer.items():
@@ -218,7 +219,8 @@ def solve_day(
                 time_dim.CumulVar(idx).SetRange(visit.earliest, visit.latest)
             # -1 means "not served"; otherwise only the allowed vehicles
             routing.VehicleVar(idx).SetValues([-1] + allowed[k])
-            routing.AddDisjunction([idx], s.unfilled_penalty)
+            # visits already in the plan (pinned) must never be dropped to cover others
+            routing.AddDisjunction([idx], s.unfilled_penalty * (10 if pin else 1))
             if slot == 0:
                 first_slot[visit.id] = idx
             else:  # second carer: same start, different carer
@@ -366,13 +368,17 @@ def solve_day(
     return result
 
 
+def _counted(problem: Problem, stops: list[Stop]) -> int:
+    return sum(problem.counted_minutes(problem.visit_by_id[st.visit_id]) for st in stops)
+
+
 def _rest_after(problem: Problem, res: DayResult) -> dict[str, int]:
     """Earliest start next day for carers who worked past midnight."""
     out = {}
     for cid, stops in res.routes.items():
         last_end = max(st.end for st in stops)
         if last_end > DAY_MINUTES:
-            out[cid] = last_end - DAY_MINUTES + problem.settings.rest_after_night_minutes
+            out[cid] = last_end - DAY_MINUTES + problem.settings.rest_after_sleep_in_minutes
     return out
 
 
@@ -383,7 +389,7 @@ def solve_week(problem: Problem, seconds_per_day: int = 10, progress=None) -> li
     for day in range(7):
         res = solve_day(problem, day, used, seconds_per_day, not_before=not_before)
         for cid, stops in res.routes.items():
-            used[cid] = used.get(cid, 0) + sum(st.end - st.start for st in stops)
+            used[cid] = used.get(cid, 0) + _counted(problem, stops)
         not_before = _rest_after(problem, res)
         results.append(res)
         if progress:
@@ -408,7 +414,7 @@ def cover_absence(
         if d == day:
             continue
         for cid, stops in week[d].routes.items():
-            used[cid] = used.get(cid, 0) + sum(st.end - st.start for st in stops)
+            used[cid] = used.get(cid, 0) + _counted(problem, stops)
     not_before = _rest_after(problem, week[day - 1]) if day > 0 else {}
 
     pins = {}

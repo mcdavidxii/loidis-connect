@@ -35,9 +35,9 @@ cd ../engine && python -m pytest -q
 
 | Measure | Result |
 |---|---|
-| Visits filled | 821 of 924 (89%); shortages are the 08:00 peak and weekend nights |
+| Visits filled | 819 of 924 (89%); shortages are the 08:00 peak and some sleep-ins |
 | Run time | about 1 minute for the week (8 s per day) |
-| Sickness cover (K004, Wednesday) | 7 of 12 visits re-covered; 1 other visit changed |
+| Sickness cover (K021, Wednesday) | 8 of 13 visits re-covered; 0 other visits changed |
 
 The made-up agency is deliberately short-staffed at peaks, so the screens show
 unfilled visits and their reasons. The fill rate is a property of the data, not the
@@ -59,6 +59,6 @@ engine.
 
 - Travel times are straight-line estimates, not road routing.
 - Weekly hours are balanced day by day (Monday first), not across the whole week at once.
-- Rest rule applies only after night shifts; general working-time rest rules are not
-  enforced yet (see open questions).
+- Rest rule applies only after sleep-ins; meal breaks are not enforced yet (see open
+  questions).
 - Loading Loidis's real CSV sample needs postcode lookup; not built yet.

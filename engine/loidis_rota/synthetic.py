@@ -188,9 +188,14 @@ def generate(
     # do-not-send lists and recent carers (for continuity), chosen from nearby carers
     for client in clients:
         nearby = sorted(carers, key=lambda c: distance_km(c.home, client.location))
-        if rng.random() < 0.06:
+        if rng.random() < 0.12:
             client.do_not_send = [rng.choice(nearby[:6]).id]
-        options = [c for c in nearby[:10] if c.id not in client.do_not_send]
+        if rng.random() < 0.04:
+            client.safeguarding_bar = [rng.choice(nearby[:6]).id]
+        options = [
+            c for c in nearby[:10]
+            if c.id not in client.do_not_send and c.id not in client.safeguarding_bar
+        ]
         if client.gender_preference:
             options = [c for c in options if c.gender == client.gender_preference]
         client.recent_carers = [c.id for c in options[: rng.randint(2, 4)]]
@@ -215,9 +220,9 @@ def generate(
                     window=0,
                     duration=night_end - night_start,
                     required_skills=["nights"],
+                    kind="sleep_in",
                 )
             )
-            client.commissioned_minutes_week += night_end - night_start
         client.recent_carers = [c.id for c in night_carers[:2]]
 
     # --- leave and sickness ----------------------------------------------------------

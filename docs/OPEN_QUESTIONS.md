@@ -24,15 +24,20 @@ Tick items off and record answers in `DECISIONS.md` where they lead to a decisio
 
 ## Rota rules (engine settings to confirm)
 
-- [ ] Carer pay rate, and is travel time between visits paid?
+- [ ] Carer pay rate (engine assumes £12.71/h)
+- [x] Is travel time between visits paid? **Yes** (2026-11-15)
 - [ ] Mileage rate per mile (engine assumes 45p) and does it include the first and last
       trip from and to home?
-- [ ] Night shifts: sleep-ins, waking nights, or night visits? Rest needed afterwards
-      (engine assumes 11 hours)?
-- [ ] Is a late shift followed by an early shift allowed (e.g. finish 22:00, start 07:00)?
+- [x] Night shifts are **sleep-ins** (2026-11-15)
+- [ ] Sleep-ins: flat rate? Do they count towards contracted hours (engine: 0 minutes)?
+      Rest needed afterwards (engine: 11 hours)?
+- [x] Late shift followed by an early shift: **allowed** (2026-11-15)
 - [ ] Breaks: is a meal break required on long shifts?
-- [ ] Hours balancing: contracted hours guaranteed, or zero-hours? Which matters more
-      when they conflict: continuity, travel, or carers getting their hours?
+- [ ] Hours balancing: contracted hours guaranteed, or zero-hours?
+- [x] Priority when they conflict: **less travel and carers getting their hours**, then
+      continuity (2026-11-15)
+- [x] Do-not-send: **hard rule**, but can be suggested to the coordinator when it
+      blocks a visit (2026-11-15). Which restrictions are safeguarding (never suggested)?
 - [ ] Any clients who accept only named carers (an allow-list, not just do-not-send)?
 - [ ] Which time windows are standard (±15, ±30) and which visits are time-critical?
 
