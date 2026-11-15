@@ -74,6 +74,7 @@ def solve_day(
     pins: dict[str, Pin] | None = None,
     absent: set[str] | None = None,
     not_before: dict[str, int] | None = None,
+    initial: dict[str, list[str]] | None = None,
 ) -> DayResult:
     """Plan one day.
 
@@ -81,6 +82,8 @@ def solve_day(
     pins: visits to keep with given carers (sickness cover).
     absent: extra carers to treat as unavailable today.
     not_before: earliest start per carer today (rest after a night shift).
+    initial: an existing plan to start from (carer -> visit ids in order), so the
+        search keeps it unless it finds something better (sickness cover).
     """
     s = problem.settings
     pins = pins or {}
@@ -106,6 +109,7 @@ def solve_day(
     # --- stops: one per carer needed on each visit ----------------------------------
     stops: list[tuple[Visit, int]] = []  # (visit, slot number)
     allowed: list[list[int]] = []
+    slot_of: dict[tuple[str, str], int] = {}  # (visit, pinned carer) -> stop number
     for visit in visits:
         pin = pins.get(visit.id)
         ok_vehicles = []
@@ -132,6 +136,8 @@ def solve_day(
             if slot < len(pinned):
                 kept = [vi for vi in ok_vehicles if vehicles[vi][0].id == pinned[slot]]
                 slot_vehicles = kept or ok_vehicles
+                if kept:
+                    slot_of[(visit.id, pinned[slot])] = len(stops)
             stops.append((visit, slot))
             allowed.append(slot_vehicles)
 
@@ -276,7 +282,22 @@ def solve_day(
     # pass 1: find a plan, double-ups may end up half-filled
     manager, routing, time_dim = build(strict_pairs=False)
     params.time_limit.FromSeconds(max(1, seconds // 2))
-    solution = routing.SolveWithParameters(params)
+    solution = None
+    if initial:
+        start_routes = []
+        for carer, block in vehicles:
+            route = []
+            for vid in initial.get(carer.id, []):
+                k = slot_of.get((vid, carer.id))
+                if k is not None and block.start <= pins[vid].start <= block.end:
+                    route.append(manager.NodeToIndex(n_veh + k))
+            start_routes.append(route)
+        routing.CloseModelWithParameters(params)
+        seed = routing.ReadAssignmentFromRoutes(start_routes, True)
+        if seed is not None:
+            solution = routing.SolveFromAssignmentWithParameters(seed, params) or seed
+    if solution is None:
+        solution = routing.SolveWithParameters(params)
     if solution is None:
         raise RuntimeError(f"No rota found for day {day}")
     routes = []  # routing indices of the stops on each vehicle, in order
@@ -398,8 +419,14 @@ def cover_absence(
         tolerance = 10 if len(others) == len(carers) else 30
         pins[vid] = Pin(carers=others, start=before.starts[vid], tolerance=tolerance)
 
+    initial = {
+        cid: [st.visit_id for st in stops]
+        for cid, stops in before.routes.items()
+        if cid != absent_carer
+    }
     after = solve_day(
-        problem, day, used, seconds, pins=pins, absent={absent_carer}, not_before=not_before
+        problem, day, used, seconds, pins=pins, absent={absent_carer},
+        not_before=not_before, initial=initial,
     )
 
     affected = [vid for vid, carers in before.assigned.items() if absent_carer in carers]
@@ -420,7 +447,7 @@ def cover_absence(
         "other_visits_moved": sum(
             1
             for vid, carers in before.assigned.items()
-            if absent_carer not in carers and after.assigned.get(vid) != carers
+            if absent_carer not in carers and set(after.assigned.get(vid, [])) != set(carers)
         ),
         "previously_unfilled_now_filled": sum(
             1 for vid in before.unfilled if vid in after.assigned
