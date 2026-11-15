@@ -7,7 +7,14 @@ Tick items off and record answers in `DECISIONS.md` where they lead to a decisio
 - [ ] Screenshots (names blurred): rota day and week view, assigning a visit, a client's
       package/hours page, a carer profile, travel and mileage settings, the Reports menu
 - [ ] Which exports exist (rota/visits, clients, carers, timesheets) and in what format
-- [ ] Is there an API or integrations section?
+- [x] Is there an API? **Yes, but no bookings endpoints** (see `CARELINELIVE.md`)
+- [ ] Ask CareLineLive support to enable API access for Loidis
+- [ ] Which export or report lists bookings **with booking IDs**, carers and times?
+      (Needed for the "round per carer" bridge)
+- [ ] How Loidis uses carer compatibility today (Warn / Exclude / Preferred / Only)
+- [ ] Are regular carers set on client schedule entries, or allocated each week?
+- [ ] Do clients have multi-week schedules (week 1 / week 2)?
+- [ ] Are carer service areas set up?
 
 ## Rota (care coordinator)
 

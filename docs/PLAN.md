@@ -12,9 +12,11 @@ follow next, reusing the travel data the rota engine already calculates.
 | B. Own rota and carer app | Main system for scheduling and visits: our carer app, check-in/out, monitoring; mileage and payroll export | Care plans, eMAR, invoicing (synced) | Our app |
 | C. Full replacement | Care plans, eMAR, finance, family portal; CareLineLive switched off | Nothing | Our app |
 
-**Key unknown:** whether an approved rota can be written back into CareLineLive (API or
-import). If it cannot, Stage A means re-typing every visit, so we go straight to Stage B
-with a pilot group of carers.
+**Key unknown, now partly answered (2026-11-15):** CareLineLive's API cannot read or
+write bookings, but it can create **visit rounds containing booking IDs**. If an export
+gives us booking IDs, Stage A works as: engine plans the week, creates one round per
+carer per day, coordinator drags each round onto its carer. If not, we go straight to
+Stage B with a pilot group of carers. Details: [`CARELINELIVE.md`](CARELINELIVE.md).
 
 ## Where we aim to beat CareLineLive's rota (to confirm with the coordinator)
 

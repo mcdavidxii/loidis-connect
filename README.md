@@ -37,6 +37,7 @@ engine/               Rota engine prototype (Python + OR-Tools) — see engine/R
 viewer/               Prototype screen for the engine's output
 docs/
   PLAN.md             Delivery plan: staged replacement of CareLineLive
+  CARELINELIVE.md     How CareLineLive's rota and API work, and what that means for us
   SCOPE.md            Features and phases (MVP, Phase 2, Phase 3)
   ROTA_ENGINE.md      How the rota auto-generator works
   COMPLIANCE.md       Compliance checklist and where to do each item
