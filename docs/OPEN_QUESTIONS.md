@@ -22,6 +22,20 @@ Tick items off and record answers in `DECISIONS.md` where they lead to a decisio
 - [ ] Number of active clients, carers, and visits per week
 - [ ] How many carers drive vs walk or use buses?
 
+## Rota rules (engine settings to confirm)
+
+- [ ] Carer pay rate, and is travel time between visits paid?
+- [ ] Mileage rate per mile (engine assumes 45p) and does it include the first and last
+      trip from and to home?
+- [ ] Night shifts: sleep-ins, waking nights, or night visits? Rest needed afterwards
+      (engine assumes 11 hours)?
+- [ ] Is a late shift followed by an early shift allowed (e.g. finish 22:00, start 07:00)?
+- [ ] Breaks: is a meal break required on long shifts?
+- [ ] Hours balancing: contracted hours guaranteed, or zero-hours? Which matters more
+      when they conflict: continuity, travel, or carers getting their hours?
+- [ ] Any clients who accept only named carers (an allow-list, not just do-not-send)?
+- [ ] Which time windows are standard (±15, ±30) and which visits are time-critical?
+
 ## Owner / manager
 
 - [ ] Which councils fund clients? Do contracts require a call monitoring provider

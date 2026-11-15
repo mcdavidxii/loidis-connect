@@ -10,7 +10,7 @@ import math
 import random
 from datetime import date, timedelta
 
-from .models import Block, Carer, Client, Location, Problem, Visit
+from .models import Absence, Block, Carer, Client, Location, Problem, Visit
 from .travel import distance_km
 
 # (name, centre lat, centre lon, radius km, share of clients)
@@ -74,7 +74,7 @@ def _round5(m: int) -> int:
 def generate(
     seed: int = 7,
     n_clients: int = 60,
-    n_carers: int = 32,
+    n_carers: int = 38,
     week_start: date = date(2026, 11, 16),
 ) -> Problem:
     rng = random.Random(seed)
@@ -181,7 +181,7 @@ def generate(
                 location=loc,
                 commissioned_minutes_week=weekly,
                 funder="council" if rng.random() < 0.7 else "private",
-                female_carer_only=rng.random() < 0.20,
+                gender_preference=_pick(rng, [(0.18, "female"), (0.03, "male"), (0.79, None)]),
             )
         )
 
@@ -191,8 +191,40 @@ def generate(
         if rng.random() < 0.06:
             client.do_not_send = [rng.choice(nearby[:6]).id]
         options = [c for c in nearby[:10] if c.id not in client.do_not_send]
-        if client.female_carer_only:
-            options = [c for c in options if c.gender == "female"]
+        if client.gender_preference:
+            options = [c for c in options if c.gender == client.gender_preference]
         client.recent_carers = [c.id for c in options[: rng.randint(2, 4)]]
 
-    return Problem(week_start, clients, carers, visits)
+    # --- night shifts: two clients with sleep-in nights, four carers who do nights ----
+    night_start, night_end = 22 * 60, 31 * 60  # 22:00 to 07:00 next morning
+    night_carers = carers[-4:]
+    for carer in night_carers:
+        carer.skills = sorted(set(carer.skills) | {"nights"})
+        nights = set(rng.sample(range(7), 4))
+        carer.availability = [b for b in carer.availability if b.day not in nights]
+        carer.availability += [Block(d, night_start - 30, night_end + 30) for d in sorted(nights)]
+    for client in rng.sample(clients, 2):
+        for day in range(7):
+            vcount += 1
+            visits.append(
+                Visit(
+                    id=f"V{vcount:05d}",
+                    client_id=client.id,
+                    day=day,
+                    start=night_start,
+                    window=0,
+                    duration=night_end - night_start,
+                    required_skills=["nights"],
+                )
+            )
+            client.commissioned_minutes_week += night_end - night_start
+        client.recent_carers = [c.id for c in night_carers[:2]]
+
+    # --- leave and sickness ----------------------------------------------------------
+    absences = []
+    for carer in rng.sample(carers[:-4], 2):  # a week of annual leave
+        absences += [Absence(carer.id, d, "annual_leave") for d in range(7)]
+    sick = rng.choice(carers[:-4])
+    absences += [Absence(sick.id, d, "sick") for d in (2, 3)]
+
+    return Problem(week_start, clients, carers, visits, absences)

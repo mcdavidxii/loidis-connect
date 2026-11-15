@@ -1,0 +1,13 @@
+[project]
+name = "loidis-rota"
+version = "0.1.0"
+description = "Rota engine prototype for Loidis Connect"
+requires-python = ">=3.11"
+dependencies = ["ortools>=9.15"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

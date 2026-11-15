@@ -20,6 +20,9 @@ def carer_rule_failure(problem: Problem, carer: Carer, visit: Visit) -> str | No
     """Reason this carer can never do this visit (ignoring availability), or None."""
     client: Client = problem.client_by_id[visit.client_id]
     when = problem.date_of(visit.day)
+    absence = problem.absence(carer.id, visit.day)
+    if absence:
+        return {"sick": "off sick", "annual_leave": "on annual leave"}.get(absence.type, "absent")
     if carer.dbs_expiry < when:
         return "DBS check expired"
     if carer.training_expiry < when:
@@ -27,8 +30,8 @@ def carer_rule_failure(problem: Problem, carer: Carer, visit: Visit) -> str | No
     missing = set(visit.required_skills) - set(carer.skills)
     if missing:
         return "missing skill: " + ", ".join(sorted(missing))
-    if client.female_carer_only and carer.gender != "female":
-        return "client needs a female carer"
+    if client.gender_preference and carer.gender != client.gender_preference:
+        return f"client needs a {client.gender_preference} carer"
     if carer.id in client.do_not_send:
         return "on client's do-not-send list"
     if visit.locked_carers and carer.id not in visit.locked_carers:

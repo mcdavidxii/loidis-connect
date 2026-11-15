@@ -36,3 +36,7 @@ def travel_minutes(a: Location, b: Location, mode: str) -> int:
         return 0
     speed, overhead = MODES[mode]
     return int(round(km / speed * 60)) + overhead
+
+
+def miles(a: Location, b: Location) -> float:
+    return distance_km(a, b) / 1.609

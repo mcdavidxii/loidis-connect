@@ -1,6 +1,7 @@
 """Core data types for the rota engine.
 
-Times are minutes after midnight. Days are 0 (Monday) to 6 (Sunday).
+Times are minutes after midnight of the visit's day; values past 1440 run into the
+next morning (night shifts). Days are 0 (Monday) to 6 (Sunday).
 """
 
 from __future__ import annotations
@@ -24,7 +25,7 @@ class Client:
     location: Location
     commissioned_minutes_week: int
     funder: str  # "council" or "private"
-    female_carer_only: bool = False
+    gender_preference: str | None = None  # "female" or "male" if the client requires it
     do_not_send: list[str] = field(default_factory=list)
     recent_carers: list[str] = field(default_factory=list)
 
@@ -78,15 +79,47 @@ class Visit:
 
 
 @dataclass
+class Absence:
+    """A whole day a carer cannot work."""
+
+    carer_id: str
+    day: int
+    type: str  # "annual_leave", "sick" or "training"
+
+
+@dataclass
+class Settings:
+    """Costs and limits the engine balances. All money in pence. Values are assumptions
+    to confirm with Loidis."""
+
+    pay_pence_per_hour: int = 1271  # assumed carer hourly pay; used to cost travel time
+    travel_time_paid: bool = True
+    mileage_pence_per_mile: int = 45  # paid to car drivers
+    continuity_penalty_pence: int = 250  # per visit by a carer new to the client
+    under_target_pence_per_min: int = 21  # unused contracted time is paid anyway (~pay rate)
+    over_contract_pence_per_min: int = 15  # carer beyond contracted hours
+    rest_after_night_minutes: int = 11 * 60  # rest before next shift after a night
+    unfilled_penalty: int = 10_000_000
+
+
+@dataclass
 class Problem:
     week_start: date
     clients: list[Client]
     carers: list[Carer]
     visits: list[Visit]
+    absences: list[Absence] = field(default_factory=list)
+    settings: Settings = field(default_factory=Settings)
 
     def __post_init__(self) -> None:
         self.client_by_id = {c.id: c for c in self.clients}
         self.carer_by_id = {c.id: c for c in self.carers}
+
+    def absence(self, carer_id: str, day: int) -> Absence | None:
+        for a in self.absences:
+            if a.carer_id == carer_id and a.day == day:
+                return a
+        return None
 
     def date_of(self, day: int) -> date:
         return self.week_start + timedelta(days=day)
@@ -106,6 +139,8 @@ class Problem:
             "clients": [enc(c) for c in self.clients],
             "carers": [enc(c) for c in self.carers],
             "visits": [enc(v) for v in self.visits],
+            "absences": [enc(a) for a in self.absences],
+            "settings": enc(self.settings),
         }
 
     @staticmethod
@@ -126,8 +161,15 @@ class Problem:
             for c in d["carers"]
         ]
         visits = [Visit(**v) for v in d["visits"]]
-        return Problem(date.fromisoformat(d["week_start"]), clients, carers, visits)
+        absences = [Absence(**a) for a in d.get("absences", [])]
+        settings = Settings(**d.get("settings", {}))
+        return Problem(
+            date.fromisoformat(d["week_start"]), clients, carers, visits, absences, settings
+        )
 
 
 def hhmm(minutes: int) -> str:
-    return f"{minutes // 60:02d}:{minutes % 60:02d}"
+    """Clock time; times past midnight get a "+1" (night shifts)."""
+    suffix = "+1" if minutes >= 24 * 60 else ""
+    minutes %= 24 * 60
+    return f"{minutes // 60:02d}:{minutes % 60:02d}{suffix}"

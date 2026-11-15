@@ -13,3 +13,6 @@ data/private/
 Thumbs.db
 .idea/
 .vscode/
+__pycache__/
+.pytest_cache/
+*.pkl

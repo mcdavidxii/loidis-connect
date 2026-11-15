@@ -4,8 +4,9 @@ Care management platform for **Loidis Care Services Ltd**, a CQC-regulated domic
 (home) care provider in Dorset, England. It is planned to replace the agency's current
 system (CareLineLive) in stages.
 
-> Status: **Phase 0 — discovery and rota prototype.** No production code yet; the
-> technology stack is still to be chosen (see [`docs/DECISIONS.md`](docs/DECISIONS.md)).
+> Status: **Phase 0 — discovery and rota prototype.** A working rota engine prototype
+> runs on made-up data ([`engine/`](engine/), screen in [`viewer/`](viewer/)). The web
+> app stack is still to be chosen (see [`docs/DECISIONS.md`](docs/DECISIONS.md)).
 
 ## The problem we solve first
 
@@ -32,7 +33,10 @@ Phases and priorities: [`docs/SCOPE.md`](docs/SCOPE.md).
 ## Repository layout
 
 ```
+engine/               Rota engine prototype (Python + OR-Tools) — see engine/README.md
+viewer/               Prototype screen for the engine's output
 docs/
+  PLAN.md             Delivery plan: staged replacement of CareLineLive
   SCOPE.md            Features and phases (MVP, Phase 2, Phase 3)
   ROTA_ENGINE.md      How the rota auto-generator works
   COMPLIANCE.md       Compliance checklist and where to do each item

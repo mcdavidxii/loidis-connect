@@ -11,6 +11,8 @@ Templates for the one-week anonymised rota sample used by the prototype.
 4. **Real exports go in `data/private/` only.** That folder is git-ignored; never commit
    real data anywhere else.
 
+`sample/problem.json` is an entirely made-up agency used by the engine prototype.
+
 ## Templates (`templates/`)
 
 | File | One row per | Notes |

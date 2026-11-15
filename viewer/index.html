@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loidis Connect — Rota prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root {
+  --bg: #f7f7f5; --panel: #ffffff; --fg: #1d1d1b; --muted: #6b6b66; --line: #e3e2dd;
+  --brand: #6b3fa0; --visit: #7c5cc4; --double: #c2410c; --night: #1e3a8a;
+  --travel: #9ca3af; --avail: #ece8f6; --absent: #e5e5e5; --bad: #b91c1c; --ok: #15803d;
+  --warn: #b45309;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161615; --panel: #1f1f1d; --fg: #ecebe6; --muted: #a3a29b; --line: #34332f;
+    --brand: #b394e6; --visit: #8f72d6; --double: #ea7a3d; --night: #6d8fe8;
+    --travel: #6b6b66; --avail: #2b2638; --absent: #2c2c2a; --bad: #f87171; --ok: #4ade80;
+    --warn: #fbbf24;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--fg); }
+header { padding: 16px 20px 8px; }
+h1 { font-size: 18px; margin: 0 0 4px; }
+.sub { color: var(--muted); font-size: 13px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; padding: 8px 20px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.tile .v { font-size: 20px; font-weight: 600; }
+.tile .l { color: var(--muted); font-size: 12px; }
+.banner { margin: 8px 20px; padding: 10px 12px; border-radius: 8px; background: var(--avail); border: 1px solid var(--line); }
+nav.days { display: flex; gap: 4px; padding: 8px 20px; flex-wrap: wrap; }
+nav.days button { border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 6px 12px; border-radius: 6px; cursor: pointer; font: inherit; }
+nav.days button[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+nav.days .count { color: inherit; opacity: .75; font-size: 12px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 12px; padding: 0 20px 20px; }
+@media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+section h2 { font-size: 14px; margin: 0 0 8px; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.sw { display: inline-block; width: 12px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+.timeline { overflow-x: auto; }
+.grid { position: relative; min-width: 1200px; }
+.axis, .row { display: grid; grid-template-columns: 150px 1fr; }
+.axis .scale { position: relative; height: 18px; border-bottom: 1px solid var(--line); }
+.axis .scale span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); }
+.row { border-bottom: 1px solid var(--line); cursor: pointer; }
+.row:hover, .row.sel { background: color-mix(in srgb, var(--brand) 6%, transparent); }
+.row .who { padding: 4px 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .who b { font-weight: 600; }
+.row .who .m { color: var(--muted); }
+.track { position: relative; height: 30px; }
+.blk { position: absolute; top: 4px; height: 22px; background: var(--avail); border-radius: 3px; }
+.abs { position: absolute; inset: 4px 0; background: var(--absent); border-radius: 3px; font-size: 11px; color: var(--muted); padding: 3px 6px; }
+.stop { position: absolute; top: 6px; height: 18px; border-radius: 3px; background: var(--visit); color: #fff; font-size: 10px; padding: 1px 3px; overflow: hidden; white-space: nowrap; }
+.stop.double { background: var(--double); }
+.stop.night { background: var(--night); }
+.trav { position: absolute; top: 14px; height: 2px; background: var(--travel); }
+.hourline { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line); opacity: .6; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.bad { color: var(--bad); } .ok { color: var(--ok); } .warn { color: var(--warn); }
+.unfilled li { margin-bottom: 8px; }
+.unfilled .why { color: var(--muted); font-size: 12px; }
+#map { height: 320px; border-radius: 6px; }
+.detail { font-size: 12px; color: var(--muted); }
+.scroll { max-height: 280px; overflow-y: auto; }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 70px; }
+.bars div { flex: 1; background: var(--bad); opacity: .8; border-radius: 2px 2px 0 0; }
+.bars-x { display: flex; gap: 2px; font-size: 10px; color: var(--muted); }
+.bars-x span { flex: 1; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Loidis Connect — rota prototype</h1>
+  <div class="sub" id="sub">Loading…</div>
+</header>
+<div class="tiles" id="tiles"></div>
+<div id="banner"></div>
+<nav class="days" id="days" aria-label="Day"></nav>
+<main>
+  <div>
+    <section>
+      <h2 id="tl-title">Carers' day</h2>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--avail)"></i>Available</span>
+        <span><i class="sw" style="background:var(--visit)"></i>Visit</span>
+        <span><i class="sw" style="background:var(--double)"></i>Two-carer visit</span>
+        <span><i class="sw" style="background:var(--night)"></i>Night</span>
+        <span><i class="sw" style="background:var(--travel);height:3px"></i>Travel</span>
+        <span>Click a carer to see their route on the map</span>
+      </div>
+      <div class="timeline"><div class="grid" id="grid"></div></div>
+    </section>
+    <section>
+      <h2>Clients short of commissioned hours (week)</h2>
+      <div class="scroll"><table id="clients"></table></div>
+    </section>
+    <section>
+      <h2>Carer hours this week</h2>
+      <div class="scroll"><table id="carers"></table></div>
+    </section>
+  </div>
+  <div>
+    <section>
+      <h2 id="map-title">Map</h2>
+      <div id="map"></div>
+      <div class="detail" id="route-detail"></div>
+    </section>
+    <section>
+      <h2 id="short-title">Where extra carers are needed</h2>
+      <div class="bars" id="bars"></div>
+      <div class="bars-x" id="bars-x"></div>
+    </section>
+    <section>
+      <h2 id="unf-title">Unfilled visits</h2>
+      <ul class="unfilled scroll" id="unfilled" style="padding-left:18px;margin:0"></ul>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const START = 6 * 60, END = 32 * 60, SPAN = END - START;
+const DAYNAMES = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const MODE = { car: "drives", foot: "walks", bus: "bus" };
+const ABS = { annual_leave: "Annual leave", sick: "Off sick", training: "Training" };
+let R, day = 0, selected = null, map, layer;
+
+const $ = id => document.getElementById(id);
+const pct = m => ((m - START) / SPAN * 100) + "%";
+const w = m => (m / SPAN * 100) + "%";
+const hhmm = m => { const n = m >= 1440; m %= 1440; return String(Math.floor(m/60)).padStart(2,"0") + ":" + String(m%60).padStart(2,"0") + (n ? "+1" : ""); };
+const hrs = m => (m / 60).toFixed(1);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+async function load() {
+  const file = new URLSearchParams(location.search).get("data") || "rota.json";
+  R = await (await fetch(file)).json();
+  R.visitById = Object.fromEntries(R.visits.map(v => [v.id, v]));
+  R.clientById = Object.fromEntries(R.clients.map(c => [c.id, c]));
+  R.carerById = Object.fromEntries(R.carers.map(c => [c.id, c]));
+  $("sub").textContent = `Week starting ${R.week_start} · made-up data · generated ${R.generated_at}`;
+  const m = R.metrics;
+  $("tiles").innerHTML = [
+    [`${m.filled}/${m.visits}`, `Visits filled (${Math.round(m.fill_rate*100)}%)`],
+    [m.unfilled, "Unfilled visits"],
+    [m.clients_short, "Clients short of hours"],
+    [`${m.care_hours} h`, "Care hours"],
+    [`${m.travel_hours} h`, "Travel time"],
+    [`${m.miles} mi`, `Mileage (£${m.mileage_pounds.toFixed(2)})`],
+    [`${Math.round(m.continuity_rate*100)}%`, "Visits by a familiar carer"],
+  ].map(([v,l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+  if (R.cover) {
+    const c = R.cover;
+    $("banner").innerHTML = `<div class="banner"><b>Sickness cover:</b> ${esc(c.absent_carer)} off on ${DAYNAMES[c.day]}.
+      ${c.covered.length} of ${c.affected_visits} visits re-covered, ${c.still_unfilled.length} not covered,
+      ${c.other_visits_moved} other visit(s) changed.</div>`;
+    day = c.day;
+  }
+  $("days").innerHTML = DAYNAMES.map((d, i) => {
+    const n = R.visits.filter(v => v.day === i && v.unfilled_reason).length;
+    return `<button data-d="${i}" aria-pressed="${i===day}">${d.slice(0,3)} <span class="count">${n ? n + " unfilled" : "all filled"}</span></button>`;
+  }).join("");
+  $("days").onclick = e => { const b = e.target.closest("button"); if (b) { day = +b.dataset.d; selected = null; render(); } };
+  if (window.L) {
+    map = L.map("map").setView([50.63, -2.45], 11);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(map);
+  } else {
+    $("map").style.height = "auto";
+    $("map").textContent = "Map unavailable (the map library needs an internet connection).";
+  }
+  renderWeekTables();
+  render();
+}
+
+function render() {
+  document.querySelectorAll("#days button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.d === day));
+  const dn = R.days[day];
+  $("tl-title").textContent = `Carers' day — ${DAYNAMES[day]}`;
+
+  // timeline
+  let html = `<div class="axis"><div></div><div class="scale">`;
+  for (let h = 6; h <= 32; h += 2) html += `<span style="left:${pct(h*60)}">${hhmm(h*60)}</span>`;
+  html += `</div></div>`;
+  const rows = R.carers.filter(c =>
+    c.availability.some(b => b.day === day) || (R.routes[c.id] || {})[dn] || c.absences.some(a => a.day === day));
+  for (const c of rows) {
+    const stops = (R.routes[c.id] || {})[dn] || [];
+    const absent = c.absences.find(a => a.day === day);
+    const mins = stops.reduce((s, x) => s + x.end - x.start, 0);
+    let t = "";
+    for (let h = 6; h <= 32; h++) t += `<i class="hourline" style="left:${pct(h*60)}"></i>`;
+    if (absent) t += `<div class="abs">${ABS[absent.type] || "Absent"}</div>`;
+    else for (const b of c.availability.filter(b => b.day === day))
+      t += `<div class="blk" style="left:${pct(b.start)};width:${w(b.end-b.start)}"></div>`;
+    for (const s of stops) {
+      const v = R.visitById[s.visit_id];
+      const cls = v.duration >= 300 ? "night" : (v.carers_needed > 1 ? "double" : "");
+      if (s.travel_before) t += `<div class="trav" style="left:${pct(s.start - s.travel_before)};width:${w(s.travel_before)}"></div>`;
+      const tip = `${s.client_id} ${hhmm(s.start)}–${hhmm(s.end)} (wanted ${hhmm(v.preferred_start)} ±${v.window})` +
+        (s.shared_with.length ? ` with ${s.shared_with.join(", ")}` : "") + ` · ${s.travel_before} min travel`;
+      t += `<div class="stop ${cls}" title="${esc(tip)}" style="left:${pct(s.start)};width:${w(s.end-s.start)}">${s.client_id}</div>`;
+    }
+    const flag = c.issues.length ? ` <span class="bad" title="${esc(c.issues.join("; "))}">⚠</span>` : "";
+    html += `<div class="row ${selected===c.id?"sel":""}" data-c="${c.id}">
+      <div class="who"><b>${c.id}</b>${flag} <span class="m">${MODE[c.travel_mode]} · ${hrs(mins)}h</span></div>
+      <div class="track">${t}</div></div>`;
+  }
+  $("grid").innerHTML = html;
+  $("grid").onclick = e => { const r = e.target.closest(".row"); if (r) { selected = r.dataset.c; render(); } };
+
+  // unfilled visits
+  const unf = R.visits.filter(v => v.day === day && v.unfilled_reason).sort((a,b) => a.preferred_start - b.preferred_start);
+  $("unf-title").textContent = `Unfilled visits — ${DAYNAMES[day]} (${unf.length})`;
+  $("unfilled").innerHTML = unf.length ? unf.map(v => `<li><b>${v.client_id}</b> ${hhmm(v.preferred_start)} ±${v.window} min,
+      ${v.duration} min${v.carers_needed > 1 ? ", two carers" : ""}${v.skills.length ? ", needs " + v.skills.join(", ") : ""}
+      <div class="why">${esc(v.unfilled_reason)}${(v.unfilled_detail||[]).length ? "<br>Nearest: " + v.unfilled_detail.map(esc).join("; ") : ""}</div></li>`).join("")
+    : "<li>None — every visit is covered.</li>";
+
+  // shortfall by hour
+  const sf = R.shortfall.filter(s => s.day === day);
+  const byHour = Array.from({length: 18}, (_, i) => (sf.find(s => s.hour === i + 6) || {}).minutes || 0);
+  const max = Math.max(60, ...byHour);
+  $("short-title").textContent = `Where extra carers are needed — ${DAYNAMES[day]} (unfilled carer-minutes by hour)`;
+  $("bars").innerHTML = byHour.map((m, i) => `<div title="${hhmm((i+6)*60)}: ${m} min" style="height:${m/max*100}%"></div>`).join("");
+  $("bars-x").innerHTML = byHour.map((_, i) => `<span>${(i + 6) % 3 === 0 ? i + 6 : ""}</span>`).join("");
+
+  renderMap(unf);
+}
+
+function renderMap(unf) {
+  if (!map) return;
+  if (layer) layer.remove();
+  layer = L.layerGroup().addTo(map);
+  const dn = R.days[day];
+  const css = getComputedStyle(document.documentElement);
+  for (const v of unf) {
+    const c = R.clientById[v.client_id];
+    L.circleMarker([c.location.lat, c.location.lon], { radius: 6, color: css.getPropertyValue("--bad").trim(), fillOpacity: .8 })
+      .bindTooltip(`Unfilled: ${v.client_id} ${hhmm(v.preferred_start)}`).addTo(layer);
+  }
+  if (!selected) {
+    $("map-title").textContent = "Map — unfilled visits (red). Click a carer to see their route.";
+    $("route-detail").textContent = "";
+    return;
+  }
+  const c = R.carerById[selected];
+  const stops = (R.routes[c.id] || {})[dn] || [];
+  const pts = [[c.home.lat, c.home.lon], ...stops.map(s => { const l = R.clientById[s.client_id].location; return [l.lat, l.lon]; }), [c.home.lat, c.home.lon]];
+  L.marker(pts[0]).bindTooltip(`${c.id} home`).addTo(layer);
+  stops.forEach((s, i) => L.circleMarker(pts[i+1], { radius: 6, color: css.getPropertyValue("--visit").trim(), fillOpacity: .9 })
+    .bindTooltip(`${i+1}. ${s.client_id} ${hhmm(s.start)}`).addTo(layer));
+  if (stops.length) {
+    L.polyline(pts, { color: css.getPropertyValue("--brand").trim(), weight: 3 }).addTo(layer);
+    map.fitBounds(pts, { padding: [20, 20] });
+  }
+  const travel = stops.reduce((a, s) => a + s.travel_before, 0), miles = stops.reduce((a, s) => a + s.miles_before, 0);
+  $("map-title").textContent = `Map — ${c.id}'s route on ${DAYNAMES[day]}`;
+  $("route-detail").innerHTML = `${c.id} (${MODE[c.travel_mode]}, ${c.area}) · ${stops.length} visits · ${travel} min travel between visits` +
+    (c.travel_mode === "car" ? ` · ${miles.toFixed(1)} miles` : "") +
+    (c.issues.length ? `<br><span class="bad">${esc(c.issues.join("; "))}</span>` : "");
+}
+
+function renderWeekTables() {
+  const short = R.clients.filter(c => c.gap_minutes > 0).sort((a, b) => b.gap_minutes - a.gap_minutes);
+  $("clients").innerHTML = `<tr><th>Client</th><th>Area</th><th>Funder</th><th class="num">Commissioned h</th><th class="num">Scheduled h</th><th class="num">Short by h</th></tr>` +
+    (short.length ? short.map(c => `<tr><td>${c.id}</td><td>${c.area}</td><td>${c.funder}</td><td class="num">${hrs(c.commissioned_minutes)}</td>
+      <td class="num">${hrs(c.scheduled_minutes)}</td><td class="num bad">${hrs(c.gap_minutes)}</td></tr>`).join("")
+      : `<tr><td colspan="6">Every client gets their commissioned hours.</td></tr>`);
+  const cs = [...R.carers].sort((a, b) => (a.scheduled_minutes - a.contracted_minutes) - (b.scheduled_minutes - b.contracted_minutes));
+  $("carers").innerHTML = `<tr><th>Carer</th><th>Travels</th><th class="num">Contracted h</th><th class="num">Scheduled h</th><th class="num">Difference</th><th class="num">Travel h</th><th class="num">Miles</th><th>Notes</th></tr>` +
+    cs.map(c => {
+      const diff = c.scheduled_minutes - c.contracted_minutes;
+      const cls = diff < -120 ? "warn" : diff > 0 ? "bad" : "ok";
+      const notes = [...c.issues, ...[...new Set(c.absences.map(a => ABS[a.type]))]].join("; ");
+      return `<tr><td>${c.id}</td><td>${MODE[c.travel_mode]}</td><td class="num">${hrs(c.contracted_minutes)}</td><td class="num">${hrs(c.scheduled_minutes)}</td>
+        <td class="num ${cls}">${diff > 0 ? "+" : ""}${hrs(diff)}</td><td class="num">${hrs(c.travel_minutes)}</td><td class="num">${c.travel_mode === "car" ? c.miles : "—"}</td><td>${esc(notes)}</td></tr>`;
+    }).join("");
+}
+
+load().catch(err => { $("sub").textContent = "Could not load rota data: " + err; });
+</script>
+</body>
+</html>
