@@ -58,3 +58,30 @@ the rest.
 4. **Decision 2:** coordinator tries it on real data. If it saves time, build the chosen
    stage properly, with logins, security and the compliance items.
 5. Next module: mileage and payroll export.
+
+## Next steps (as of 2026-11-16)
+
+**Approach: exports first, API second.** The API cannot read or create bookings (checked
+on Loidis's account, see [`CARELINELIVE.md`](CARELINELIVE.md)), so visits must come from
+a CareLineLive export. The API is used read-only to keep carers, clients, leave,
+qualifications and transport types in sync, so the export only needs to cover visits
+and client packages.
+
+1. **Safer token.** Create a dedicated CareLineLive user with view-only permissions and
+   replace the API token with one created from that user.
+2. **Task completions (read only).** Check whether they include future, planned visits.
+   If yes, they give booking IDs (the visit-round bridge) without an export. Either
+   way, use their history for continuity (who visited whom recently).
+3. **Export from Loidis.** One week of visits, clients and carers, anonymised into
+   `data/private/` per `data/README.md`. Find out which export lists bookings **with
+   booking IDs**.
+4. **Coordinator input.** Top 3 rota frustrations and the open engine settings (pay
+   rate, mileage rate, meal breaks, contracted vs zero-hours).
+5. **Read-only sync.** Importer that pulls carers, clients, addresses, leave,
+   qualifications and transport types through the API into the engine's input.
+6. **Export importer.** Turn the visits export into the engine's input; run the engine
+   on Loidis's real week.
+7. **Decision 2.** Coordinator reviews the result on their own data.
+8. **Decision 1.** Booking IDs available: Stage A with one visit round per carer per
+   day (a write: needs explicit approval first). Not available: Stage B pilot.
+9. **Ask CareLineLive** whether booking read and allocation endpoints are planned.

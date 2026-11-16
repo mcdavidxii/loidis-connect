@@ -8,9 +8,14 @@ Tick items off and record answers in `DECISIONS.md` where they lead to a decisio
       package/hours page, a carer profile, travel and mileage settings, the Reports menu
 - [ ] Which exports exist (rota/visits, clients, carers, timesheets) and in what format
 - [x] Is there an API? **Yes, but no bookings endpoints** (see `CARELINELIVE.md`)
-- [ ] Ask CareLineLive support to enable API access for Loidis
+- [x] Ask CareLineLive support to enable API access for Loidis. **Enabled; token works** (read-only check 2026-11-16)
 - [ ] Which export or report lists bookings **with booking IDs**, carers and times?
       (Needed for the "round per carer" bridge)
+- [ ] Do task completions (`/client-task-completions`) include future, planned visits?
+      If yes, they give booking IDs without an export (check read-only)
+- [ ] Create a dedicated view-only CareLineLive user and replace the API token with one
+      created from it
+- [ ] Ask CareLineLive whether booking read and allocation endpoints are planned
 - [ ] How Loidis uses carer compatibility today (Warn / Exclude / Preferred / Only)
 - [ ] Are regular carers set on client schedule entries, or allocated each week?
 - [ ] Do clients have multi-week schedules (week 1 / week 2)?
