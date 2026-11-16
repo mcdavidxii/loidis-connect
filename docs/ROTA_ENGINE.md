@@ -1,68 +1,85 @@
 # Rota engine
 
 The engine builds a draft week of visits and suggests cover for absences. It follows
-every must-have rule, minimises travel, and rewards continuity and carers reaching their
-hours. **It only suggests; a coordinator approves before anything is published.**
+every must-have rule, keeps travel and mileage down, balances carers' hours, and
+rewards continuity. **It only suggests; a coordinator approves before anything is
+published.** Prototype code: [`../engine/`](../engine/).
 
 ## Inputs
 
 | Input | Fields |
 |---|---|
-| Visits | Client, day, preferred start, time window (e.g. ±30 min), duration, carers needed (1 or 2), required skills, locked carer (optional) |
-| Clients | Location, commissioned hours per week, funder (council/private), preferences (gender, language), do-not-send list |
-| Carers | Home location, availability and leave, skills, travel mode (car/foot/bus), contracted or wanted hours, maximum hours |
-| Travel times | Between every pair of locations, per travel mode |
-| History | Who visited whom recently (for continuity) |
+| Visits | Client, day, preferred start, time window (e.g. ±15 or ±30 min), duration, carers needed (1 or 2), required skills, locked carer (optional) |
+| Clients | Location, commissioned hours per week, funder (council/private), gender preference, do-not-send carers, recent carers |
+| Carers | Home location, availability blocks (including night shifts past midnight), skills, travel mode (car/foot/bus), contracted and maximum hours, DBS and training expiry |
+| Absences | Annual leave, sickness, training, by day |
+| Travel | Time and miles between every pair of locations, per travel mode |
+| Settings | Pay rate, mileage rate, whether travel time is paid, weights for continuity and hours balance, rest after nights |
 
 ## Rules
 
-| Rule | Type |
-|---|---|
-| Carer available, not on leave or sick | Must |
-| Carer's DBS and required training are current | Must |
-| Required skills present (e.g. hoist, medication) | Must |
-| Visit starts within its time window | Must |
-| Two different carers on double-up visits, arriving together | Must |
-| Working-time limits and rest breaks | Must |
-| Client do-not-send list | Must |
-| Gender or language preference written in the care plan | Must |
-| Shortest travel between visits | Preference |
-| Same carers as recent weeks (continuity) | Preference |
-| Carers reach their wanted hours | Preference |
-| Other client preferences | Preference |
+| Rule | Type | Status |
+|---|---|---|
+| Carer available, not on annual leave or sick | Must | Built |
+| DBS check and mandatory training current on the visit date | Must | Built |
+| Required skills present (hoist, medication, nights) | Must | Built |
+| Visit starts within its time window (±15/±30 min, set per visit) | Must | Built |
+| Two different carers on double-up visits, starting together; each travels from and to their own places | Must | Built |
+| Client's gender preference (e.g. no male carers) | Must | Built |
+| Client's do-not-send list (carers not allowed to that client) | Must; may be **suggested** to the coordinator when it blocks a visit | Built |
+| Client's safeguarding bar | Must; **never** suggested | Built |
+| Weekly maximum hours | Must | Built |
+| Sleep-ins (22:00 to 07:00 at the client's home); count towards carers' hours in full, as in CareLineLive (setting); sleep-in pay handled in payroll later | Must | Built |
+| Rest after a sleep-in before the next shift (default 11 h, to confirm) | Must | Built |
+| Late shift followed by an early shift | Allowed (Loidis) | — |
+| Meal breaks on long shifts | Must | Not yet (policy to confirm) |
+| Lowest cost of travel: paid travel time + mileage for drivers | Preference, **priority** (Loidis) | Built |
+| Balanced hours: carers reach their contracted share, avoid going over | Preference, **priority** (Loidis) | Built |
+| Same carers as recently (continuity) | Preference, tie-breaker | Built |
 
 ## How a run works
 
-1. **Generate the week's visits** from each client's repeating weekly pattern.
-2. **Keep locked visits** as they are.
-3. **Solve:** assign carers to visits and order each carer's day. This is a vehicle
-   routing problem with time windows; use a proven solver (Google OR-Tools or Timefold)
-   rather than writing one.
-4. **Output:**
-   - Each carer's day as a timeline and a map route
-   - Unfilled visits, each with a reason ("no hoist-trained carer free at 08:00")
-   - Hours panel: client commissioned vs scheduled; carer wanted vs scheduled
-   - Totals: travel time, continuity score
-5. **Coordinator adjusts:** drag, lock, re-run, then publish.
+1. Take the week's visits (from each client's repeating pattern).
+2. Keep locked visits as they are.
+3. Solve each day as a vehicle routing problem with time windows (OR-Tools): each
+   carer availability block is a "vehicle" starting and ending at home. The engine
+   plans each carer's whole day at once, so the next visit is close to the last one.
+4. Double-ups are solved in two passes: first find a plan, drop any half-filled
+   double-ups, then polish with "both carers or neither".
+5. Days run Monday to Sunday so weekly hours and rest after nights carry forward.
+6. Output: each carer's route and timeline, travel time and miles, unfilled visits
+   with reasons and the nearest carers who were busy, client and carer hours gaps,
+   and unfilled carer-minutes by hour (where extra carers are needed).
+
+## Costs the engine balances (pence, all settings)
+
+- Travel time at the carer's pay rate (if travel time is paid)
+- Mileage for drivers (default 45p per mile); walkers and bus users cost none
+- Continuity penalty for a carer new to the client (small: Loidis puts travel and
+  carers' hours first; on the same data this cut travel 8% and filled 2 more visits)
+- Unused contracted time (paid anyway) and time beyond contract
+- A very large penalty for any unfilled visit, so filling visits always comes first
 
 ## Sickness cover
 
-Remove the absent carer, then re-plan **only the affected visits**, with a penalty for
-changing anything else, so the rest of the rota stays stable. Show ranked options with
-a plain explanation of each (travel added, continuity, hours).
+Mark the carer absent, keep every other visit with its carer near its planned time,
+and re-plan only the affected visits. The search starts from the existing plan, and a
+planned visit is never dropped to cover someone else's (it would just move the problem
+to another client). On made-up data, a carer with 13 visits off sick on Wednesday:
+8 re-covered, 5 not covered (morning peak), 0 other visits changed.
 
-## Why not "closest client next"
+## Unfilled visits
 
-Picking the nearest visit each time leaves long gaps and late visits nobody can reach.
-The engine plans each carer's whole day at once, and treats continuity as important as
-distance.
+Each unfilled visit shows the reason, the nearest suitable carers and what kept them
+busy, and any free carer blocked only by the client's do-not-send list ("possible if
+you approve"). The coordinator decides; the engine never books them.
 
 ## Travel times
 
-- Prototype: straight-line distance with a road factor and per-mode speed.
-- Later: road routing, either Google Maps (live traffic, paid per request) or a
+- Prototype: straight-line distance times a road factor, at typical speeds per mode.
+- Next: road routing, either Google Maps (live traffic, paid per request) or a
   self-hosted OSRM server (free, no live traffic). Cache results between postcodes.
 
-## Open design questions
+## Open questions
 
-See [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md), section "Rota".
+See [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md), section "Rota rules".

@@ -4,6 +4,15 @@ Newest first. Each entry: decision, why, and what it rules out.
 
 | Date | Decision | Why | Status |
 |---|---|---|---|
+| 2026-11-16 | Bookings come from a CareLineLive export; the API is used only to sync carers, clients, leave, qualifications and transport types | The API has no booking, visit or schedule endpoints (confirmed on Loidis's account) | Proposed |
+| 2026-11-16 | The CareLineLive API is used read-only, with a token from a dedicated view-only user | Tokens inherit all of the user's permissions, and some writes (leave, contract end) unallocate live bookings as a side effect | Proposed |
+| 2026-11-15 | Do-not-send stays a hard rule; when it blocks a visit the carer is suggested to the coordinator. Separate safeguarding bar is never suggested | Loidis: hard rule but sometimes worth suggesting; safeguarding restrictions must not be offered | Decided |
+| 2026-11-15 | Priorities: travel and carers' hours first, continuity as a tie-breaker | Loidis's answer; continuity still kept because clients and CQC value it | Decided |
+| 2026-11-15 | Night shifts modelled as sleep-ins that count in full towards carers' hours (setting) | Matches CareLineLive's rota, which shows the full block in the carer's hours; pay handled later in payroll | Decided |
+| 2026-11-15 | Sickness cover never drops a planned visit to cover another | Otherwise it only moves the problem to another client | Decided |
+| 2026-11-15 | Replace CareLineLive in stages (A rota companion, B own rota and carer app, C full replacement); see PLAN.md | Lowest risk for a live care service; rota delivers value first | Decided |
+| 2026-11-15 | Rota engine in Python with Google OR-Tools, as a separate service from the web app | Strongest free solver for visit routing with time windows; keeps the engine independent of the web stack | Decided |
+| 2026-11-15 | Mileage and payroll export is the next module after the rota | Requested by the client; reuses the engine's travel calculations | Decided |
 | 2026-11-14 | Keep the platform in its own repo, separate from the public website (`loidiscare`) | Care records need much stricter security than a marketing site | Decided |
 | 2026-11-14 | Start with a rota engine prototype on realistic made-up data, then swap in anonymised real data | Rota is the biggest pain; made-up data lets work start before client data and compliance are ready | Decided |
 | 2026-11-14 | Staged replacement of CareLineLive, not a single cut-over | Care cannot pause; lower clinical and operational risk | Decided |
