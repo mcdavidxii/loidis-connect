@@ -5,6 +5,7 @@ actual week with equal staffing, optional) and <region><suffix>_build_info.json,
 and writes comparison<suffix>.json and comparison<suffix>.md in the same folder.
 Pseudo IDs and numbers only.
 """
+import argparse
 import json
 import re
 import statistics
@@ -14,7 +15,14 @@ from pathlib import Path
 
 TRIAL = Path(__file__).resolve().parents[2] / "data" / "private" / "trial"
 REGIONS = ["leeds", "dorset"]
-SUFFIX = sys.argv[1] if len(sys.argv) > 1 else ""  # e.g. _wide
+_ap = argparse.ArgumentParser()
+_ap.add_argument("suffix", nargs="?", default="", help="input file suffix, e.g. _wide")
+_ap.add_argument("--tolerance", type=int, default=None,
+                 help="arrival tolerance in minutes (reclassifies the existing reports, no re-solve); "
+                      "default: the value recorded in the trial settings, else 0. Output files get _tol<N> added.")
+_ARGS = _ap.parse_args()
+SUFFIX = _ARGS.suffix  # e.g. _wide
+OUT_SUFFIX = SUFFIX + (f"_tol{_ARGS.tolerance}" if _ARGS.tolerance is not None else "")
 SPREAD_TOLERANCE_H = 5.0
 LABELS = {"actual": "actual", "actual_eq": "actual (equal staffing)", "engine": "engine"}
 
@@ -55,6 +63,44 @@ def summarise(report):
     }
 
 
+def changes(report, actual, tol=0):
+    """Classify filled visits against the actual allocation (actual: visit id -> carers); engine sides only.
+
+    carer = the plan's carers differ from the actual (including visits the actual left unallocated); time_with_change = same carers, off booked start,
+    and a carer on it gains or loses some visit that day (must be applied too); time_note = off booked
+    start but the carer-day is untouched (only fits our travel model); unchanged otherwise.
+    With tol > 0, same carers and a shift of at most tol minutes is time_within_tolerance (a note, not a change);
+    carer changes are also counted by whether they need a new time (shift beyond tol: carer_changes_new_time).
+    Carer-days touched = distinct (carer, day) pairs that gain or lose a visit (unfilled visits count as losses,
+    unallocated visits filled count as gains). Same definitions as engine report.py."""
+    days = set()
+    for v in report["visits"]:
+        for k in set(actual.get(v["id"], [])) ^ set(v["assigned"] or []):
+            days.add((k, v["day"]))
+    n = Counter()
+    for v in report["visits"]:
+        cur, new = set(actual.get(v["id"], [])), set(v["assigned"] or [])
+        if not new:
+            continue
+        st = v.get("start") if v.get("start") is not None else v["preferred_start"]
+        shift = abs(st - v["preferred_start"])
+        if new != cur:
+            n["carer_changed"] += 1
+            if shift > tol:
+                n["carer_changes_new_time"] += 1
+        elif st != v["preferred_start"]:
+            if shift <= tol:
+                n["time_within_tolerance"] += 1
+            else:
+                n["time_with_change" if any((k, v["day"]) in days for k in new) else "time_notes"] += 1
+        else:
+            n["unchanged"] += 1
+    n["changes_to_apply"] = n["carer_changed"] + n["time_with_change"]
+    keys = ("carer_changed", "carer_changes_new_time", "time_with_change", "time_notes",
+            "time_within_tolerance", "unchanged", "changes_to_apply")
+    return {k: n[k] for k in keys}, days
+
+
 def spread_from_rows(rows):
     hrs = [h for _, h, _, _ in rows]
     share = rows[0][2] if rows else 0
@@ -88,9 +134,12 @@ def main():
     pooled = {side: {} for side in sides}  # carer id -> [scheduled minutes across regions, home share minutes]
     sums = {side: Counter() for side in sides}
     have = {side: True for side in sides}
+    carer_days = {side: set() for side in sides}
     for region in REGIONS:
         info = json.loads((TRIAL / f"{region}{SUFFIX}_build_info.json").read_text())
         out["trial_settings"] = info["trial_settings"]
+        TOL = _ARGS.tolerance if _ARGS.tolerance is not None else info["trial_settings"].get("arrival_tolerance_minutes", 0)
+        out["trial_settings"] = {**info["trial_settings"], "arrival_tolerance_minutes": TOL}
         entry = {"build_info": {k: v for k, v in info.items() if k not in ("trial_settings", "region")}}
         for side in sides:
             f = TRIAL / f"{region}{SUFFIX}_{side}_report.json"
@@ -113,6 +162,14 @@ def main():
                 c[k] += s[k]
             for k, v in s["unfilled_by_reason"].items():
                 c["reason:" + k] += v
+            if side == "engine":
+                actual = json.loads((TRIAL / f"{region}{SUFFIX}_actual_assignments.json").read_text())
+                ch, days = changes(json.loads(f.read_text()), actual, TOL)
+                ch["carer_days_touched"] = len(days)
+                s.update(ch)
+                carer_days[side] |= days
+                for k, v in ch.items():
+                    c["chg:" + k] += v
             entry[side] = {**s, "spread": sp}
         out["regions"][region] = entry
 
@@ -135,12 +192,17 @@ def main():
             "consecutive_gaps_below_model_travel": c["gaps"],
             "care_hours": round(c["care_hours"], 1), "travel_hours": round(c["travel_hours"], 1),
             "miles": round(c["miles"], 1),
+            **({"carer_changed": c["chg:carer_changed"], "carer_changes_new_time": c["chg:carer_changes_new_time"],
+                "time_within_tolerance": c["chg:time_within_tolerance"], "time_with_change": c["chg:time_with_change"],
+                "time_notes": c["chg:time_notes"], "changes_to_apply": c["chg:changes_to_apply"],
+                "unchanged": c["chg:unchanged"], "carer_days_touched": len(carer_days[side])}
+               if side == "engine" else {}),
             "continuity_rate": round(c["continuity_hits"] / max(1, c["continuity_total"]), 3),
             "spread": {k: sp[k] for k in ("carers_counted", "min", "median", "max", "stdev",
                                           "above_share_by_over_5h", "below_share_by_over_5h")},
         }
     out["total"] = total
-    (TRIAL / f"comparison{SUFFIX}.json").write_text(json.dumps(out, indent=1))
+    (TRIAL / f"comparison{OUT_SUFFIX}.json").write_text(json.dumps(out, indent=1))
 
     # ---- text table ---------------------------------------------------------------------
     cols = [(r, out["regions"][r]) for r in REGIONS] + [("total", total)]
@@ -151,6 +213,14 @@ def main():
         ("unfilled carer-hours (deficit)", lambda e: e["unfilled_carer_hours"]),
         ("care hours", lambda e: e["care_hours"]), ("travel hours", lambda e: e["travel_hours"]),
         ("miles", lambda e: e["miles"]), ("continuity rate", lambda e: e["continuity_rate"]),
+        ("visits with carer changed", lambda e: e.get("carer_changed", "-")),
+        ("changes to apply (carer + time with change)", lambda e: e.get("changes_to_apply", "-")),
+        ("carer changes needing a new time", lambda e: e.get("carer_changes_new_time", "-")),
+        ("time changes with a carer change (beyond tolerance)", lambda e: e.get("time_with_change", "-")),
+        ("time within tolerance (notes)", lambda e: e.get("time_within_tolerance", "-")),
+        ("time notes (tight-gap, check)", lambda e: e.get("time_notes", "-")),
+        ("visits unchanged", lambda e: e.get("unchanged", "-")),
+        ("carer-days touched", lambda e: e.get("carer_days_touched", "-")),
         ("visits started off booked time", lambda e: e["shift"]["visits_moved"]),
         ("mean abs shift (min, all with carers)", lambda e: e["shift"]["mean_abs_shift_min"]),
         ("mean abs shift (min, moved only)", lambda e: e["shift"]["mean_abs_shift_of_moved_min"]),
@@ -186,7 +256,7 @@ def main():
         f"{out['trial_settings'].get('continuity_file', 'the continuity file')}, for both the actual week and the engine; "
         f"{extra} visits expected 1 carer but had 2 (counted as 2 in actual care hours and travel, 1 in the engine and in the "
         "equal-staffing column, where which carer is dropped is arbitrary: the first listed is kept)."]
-    (TRIAL / f"comparison{SUFFIX}.md").write_text("\n".join(md))
+    (TRIAL / f"comparison{OUT_SUFFIX}.md").write_text("\n".join(md))
     print("\n".join(md))
 
 

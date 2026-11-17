@@ -152,6 +152,7 @@ def solve_day(
     service = [0] * n_veh + [v.duration for v, _ in stops]  # time on site
     counted = [0] * n_veh + [problem.counted_minutes(v) for v, _ in stops]  # towards hours
     client_of = [None] * n_veh + [v.client_id for v, _ in stops]
+    current_of = [None] * n_veh + [v.current_carers for v, _ in stops]
     n = len(locations)
 
     travel = {
@@ -258,6 +259,14 @@ def solve_day(
                 c = t[i][j] * pay_per_min + dist[i][j] * per_mile
                 if j >= n_veh and carer.id not in problem.client_by_id[client_of[j]].recent_carers:
                     c += s.continuity_penalty_pence
+                # improve mode: a carer other than the current one costs a change
+                if (
+                    s.change_pence_per_visit > 0
+                    and j >= n_veh
+                    and current_of[j]
+                    and carer.id not in current_of[j]
+                ):
+                    c += s.change_pence_per_visit
                 row.append(int(round(c)))
             rows.append(row)
         cost_matrix[carer.id] = rows
