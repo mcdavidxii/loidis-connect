@@ -54,6 +54,7 @@ engine.
 | `loidis_rota/report.py` | JSON for the viewer: routes, hours, mileage, unfilled reasons, shortfall |
 | `loidis_rota/synthetic.py` | Made-up agency for development |
 | `tests/test_rules.py` | Checks every must-have rule on a solved week |
+| `tests/test_shift_cost.py` | Checks the cost of moving a visit off its booked start (`shift_pence_per_min`) |
 
 ## Known limits (prototype)
 

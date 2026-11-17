@@ -10,9 +10,35 @@ Tick items off and record answers in `DECISIONS.md` where they lead to a decisio
 - [x] Is there an API? **Yes, but no bookings endpoints** (see `CARELINELIVE.md`)
 - [x] Ask CareLineLive support to enable API access for Loidis. **Enabled; token works** (read-only check 2026-11-16)
 - [ ] Which export or report lists bookings **with booking IDs**, carers and times?
-      (Needed for the "round per carer" bridge)
-- [ ] Do task completions (`/client-task-completions`) include future, planned visits?
-      If yes, they give booking IDs without an export (check read-only)
+      (Needed for the "round per carer" bridge). **Not the .xlsx Bookings report** (names
+      only, no IDs; checked 2026-11-16). **The CSV export `bookings_optimised.csv` has
+      them** (a UUID per row, client IDs match the API; 2026-11-16). Kept open until a
+      full week's CSV is checked (see below). Tempaid and Hastee integration exports and
+      other reports are no longer needed if the CSV works
+- [ ] How exactly is `bookings_optimised.csv` produced in CareLineLive? **Answered in
+      part (2026-11-16):** another option of the Bookings report in Reports, so it is
+      reproducible from the web app whenever bookings exist. Remaining: note the exact
+      option name as shown on screen, and run it for a full generated week to confirm
+      every day is present with a booking ID on every row
+- [x] Why was the Bookings report for 2026-11-24 to 2026-11-29 (and 23-29) empty?
+      **Bookings not yet generated** (2026-11-16): the coordinator generates the next
+      bookings once staff availability is known, with no fixed day. Bookings exist up to
+      22 Nov and none after
+- [ ] Where does the coordinator keep carers' availability? It is not in CareLineLive
+      (the Carer Availability and Work Patterns reports are empty), so it must come from
+      the coordinator. The key input question for the engine
+      *Note 2026-11-16: Loidis Connect will hold carers' working hours and weekly
+      maximum, entered by the coordinator (see DECISIONS.md). Current practice is still
+      worth asking.*
+- [ ] Where are carer compatibility rules kept? No report or export lists them, nor
+      client schedule entries or rounds (checked 2026-11-16, public help centre and
+      reports run). Ask the coordinator and CareLineLive
+      *Note 2026-11-16: Loidis Connect will hold each client's do-not-send carers,
+      entered by the coordinator (see DECISIONS.md). Current practice is still worth
+      asking.*
+- [x] Do task completions (`/client-task-completions`) include future, planned visits?
+      **No**, only completed tasks (read-only check 2026-11-16). Booking IDs for future
+      visits must come from an export; completions are for history and continuity only
 - [ ] Create a dedicated view-only CareLineLive user and replace the API token with one
       created from it
 - [ ] Ask CareLineLive whether booking read and allocation endpoints are planned

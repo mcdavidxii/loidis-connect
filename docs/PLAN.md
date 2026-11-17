@@ -69,19 +69,61 @@ and client packages.
 
 1. **Safer token.** Create a dedicated CareLineLive user with view-only permissions and
    replace the API token with one created from that user.
-2. **Task completions (read only).** Check whether they include future, planned visits.
-   If yes, they give booking IDs (the visit-round bridge) without an export. Either
-   way, use their history for continuity (who visited whom recently).
+2. **Task completions (read only). Done 2026-11-16.** They do **not** include future,
+   planned visits (rows appear only once a task is completed; the newest rows were dated
+   the day of the check). So they are not the visit-round bridge. Use their history for
+   continuity (who visited whom recently). Details in
+   [`CARELINELIVE.md`](CARELINELIVE.md).
 3. **Export from Loidis.** One week of visits, clients and carers, anonymised into
    `data/private/` per `data/README.md`. Find out which export lists bookings **with
-   booking IDs**.
+   booking IDs**: this now decides Decision 1 (step 8).
+   *Progress 2026-11-16:* the Bookings report was received for one week
+   (2026-11-16 to 2026-11-22). It has **no booking IDs** (clients and carers by name
+   only) but is enough for step 6. Still open: find whether any other export (the
+   Tempaid or Hastee integration exports, another report) has booking IDs; check why
+   the 2026-11-24 to 2026-11-29 export was empty; move the files into `data/private/`
+   (they are still in Downloads). Format in [`CARELINELIVE.md`](CARELINELIVE.md).
+   *Update 2026-11-16:* a second export, the CSV `bookings_optimised.csv`, **does have
+   booking IDs** (461 rows, 17 to 19 Nov, a UUID on every row), and its client IDs match
+   the API's. Carers are still by name only. Still to confirm: how it is produced in
+   CareLineLive, and that it can be produced every week for the coming week. The API has
+   no export endpoints, so it must be downloaded from the web app.
+   *Update 2026-11-16 (later):* reports received for 16 to 22 Nov (Carer Availability
+   and Carer Work Patterns empty; Continuity and Mileage useful, see
+   [`CARELINELIVE.md`](CARELINELIVE.md)). The empty 23-29 / 24-29 Nov exports are
+   explained: bookings are generated only once availability is known. The CSV is
+   another option of the Bookings report in Reports, so it is reproducible from the web
+   app whenever bookings exist (exact option name to note). **Next check:** run it for a
+   full generated week and confirm every day is present with a booking ID on every row.
 4. **Coordinator input.** Top 3 rota frustrations and the open engine settings (pay
-   rate, mileage rate, meal breaks, contracted vs zero-hours).
+   rate, mileage rate, meal breaks, contracted vs zero-hours). **Key question: where
+   does the coordinator keep carers' availability?** It is not in CareLineLive (the
+   Carer Availability and Work Patterns reports are empty), so it must come from the
+   coordinator. Also: where carer compatibility rules are kept (no report or export
+   lists them). *Decided 2026-11-16 (DECISIONS.md):* Loidis Connect holds carers'
+   working hours, weekly maximums and do-not-send pairs, entered by the coordinator;
+   the first run is a shadow-mode trial on 16 to 22 Nov with placeholder hours.
 5. **Read-only sync.** Importer that pulls carers, clients, addresses, leave,
    qualifications and transport types through the API into the engine's input.
 6. **Export importer.** Turn the visits export into the engine's input; run the engine
    on Loidis's real week.
-7. **Decision 2.** Coordinator reviews the result on their own data.
+   *Progress 2026-11-17:* done for 16 to 22 Nov; the engine filled 1,061 of 1,065
+   visits (actual 1,064) with less travel (-16%), fewer miles (-20%) and better continuity
+   than the actual week (re-run after review fixes), at the cost of 626 visits moved by up
+   to 30 min; safety rules (skills, gender, do-not-send, safeguarding, DBS/training) were
+   not applied and must be checked. Method, runs,
+   findings and caveats in [`SHADOW_TRIAL.md`](SHADOW_TRIAL.md); pipeline in
+   `tools/shadow_trial/README.md`. Four unfilled visits (Dorset) still to diagnose.
+7. **Decision 2.** Coordinator reviews the result on their own data. *Ready for review
+   2026-11-17* (settings agreed in `DECISIONS.md`; review list in
+   [`SHADOW_TRIAL.md`](SHADOW_TRIAL.md)). A second week and real working hours should
+   follow.
 8. **Decision 1.** Booking IDs available: Stage A with one visit round per carer per
-   day (a write: needs explicit approval first). Not available: Stage B pilot.
-9. **Ask CareLineLive** whether booking read and allocation endpoints are planned.
+   day (a write: needs explicit approval first). Not available: Stage B pilot. Still
+   open: the CSV with booking IDs exists and is reproducible from Reports; the remaining
+   conditions are confirming a full week's CSV (every day, a booking ID on every row)
+   and the user's approval. Engine run timing: the coordinator triggers it after
+   bookings are generated and before they are published, not on a fixed weekly slot.
+9. **Ask CareLineLive** whether booking read and allocation endpoints are planned, and
+   whether carer compatibility rules, client schedule entries and rounds can be exported
+   (no report does).

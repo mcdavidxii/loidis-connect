@@ -15,6 +15,15 @@ import time
 import urllib.error
 import urllib.request
 
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuse every redirect so the bearer token is only sent to the original URL."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise RuntimeError(f"HTTP {code} redirect refused")
+
+
+OPENER = urllib.request.build_opener(NoRedirect)
+
 ENV_PATH, SPEC_PATH = sys.argv[1], sys.argv[2]
 
 
@@ -55,7 +64,7 @@ def http_get(path, query="limit=1"):
         "X-Api-Version": "2025-01-01",
     })
     try:
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with OPENER.open(req, timeout=20) as r:
             return r.status, json.loads(r.read() or b"{}")
     except urllib.error.HTTPError as e:
         return e.code, None

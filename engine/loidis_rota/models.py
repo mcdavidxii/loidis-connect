@@ -104,6 +104,9 @@ class Settings:
     # CareLineLive's rota does (sleep-in pay is a payroll question, handled later)
     sleep_in_counted_minutes: int | None = None
     rest_after_sleep_in_minutes: int = 11 * 60  # rest before the next shift (to confirm)
+    # pence per minute a visit starts away from its booked (preferred) start; 0 = moving
+    # inside the visit's window is free
+    shift_pence_per_min: int = 0
     unfilled_penalty: int = 10_000_000
 
 

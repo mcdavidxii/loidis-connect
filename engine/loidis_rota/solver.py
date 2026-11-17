@@ -10,7 +10,8 @@ Each day is solved as a vehicle routing problem with time windows (OR-Tools):
   do-not-send, locks, availability) decide which vehicles may serve each stop;
 - the cost, in pence, is: paid travel time + mileage for drivers + a penalty for
   carers new to the client (continuity) + penalties that balance hours (carers below
-  their fair share, or above their contract);
+  their target share, or above their contract) + an optional penalty per minute a visit
+  starts away from its booked time;
 - any visit may be left unfilled, at a very large penalty, and is explained afterwards.
 
 Days are solved Monday to Sunday so weekly hours and rest after night shifts carry
@@ -217,6 +218,11 @@ def solve_day(
                 time_dim.CumulVar(idx).SetRange(pin.start - pin.tolerance, pin.start + pin.tolerance)
             else:
                 time_dim.CumulVar(idx).SetRange(visit.earliest, visit.latest)
+            # moving a visit off its booked start costs pence per minute (same units as
+            # the arc costs); a double-up is charged once, on its first stop
+            if s.shift_pence_per_min > 0 and visit.window > 0 and not pin and slot == 0:
+                time_dim.SetCumulVarSoftUpperBound(idx, visit.start, s.shift_pence_per_min)
+                time_dim.SetCumulVarSoftLowerBound(idx, visit.start, s.shift_pence_per_min)
             # -1 means "not served"; otherwise only the allowed vehicles
             routing.VehicleVar(idx).SetValues([-1] + allowed[k])
             # visits already in the plan (pinned) must never be dropped to cover others
