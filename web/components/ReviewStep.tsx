@@ -3,7 +3,7 @@
 import { AlertCircle, ArrowDown, ArrowRight, ArrowUp, Equal, Lock } from "lucide-react";
 import type { ReactNode } from "react";
 import { addDays, niceDate } from "@/lib/time";
-import type { Change, ReportMetrics, RunResult, TimeNote } from "@/lib/types";
+import type { Change, FillCheck, ReportMetrics, RunResult, TimeNote } from "@/lib/types";
 import { useApp } from "./AppProvider";
 import { Roster } from "./Roster";
 import { Badge, Banner, Button, Card, PageTitle } from "./ui";
@@ -44,11 +44,58 @@ function Stat({ label, engine, current, children }: { label: string; engine: Rea
   );
 }
 
+const WARNING_HELP: Record<string, string> = {
+  locked_outside_hours:
+    "These bookings are at times no allowed carer is working, so they stay with their current carer. Check those carers can really do them.",
+  current_rota_not_feasible:
+    "Your current rota has bookings our rules or travel estimates would not keep (for example a carer who is not allowed, not working then, or too far from the previous visit). So the engine can show fewer filled bookings than your rota; that is not necessarily worse.",
+};
+
+const CAUSE_TEXT: Record<string, string> = {
+  rules: "too few carers are allowed to do it (skills, gender, do-not-send, leave, DBS or training)",
+  hours: "carers are not working at that time",
+  weekly_max: "carers are at their weekly maximum",
+  travel_or_booked: "carers busy or too far away",
+};
+
+function FillCheckText({ fc }: { fc: FillCheck }) {
+  const parts = (
+    [
+      ["because_rules", fc.because_rules],
+      ["because_hours", fc.because_hours],
+      ["because_weekly_max", fc.because_weekly_max],
+      ["because_travel_or_booked", fc.because_travel_or_booked],
+    ] as const
+  ).filter(([, n]) => n > 0);
+  return (
+    <div className="mt-2 border-t border-line pt-2 text-xs text-muted">
+      <p>
+        Current rota: {fc.current_rota_fully_staffed} filled, of which {fc.current_rota_feasible} work under our rules and travel estimates.
+      </p>
+      <p className="mt-1">
+        Unfilled: {fc.unfilled}
+        {parts.length > 0 && " — "}
+        {parts.map(([k, n], i) => (
+          <span key={k}>
+            {i > 0 && "; "}
+            {n} {CAUSE_TEXT[k.replace("because_", "")]}
+          </span>
+        ))}
+        .
+      </p>
+      {fc.unfilled_but_filled_in_current_rota > 0 && (
+        <p className="mt-1">{fc.unfilled_but_filled_in_current_rota} of these are filled in the current rota.</p>
+      )}
+    </div>
+  );
+}
+
 function Overview({ result }: { result: RunResult }) {
   const e = result.comparison.engine;
   const c = result.comparison.current;
   const pct = (m: ReportMetrics) => `${Math.round(m.continuity_rate * 100)}%`;
   const range = (m: ReportMetrics) => `${m.hours_min}-${m.hours_max} h`;
+  const fc = result.fill_check;
   const label = result.mode === "new" ? "Engine" : "After changes";
   return (
     <section aria-label="Overview">
@@ -56,6 +103,7 @@ function Overview({ result }: { result: RunResult }) {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Bookings filled" engine={`${e.filled} of ${e.visits}`} current={`${c.filled} of ${c.visits}`}>
           <Diff engine={e.filled} current={c.filled} good="up" />
+          {fc && <FillCheckText fc={fc} />}
         </Stat>
         <Stat label="Unallocated" engine={e.unfilled} current={c.unfilled}>
           <Diff engine={e.unfilled} current={c.unfilled} good="down" />
@@ -69,7 +117,7 @@ function Overview({ result }: { result: RunResult }) {
         <Stat label="Continuity (familiar carer)" engine={pct(e)} current={pct(c)}>
           <Diff engine={Math.round(e.continuity_rate * 100)} current={Math.round(c.continuity_rate * 100)} good="up" unit=" pts" />
         </Stat>
-        <Stat label="Hours per carer (range)" engine={range(e)} current={range(c)}>
+        <Stat label="Care hours per carer (range)" engine={range(e)} current={range(c)}>
           <p className="text-sm text-muted">
             Median {e.hours_median} h (now {c.hours_median} h)
           </p>
@@ -106,6 +154,11 @@ function Unallocated({ result }: { result: RunResult }) {
                 {v.booking_id} · {ref} · {niceDate(date)} {hhmm(v.preferred_start)} · {v.booking_type}
                 {v.carers_needed > 1 && <span className="text-muted">(needs {v.carers_needed} carers)</span>}
               </p>
+              {v.unfilled_cause && (
+                <p className="mt-1">
+                  <Badge tone="neutral">Cause: {CAUSE_TEXT[v.unfilled_cause] ?? v.unfilled_cause}</Badge>
+                </p>
+              )}
               <p className="mt-1">{v.unfilled_reason}</p>
               {v.unfilled_detail.length > 0 && (
                 <ul className="mt-1 list-disc pl-5 text-muted">
@@ -266,7 +319,10 @@ export function ReviewStep() {
         <Banner tone="warn" title={`${result.warnings.length} warning(s): some rules were not checked or need attention`}>
           <ul className="list-disc pl-5">
             {result.warnings.map((w) => (
-              <li key={w.code}>{w.message}</li>
+              <li key={w.code}>
+                {w.message}
+                {WARNING_HELP[w.code] && <span className="block text-muted">{WARNING_HELP[w.code]}</span>}
+              </li>
             ))}
           </ul>
         </Banner>

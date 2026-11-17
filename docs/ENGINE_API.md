@@ -201,7 +201,7 @@ It holds personal data. Versioned so that a later release can read old files.
     "move_cost_pence_per_min": 15,
     "continuity_weight_pence": 1000,
     "hours_balance": "equal_share_within_team",
-    "search_seconds_per_day": 30,
+    "search_seconds_per_day": 10,
     "change_cost_pence": 1000,
     "pay_pence_per_hour": null,
     "mileage_pence_per_mile": null,
@@ -381,3 +381,7 @@ the web app already sends or reads.
   reason `current carer over weekly maximum` and is counted as forced (`forced_by_rules`) only
   when the carer would still be over the cap with that visit kept
   (`current carer not allowed: over weekly maximum`).
+
+- **Search time default.** `agency.search_seconds_per_day` defaults to 10 when the settings file lacks it
+  (Quick); the UI offers 10 (Quick) and 30 (Thorough). Any value from 1 to 120 is accepted; outside that
+  range the settings file is refused with a 422. A run takes about 7 times this plus under 10 seconds.

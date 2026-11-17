@@ -127,6 +127,7 @@ export interface ReportVisit {
   moved: boolean; // carer(s) or time differ from the current rota
   locked: boolean;
   lock_reason: string | null;
+  unfilled_cause?: "rules" | "hours" | "weekly_max" | "travel_or_booked" | null;
   unfilled_reason: string | null;
   unfilled_detail: string[];
 }
@@ -182,6 +183,17 @@ export interface TimeNote {
   reason: string;
 }
 
+export interface FillCheck {
+  unfilled: number;
+  because_rules: number;
+  because_hours: number;
+  because_weekly_max: number;
+  because_travel_or_booked: number;
+  unfilled_but_filled_in_current_rota: number;
+  current_rota_fully_staffed: number;
+  current_rota_feasible: number;
+}
+
 export interface ChangeSummary {
   total: number;
   forced_by_rules: number;
@@ -205,6 +217,7 @@ export interface RunResult {
   changes: Change[];
   time_notes: TimeNote[];
   change_summary?: ChangeSummary | null;
+  fill_check?: FillCheck | null;
   warnings: RunWarning[];
 }
 

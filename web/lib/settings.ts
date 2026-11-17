@@ -6,7 +6,7 @@ export const DEFAULT_AGENCY: AgencySettings = {
   move_cost_pence_per_min: 15,
   continuity_weight_pence: 1000,
   hours_balance: "equal_share_within_team",
-  search_seconds_per_day: 30,
+  search_seconds_per_day: 10,
   change_cost_pence: 1000,
   arrival_tolerance_minutes: 15,
   pay_pence_per_hour: null,

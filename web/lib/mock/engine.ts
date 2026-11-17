@@ -10,6 +10,7 @@ import type {
   ReportCarer,
   ReportMetrics,
   ReportVisit,
+  FillCheck,
   RouteStop,
   RunResult,
   RunWarning,
@@ -371,14 +372,16 @@ function metricsFor(
   };
 }
 
-function explainUnfilled(ctx: Ctx, assign: Assign, v: FakeVisit): { reason: string; detail: string[] } {
+type Cause = "rules" | "hours" | "weekly_max" | "travel_or_booked";
+
+function explainUnfilled(ctx: Ctx, assign: Assign, v: FakeVisit): { reason: string; detail: string[]; cause: Cause } {
   const teamCarers = ctx.carers.filter((c) => c.team === v.team && !ctx.inactive.has(c.id));
   const ok = teamCarers.filter((c) => eligible(ctx, c, v));
-  if (!ok.length) {
-    return { reason: "No carer meets the rules for this client (skills, gender preference, do-not-send, DBS or training).", detail: [] };
+  if (ok.length < v.carersNeeded) {
+    return { cause: "rules", reason: "No carer meets the rules for this client (skills, gender preference, do-not-send, DBS or training).", detail: [] };
   }
   const there = ok.filter((c) => working(c, v.day, v.start, v.start + v.duration));
-  if (!there.length) return { reason: "No suitable carer is working at this time.", detail: [] };
+  if (there.length < v.carersNeeded) return { cause: "hours", reason: "No suitable carer is working at this time.", detail: [] };
   const detail: string[] = [];
   for (const c of there) {
     const clash = listFor(ctx, assign, c.id, v.day).find((x) => x.start < v.start + v.duration && x.start + x.duration > v.start);
@@ -390,7 +393,9 @@ function explainUnfilled(ctx: Ctx, assign: Assign, v: FakeVisit): { reason: stri
     } else detail.push(`${c.name} is too far from the previous visit to arrive in time`);
   }
   const n = there.length;
+  const allMax = there.every((c) => overWeeklyMax(ctx, assign, c, v.duration) && !listFor(ctx, assign, c.id, v.day).some((x) => x.start < v.start + v.duration && x.start + x.duration > v.start));
   return {
+    cause: allMax ? "weekly_max" : "travel_or_booked",
     reason: `${n} suitable carer${n > 1 ? "s" : ""} working, but ${n > 1 ? "all are" : "they are"} booked or too far away at this time${v.carersNeeded > 1 ? " (needs 2 carers)" : ""}.`,
     detail: detail.slice(0, 3),
   };
@@ -438,6 +443,7 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
       moved: movedOf(v),
       locked: v.timeCritical || Boolean(locks[v.bookingId]),
       lock_reason: locks[v.bookingId] ? "locked by coordinator" : v.timeCritical ? "time-critical booking type" : null,
+      unfilled_cause: un?.cause ?? null,
       unfilled_reason: un?.reason ?? null,
       unfilled_detail: un?.detail ?? [],
     };
@@ -457,6 +463,31 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
     visits: reportVisits,
     routes,
   };
+}
+
+function fillCheck(ctx: Ctx, sol: Solution, cur: Solution): FillCheck {
+  const fc: FillCheck = {
+    unfilled: 0, because_rules: 0, because_hours: 0, because_weekly_max: 0, because_travel_or_booked: 0,
+    unfilled_but_filled_in_current_rota: 0, current_rota_fully_staffed: 0, current_rota_feasible: 0,
+  };
+  const feasible = (v: FakeVisit) =>
+    (cur.assign.get(v.id) ?? []).every((id) => {
+      const c = ctx.carerById.get(id)!;
+      return eligible(ctx, c, v) && working(c, v.day, v.start, v.start + v.duration);
+    });
+  for (const v of ctx.visits) {
+    const curStaffed = (cur.assign.get(v.id)?.length ?? 0) >= v.carersNeeded;
+    if (curStaffed) {
+      fc.current_rota_fully_staffed++;
+      if (feasible(v)) fc.current_rota_feasible++;
+    }
+    if (sol.assign.has(v.id)) continue;
+    fc.unfilled++;
+    const cause = explainUnfilled(ctx, sol.assign, v).cause;
+    fc[`because_${cause}`]++;
+    if (curStaffed) fc.unfilled_but_filled_in_current_rota++;
+  }
+  return fc;
 }
 
 export interface MockParams {
@@ -543,6 +574,13 @@ export function runMock(p: MockParams): RunResult {
             "No settings file was uploaded. The mock used its built-in made-up carers and rules; DBS, training and other rules are not checked from your data.",
         },
       ];
+  const fcheck = fillCheck(ctx, sol, cur);
+  if (fcheck.current_rota_feasible < fcheck.current_rota_fully_staffed) {
+    warnings.push({
+      code: "current_rota_not_feasible",
+      message: `${fcheck.current_rota_fully_staffed - fcheck.current_rota_feasible} booking(s) filled in the current rota would not be kept under our rules and travel estimates.`,
+    });
+  }
   const unfilled = comparison.engine.unfilled;
   if (unfilled > 0) {
     warnings.push({ code: "unallocated", message: `${unfilled} booking(s) could not be allocated; see Unallocated bookings.` });
@@ -555,6 +593,7 @@ export function runMock(p: MockParams): RunResult {
     comparison,
     changes,
     time_notes: timeNotes,
+    fill_check: fillCheck(ctx, sol, cur),
     change_summary:
       p.mode === "improve"
         ? {

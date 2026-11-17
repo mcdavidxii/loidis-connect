@@ -130,8 +130,8 @@ redirect following, and that logs and errors contain no names.
 
 ## Search time
 
-`agency.search_seconds_per_day` (settings file; 30 if absent) is the search time per day per
-region; a run is about 7 times that plus 10 seconds (30 gives about 5 minutes). On the made-up
+`agency.search_seconds_per_day` (settings file; 10 if absent, "Quick"; the UI also offers 30, "Thorough"; any 1 to 120 is valid) is the search time per day per
+region; a run is about 7 times that plus 10 seconds (10 gives about 80 seconds, 30 about 5 minutes). On the made-up
 week 5 seconds a day gave the same fill and travel as 30 (48 s against 301 s).
 
 ## Fewer fills than the current rota

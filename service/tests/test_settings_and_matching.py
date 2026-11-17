@@ -120,3 +120,13 @@ def test_unmatched_names_stop_a_run_with_a_count_not_names(files):
         build(rows, fetch_api_data(), s, "new", 0, {}, None)
     assert e.value.status == 422 and "1 carer name(s)" in e.value.message
     assert "Ravenscrofty" not in e.value.message
+
+
+def test_search_seconds_default_and_range():
+    base = {"version": 1, "carers": [], "clients": []}
+    assert SettingsFile.from_dict(base).agency["search_seconds_per_day"] == 10
+    for ok in (1, 10, 30, 120):
+        assert SettingsFile.from_dict({**base, "agency": {"search_seconds_per_day": ok}}).agency["search_seconds_per_day"] == ok
+    for bad in (0, 121, "x", None):
+        with pytest.raises(ServiceError):
+            SettingsFile.from_dict({**base, "agency": {"search_seconds_per_day": bad}})

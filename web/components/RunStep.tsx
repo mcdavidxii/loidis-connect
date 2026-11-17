@@ -94,6 +94,39 @@ export function RunStep() {
         </Card>
       )}
 
+      <Card title="Search time">
+        <fieldset>
+          <legend className="sr-only">Search time</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {[
+              { s: 10, label: "Quick (10 s per day)", text: "Default. A result in about a minute or two." },
+              { s: 30, label: "Thorough (30 s per day, a few minutes)", text: "Slower, may be slightly better." },
+            ].map((o) => {
+              const on = settings.agency.search_seconds_per_day === o.s;
+              return (
+                <label
+                  key={o.s}
+                  className={`flex cursor-pointer gap-3 rounded-md border p-3 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-700 ${
+                    on ? "border-brand bg-brand-soft" : "border-line"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="search-time"
+                    checked={on}
+                    onChange={() => setSettings((st) => ({ ...st, agency: { ...st.agency, search_seconds_per_day: o.s } }))}
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold">{o.label}</span>
+                    <span className="block text-sm text-muted">{o.text}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      </Card>
+
       {lockCount > 0 && (
         <Banner tone="info" title={`${lockCount} booking(s) locked to a carer`}>
           <span className="inline-flex items-center gap-1">

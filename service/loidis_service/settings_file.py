@@ -21,7 +21,7 @@ DEFAULT_AGENCY = {
     "move_cost_pence_per_min": 15,
     "continuity_weight_pence": 1000,
     "hours_balance": "equal_share_within_team",
-    "search_seconds_per_day": 30,
+    "search_seconds_per_day": 10,  # Quick; the UI also offers 30 (Thorough); any 1-120 is valid
     "change_cost_pence": 1000,
     "pay_pence_per_hour": None,
     "mileage_pence_per_mile": None,
@@ -163,6 +163,9 @@ class SettingsFile:
             agency.update(raw["agency"])
             tolerance_defaulted = raw["agency"].get("arrival_tolerance_minutes") is None
             agency["arrival_tolerance_minutes"] = agency.get("arrival_tolerance_minutes") if not tolerance_defaulted else 15
+        sec = agency.get("search_seconds_per_day")
+        if not isinstance(sec, (int, float)) or isinstance(sec, bool) or not 1 <= sec <= 120:
+            raise ServiceError("agency.search_seconds_per_day must be between 1 and 120.", 422)
         for key in ("move_window_minutes", "move_cost_pence_per_min", "continuity_weight_pence",
                     "search_seconds_per_day", "change_cost_pence", "arrival_tolerance_minutes"):
             if not isinstance(agency.get(key), (int, float)) or isinstance(agency.get(key), bool):

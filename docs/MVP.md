@@ -152,7 +152,7 @@ explanation of each:
 | Move cost | 15p per minute | Discourages moving visits unless it saves travel |
 | Continuity weight | £10 per visit | Cost of sending a carer the client has not seen in 4 weeks |
 | Hours balance | Equal share within each team | Decision 2026-11-16 |
-| Search time | 30 s per day | Longer can give a slightly better plan |
+| Search time | 10 s per day (Quick); 30 s per day (Thorough) as an option | Longer can give a slightly better plan |
 | Change cost (Improve my rota only) | £10 per change | How much a change must save to be worth suggesting. Options on the Run screen: £3, £5, £10, £20 |
 | Arrival tolerance (Improve my rota only) | 15 min (placeholder: to confirm with the coordinator and Loidis's contracts; not a regulatory or contractual standard) | A visit that keeps its carer and moves by no more than this is a note, not a change to apply |
 | Pay rate, mileage rate, travel time paid | Engine defaults until the coordinator confirms | Used to cost travel |

@@ -361,7 +361,7 @@ def bookings_csv(current_rota: bool = True) -> str:
 def settings_dict(all_matches: bool = True) -> dict:
     carers, clients, _ = agency()
     agency_s = dict(DEFAULT_AGENCY)
-    agency_s["search_seconds_per_day"] = 30
+    agency_s["search_seconds_per_day"] = 10
     agency_s.pop("arrival_tolerance_minutes")  # like a file saved before the setting existed
     matches = []
     if all_matches:
