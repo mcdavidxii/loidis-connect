@@ -8,6 +8,8 @@ import { IconAdd, IconDelete, IconDownload, IconUpload, IconWarning } from "./ic
 import { Badge, Button, Notice, PageHeader, Section, inputCls, tableCls, tdCls, thCls } from "./ui";
 
 type Tab = "carers" | "clients" | "agency";
+// Default block when "Add" is pressed on a day: a 12-hour day shift, edited per carer.
+const DEFAULT_SHIFT: HoursBlock = { start: "07:00", end: "19:00" };
 const SKILL_OPTIONS = ["medication", "hoist", "nights", "dementia", "peg feeding"];
 const BOOKING_TYPES = ["Morning Visit", "Medication Call", "Lunch Visit", "Tea Visit", "Bed Visit", "Night Check"];
 
@@ -146,7 +148,7 @@ function HoursEditor({ carer, onChange }: { carer: SettingsCarer; onChange: (h: 
                   </div>
                 </td>
                 <td className={`${tdCls} w-28 text-right`}>
-                  <Button variant="ghost" onClick={() => set(d, [...blocks, { start: "07:00", end: "14:00" }])}>
+                  <Button variant="ghost" onClick={() => set(d, [...blocks, { ...DEFAULT_SHIFT }])}>
                     <IconAdd aria-hidden className="h-4 w-4 text-muted" />
                     Add
                   </Button>
