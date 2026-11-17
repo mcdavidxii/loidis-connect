@@ -1,29 +1,36 @@
 @import "tailwindcss";
 
+/*
+  Design system (single source). Neutral greys for text, borders and surfaces; one brand
+  accent for primary buttons, selected navigation and focus; semantic colours only for
+  status, as muted tints. Booking-type colours exist only inside the roster.
+  Type: system stack, 14px body, 12px meta, 16px section titles, 20px page titles,
+  weights 400 and 600 only. Spacing on a 4/8px scale, 1px borders, 6px radius.
+*/
 @theme {
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --color-ink: #1c2530;
-  --color-muted: #566170;
-  --color-line: #d9dee5;
-  --color-canvas: #f4f6f8;
+  --color-ink: #111827;
+  --color-muted: #6b7280;
+  --color-line: #e5e7eb;
+  --color-canvas: #f9fafb;
   --color-surface: #ffffff;
+  --color-hover: #f3f4f6;
 
-  --color-brand: #0f6b66;
-  --color-brand-strong: #0a524e;
-  --color-brand-soft: #e3f2f0;
+  --color-brand: #0f766e;
+  --color-brand-strong: #115e59;
+  --color-brand-soft: #f0fdfa;
 
-  --color-ok: #166534;
-  --color-ok-soft: #e6f4ea;
-  --color-warn: #8a4b08;
-  --color-warn-soft: #fdf1dc;
-  --color-bad: #a3231a;
-  --color-bad-soft: #fcebe9;
-  --color-moved: #3730a3;
-  --color-moved-soft: #e8e9fb;
-  --color-locked: #3d4756;
-  --color-locked-soft: #e8ebf0;
+  --color-ok: #15803d;
+  --color-ok-soft: #f0fdf4;
+  --color-warn: #a16207;
+  --color-warn-soft: #fefce8;
+  --color-bad: #b91c1c;
+  --color-bad-soft: #fef2f2;
+  --color-info: #1d4ed8;
+  --color-info-soft: #eff6ff;
+
+  --radius-md: 6px;
 }
 
 html,
@@ -31,18 +38,45 @@ body {
   background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
 }
 
 :focus-visible {
-  outline: 3px solid #1d4ed8;
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 
-/* Travel gap between two visits on the roster: hatched so it is not colour alone. */
-.travel-gap {
-  background-image: repeating-linear-gradient(45deg, #94a3b8 0 2px, transparent 2px 6px);
-  background-color: #eef1f5;
+/* One stroke width for every icon. */
+svg.lucide {
+  stroke-width: 1.75;
 }
-.worktime {
-  background: #f1f7f6;
+
+/* ---- Roster only ---- */
+:root {
+  --bt-morning-bg: #fef3c7; --bt-morning-fg: #78350f; --bt-morning-bd: #f59e0b;
+  --bt-lunch-bg: #dcfce7;   --bt-lunch-fg: #14532d;   --bt-lunch-bd: #22c55e;
+  --bt-tea-bg: #e0f2fe;     --bt-tea-fg: #0c4a6e;     --bt-tea-bd: #38bdf8;
+  --bt-bed-bg: #ede9fe;     --bt-bed-fg: #4c1d95;     --bt-bed-bd: #8b5cf6;
+  --bt-domestic-bg: #ffe4e6; --bt-domestic-fg: #881337; --bt-domestic-bd: #fb7185;
+  --bt-respite-bg: #ccfbf1; --bt-respite-fg: #134e4a; --bt-respite-bd: #2dd4bf;
+  --bt-night-bg: #e2e8f0;   --bt-night-fg: #0f172a;   --bt-night-bd: #64748b;
+  --bt-other-bg: #f3f4f6;   --bt-other-fg: #1f2937;   --bt-other-bd: #9ca3af;
 }
+
+/* Status strips: colour plus a pattern, and always named in the legend. */
+.strip-unchanged { background: #9ca3af; }
+.strip-changed { background: #4338ca; }
+.strip-moved { background: repeating-linear-gradient(90deg, #b45309 0 4px, transparent 4px 7px); }
+.strip-locked { background: repeating-linear-gradient(90deg, #111827 0 2px, transparent 2px 4px); }
+.strip-unallocated { background: #b91c1c; }
+
+.hour-line { border-left: 1px solid var(--color-line); }
+.off-hours { background: repeating-linear-gradient(135deg, #f3f4f6 0 3px, #fff 3px 8px); }

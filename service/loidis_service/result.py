@@ -136,11 +136,12 @@ def _region_report(
                 "contracted_minutes": c["contracted_minutes"], "max_minutes": c["max_minutes"],
                 "scheduled_minutes": c["scheduled_minutes"], "travel_minutes": c["travel_minutes"],
                 "miles": c["miles"], "availability": c["availability"], "issues": issues,
+                "travel_mode": c["travel_mode"],
             }
         )
     clients = [
-        {"id": c["id"], "ref": rb.client_ref.get(c["id"], ""), "area": c["area"],
-         "recent_carers": c["recent_carers"]}
+        {"id": c["id"], "ref": rb.client_ref.get(c["id"], ""), "display_name": rb.client_display.get(c["id"], ""),
+         "area": c["area"], "recent_carers": c["recent_carers"]}
         for c in raw["clients"]
     ]
     visits = []
@@ -176,6 +177,7 @@ def _region_report(
         "clients": clients,
         "visits": visits,
         "routes": raw["routes"],
+        "current_routes": cur_raw["routes"],
     }
     cur_report = {
         "carers": [

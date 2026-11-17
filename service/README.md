@@ -87,6 +87,9 @@ Differences from the first draft of the contract are in `../docs/ENGINE_API.md`,
   (`python -m loidis_service` sets `access_log=False`; if you start uvicorn yourself, pass
   `--no-access-log`). Unexpected errors are turned into a plain 500 so a traceback never
   reaches the log. Error messages to the user carry counts, column names and IDs only.
+- The result carries carers' names and a short client name ("Surname, I") for the coordinator's
+  screens: personal data shown to the coordinator only, deleted with the run, never logged and
+  never in an error message.
 - The settings file and exports hold personal data and leave the service only when the web
   app downloads them.
 - No external services: travel uses the engine's own straight-line model with a road

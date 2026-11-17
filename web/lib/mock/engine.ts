@@ -401,6 +401,22 @@ function explainUnfilled(ctx: Ctx, assign: Assign, v: FakeVisit): { reason: stri
   };
 }
 
+const FAKE_SURNAMES = ["Alder", "Birch", "Cedar", "Dogwood", "Elm", "Fir", "Gorse", "Hazel", "Ivy", "Juniper", "Kale", "Larch", "Maple", "Nettle", "Oak"];
+function displayName(c: FakeClient): string {
+  const n = Number(c.id.slice(1)) - 1;
+  return `${FAKE_SURNAMES[n % FAKE_SURNAMES.length]}, ${String.fromCharCode(65 + (n % 26))}`;
+}
+
+function classOf(ctx: Ctx, v: FakeVisit, sol: Solution, cur: Solution, assigned: string[]): ReportVisit["change_class"] {
+  if (!assigned.length) return null;
+  const a = assigned.slice().sort().join();
+  const b = (cur.assign.get(v.id) ?? []).slice().sort().join();
+  if (a !== b) return "carer";
+  const shift = Math.abs((sol.start.get(v.id) ?? v.start) - v.start);
+  if (shift === 0) return "unchanged";
+  return shift <= ctx.tolerance ? "time_within_tolerance" : "time_note";
+}
+
 function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: Record<string, string>): Report {
   const carers = ctx.carers.filter((c) => c.team === team);
   const visits = ctx.visits.filter((v) => v.team === team);
@@ -415,6 +431,7 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
     scheduled_minutes: loadOf(ctx, sol.assign, c.id),
     travel_minutes: sol.travelMin.get(c.id) ?? 0,
     miles: round(sol.milesBy.get(c.id) ?? 0),
+    travel_mode: c.id === "K004" ? "walk" : "car",
     availability: DAYS.flatMap((_, day) => blocksFor(c, day).map(([s, e]) => ({ day, start: s, end: Math.min(e, 1440) }))),
     issues: [],
   }));
@@ -444,13 +461,16 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
       locked: v.timeCritical || Boolean(locks[v.bookingId]),
       lock_reason: locks[v.bookingId] ? "locked by coordinator" : v.timeCritical ? "time-critical booking type" : null,
       unfilled_cause: un?.cause ?? null,
+      change_class: classOf(ctx, v, sol, cur, assigned),
       unfilled_reason: un?.reason ?? null,
       unfilled_detail: un?.detail ?? [],
     };
   });
   const routes: Report["routes"] = {};
+  const currentRoutes: Report["routes"] = {};
   carers.forEach((c) => {
     if (sol.stops.has(c.id)) routes[c.id] = sol.stops.get(c.id)!;
+    if (cur.stops.has(c.id)) currentRoutes[c.id] = cur.stops.get(c.id)!;
   });
   return {
     week_start: ctx.weekStart,
@@ -459,9 +479,10 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
     carers: reportCarers,
     clients: ctx.clients
       .filter((c) => c.team === team)
-      .map((c) => ({ id: c.id, ref: c.ref, area: c.team, recent_carers: c.recentCarers })),
+      .map((c) => ({ id: c.id, ref: c.ref, display_name: displayName(c), area: c.team, recent_carers: c.recentCarers })),
     visits: reportVisits,
     routes,
+    current_routes: currentRoutes,
   };
 }
 

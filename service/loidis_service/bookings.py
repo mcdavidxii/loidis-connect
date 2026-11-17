@@ -110,6 +110,28 @@ def _duration(s: str) -> int | None:
     return int(m[1]) * 60 + int(m[2]) if m else None
 
 
+_TITLES = {"mr", "mrs", "miss", "ms", "dr", "mx", "master", "sir", "lady", "rev", "prof"}
+
+
+def short_client_name(full: str) -> str:
+    """"Surname, I" for the coordinator's screens, from "First Last", "Last, First" or with a
+    title (Mr, Mrs, Miss, Ms, Dr...). Shown only in the result sent to the web app: never
+    logged and never put in an error message."""
+    text = re.sub(r"\s+", " ", (full or "").strip())
+    if not text:
+        return ""
+    if "," in text:
+        sur, _, rest = text.partition(",")
+        words = rest.split()
+    else:
+        parts = text.split()
+        sur, words = (parts[-1], parts[:-1]) if len(parts) > 1 else (parts[0], [])
+    words = [w for w in words if w.strip(".").lower() not in _TITLES]
+    sur_words = [w for w in sur.split() if w.strip(".").lower() not in _TITLES]
+    sur = " ".join(sur_words) or sur
+    return f"{sur}, {words[0][0].upper()}" if words else sur
+
+
 def monday_of(d: date) -> date:
     return d - timedelta(days=d.weekday())
 

@@ -1,20 +1,22 @@
 "use client";
 
-import { CalendarRange, Check, Download, FlaskConical, Play, Settings, Upload, UserRound, type LucideIcon } from "lucide-react";
 import { useApp, type Step } from "./AppProvider";
+import { IconCarer, IconCheck, type IconType } from "./icons";
 import { UploadStep } from "./UploadStep";
 import { SettingsStep } from "./SettingsStep";
 import { RunStep } from "./RunStep";
 import { ReviewStep } from "./ReviewStep";
 import { ExportStep } from "./ExportStep";
 
-const STEPS: { id: Step; label: string; Icon: LucideIcon }[] = [
-  { id: "upload", label: "Upload", Icon: Upload },
-  { id: "settings", label: "Settings", Icon: Settings },
-  { id: "run", label: "Run", Icon: Play },
-  { id: "review", label: "Review", Icon: CalendarRange },
-  { id: "export", label: "Export", Icon: Download },
+const STEPS: { id: Step; label: string }[] = [
+  { id: "upload", label: "Upload" },
+  { id: "settings", label: "Settings" },
+  { id: "run", label: "Run" },
+  { id: "review", label: "Review" },
+  { id: "export", label: "Export" },
 ];
+
+export type { IconType };
 
 export function Shell() {
   const app = useApp();
@@ -29,34 +31,24 @@ export function Shell() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-line bg-surface px-5 py-3">
-        <div className="flex items-center gap-3">
-          <span aria-hidden className="grid h-8 w-8 place-items-center rounded-md bg-brand text-sm font-bold text-white">
-            LC
-          </span>
-          <div>
-            <p className="text-sm font-semibold leading-tight">Loidis Connect</p>
-            <p className="text-xs leading-tight text-muted">Rota engine test</p>
-          </div>
+      <header className="flex h-12 items-center justify-between border-b border-line bg-surface px-4">
+        <div className="flex items-baseline gap-2">
+          <span className="font-semibold">Loidis Connect</span>
+          <span className="text-xs text-muted">Rota engine test</span>
         </div>
         <div className="flex items-center gap-3 text-sm">
-          {app.mock && (
-            <span className="inline-flex items-center gap-1.5 rounded bg-warn-soft px-2 py-1 text-xs font-medium text-warn">
-              <FlaskConical aria-hidden className="h-3.5 w-3.5" />
-              Demo mode: made-up data
-            </span>
-          )}
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1">
-            <UserRound aria-hidden className="h-4 w-4" />
+          {app.mock && <span className="rounded-md border border-line px-2 py-0.5 text-xs text-muted">Demo data</span>}
+          <span className="flex items-center gap-1.5 text-muted">
+            <IconCarer aria-hidden className="h-5 w-5" />
             Coordinator
           </span>
         </div>
       </header>
 
       <div className="flex flex-1">
-        <nav aria-label="Steps" className="w-52 shrink-0 border-r border-line bg-surface p-3">
-          <ol className="space-y-1">
-            {STEPS.map(({ id, label, Icon }, i) => {
+        <nav aria-label="Steps" className="flex w-44 shrink-0 flex-col justify-between border-r border-line bg-surface p-2">
+          <ol className="space-y-0.5">
+            {STEPS.map(({ id, label }, i) => {
               const current = app.step === id;
               return (
                 <li key={id}>
@@ -65,19 +57,13 @@ export function Shell() {
                     disabled={blocked(id)}
                     aria-current={current ? "step" : undefined}
                     onClick={() => app.setStep(id)}
-                    className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm disabled:cursor-not-allowed disabled:opacity-45 ${
-                      current ? "bg-brand-soft font-semibold text-brand-strong" : "hover:bg-canvas"
+                    className={`flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-sm disabled:cursor-not-allowed disabled:opacity-40 ${
+                      current ? "bg-brand-soft font-semibold text-brand-strong" : "text-ink hover:bg-hover"
                     }`}
                   >
-                    <span
-                      aria-hidden
-                      className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border text-xs ${
-                        done[id] && !current ? "border-ok bg-ok text-white" : current ? "border-brand bg-brand text-white" : "border-line text-muted"
-                      }`}
-                    >
-                      {done[id] && !current ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                    <span aria-hidden className="grid h-4 w-4 place-items-center text-xs text-muted">
+                      {done[id] && !current ? <IconCheck className="h-4 w-4 text-ok" /> : i + 1}
                     </span>
-                    <Icon aria-hidden className="h-4 w-4 shrink-0" />
                     <span>
                       {label}
                       {done[id] && <span className="sr-only"> (done)</span>}
@@ -87,10 +73,10 @@ export function Shell() {
               );
             })}
           </ol>
-          <p className="mt-6 px-3 text-xs text-muted">Nothing is stored on the server. Results are deleted when you close this page.</p>
+          <p className="px-2 pb-1 text-xs text-muted">Nothing is stored on the server. Results are deleted when you close this page.</p>
         </nav>
 
-        <main className="min-w-0 flex-1 p-6">
+        <main className="min-w-0 flex-1 px-6 py-5">
           {app.step === "upload" && <UploadStep />}
           {app.step === "settings" && <SettingsStep />}
           {app.step === "run" && <RunStep />}

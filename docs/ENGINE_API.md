@@ -385,3 +385,15 @@ the web app already sends or reads.
 - **Search time default.** `agency.search_seconds_per_day` defaults to 10 when the settings file lacks it
   (Quick); the UI offers 10 (Quick) and 30 (Thorough). Any value from 1 to 120 is accepted; outside that
   range the settings file is refused with a 422. A run takes about 7 times this plus under 10 seconds.
+
+### Service notes: display names, travel modes, current routes
+
+- `teams[].clients[].display_name` is a short client name for the coordinator's screens,
+  "Surname, I" (for example "Smith, J"), built from the bookings CSV's `ClientName` with titles
+  (Mr, Mrs, Miss, Ms, Dr, ...) removed. Like carer names, it is **personal data shown to the
+  coordinator only**: it exists in the result returned to the web app, is deleted with the run,
+  and is never written to a log or an error message. No other client name is in a result.
+- `teams[].carers[].travel_mode` is `car`, `foot` or `bus`, as the engine uses it.
+- `teams[].current_routes` is the current rota's routes in the same shape as `routes`
+  (`{ <carer id>: { <day>: [ { visit_id, client_id, start, end, travel_before, miles_before,
+  shared_with[] } ] } }`), from the scoring of the current rota with the same travel model.

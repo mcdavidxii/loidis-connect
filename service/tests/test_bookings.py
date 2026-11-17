@@ -4,7 +4,7 @@ import io
 import pytest
 
 from loidis_service import fake_data
-from loidis_service.bookings import KNOWN_COLUMNS, parse_bookings, require_valid
+from loidis_service.bookings import KNOWN_COLUMNS, parse_bookings, require_valid, short_client_name
 from loidis_service.errors import ServiceError
 
 from conftest import fake_names
@@ -84,3 +84,12 @@ def test_bad_values_give_counts_not_values(files):
     _, info = parse_bookings(to_bytes(r))
     text = " ".join(info.problems)
     assert "Date" in text and "Duration" in text and "not a date" not in text
+
+
+@pytest.mark.parametrize("full,short", [
+    ("Jane Smith", "Smith, J"), ("Mrs Jane Smith", "Smith, J"), ("Smith, Jane", "Smith, J"),
+    ("Smith, Mrs Jane", "Smith, J"), ("Dr. A B Jones", "Jones, A"), ("Miss Pat O'Neil", "O'Neil, P"),
+    ("Mr  John   Brown", "Brown, J"), ("Madonna", "Madonna"), ("", ""),
+])
+def test_short_client_name(full, short):
+    assert short_client_name(full) == short

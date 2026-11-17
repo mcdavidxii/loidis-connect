@@ -19,7 +19,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field, replace
 from datetime import date, timedelta
 
-from .bookings import Booking, monday_of
+from .bookings import Booking, monday_of, short_client_name
 from .cll import ApiCarer, ApiData
 from .continuity import parse_continuity, recent_carers_from_report
 from .errors import ServiceError
@@ -58,6 +58,7 @@ class RegionBuild:
     current: dict[str, list[str]]  # visit id -> carers in the current rota
     not_planned: set[str]  # carers in the problem who are not planned
     carer_notes: dict[str, list[str]]  # carer id -> issues to show
+    client_display: dict[str, str] = field(default_factory=dict)  # client id -> "Surname, I" (result only)
 
 
 @dataclass
@@ -561,6 +562,7 @@ def build(
                 name=region, problem=problem, visit_meta=meta, client_ref=client_ref,
                 carer_name={c.id: display[c.id] for c in carers}, current=current,
                 not_planned=not_planned, carer_notes=notes,
+                client_display={b.client_id: short_client_name(b.client_name) for b in bs},
             )
         )
 

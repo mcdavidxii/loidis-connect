@@ -1,11 +1,11 @@
 "use client";
 
-import { CheckCircle2, CloudDownload, FileSpreadsheet, FileText, FlaskConical, RefreshCw, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { fetchSample, syncFromCareLineLive } from "@/lib/api";
 import { mergeSync } from "@/lib/settings";
 import { useApp } from "./AppProvider";
-import { Banner, Button, Card, PageTitle, inputCls } from "./ui";
+import { IconClose, IconDemo, IconRefresh, IconSync, IconUpload } from "./icons";
+import { Button, Notice, PageHeader, Section, inputCls } from "./ui";
 
 function DropZone({
   id,
@@ -16,7 +16,6 @@ function DropZone({
   required,
   onFile,
   onClear,
-  Icon,
 }: {
   id: string;
   title: string;
@@ -25,8 +24,7 @@ function DropZone({
   file: { name: string } | null;
   required?: boolean;
   onFile: (f: File) => void;
-  onClear: () => void;
-  Icon: typeof FileText;
+  onClear?: () => void;
 }) {
   const [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -43,46 +41,75 @@ function DropZone({
         const f = e.dataTransfer.files[0];
         if (f) onFile(f);
       }}
-      className={`rounded-lg border-2 border-dashed p-4 ${over ? "border-brand bg-brand-soft" : "border-line bg-surface"}`}
+      className={`rounded-md border border-dashed px-3 py-2.5 ${over ? "border-brand bg-brand-soft" : "border-[#d1d5db] bg-surface"}`}
     >
-      <div className="flex items-start gap-3">
-        <Icon aria-hidden className="mt-0.5 h-6 w-6 shrink-0 text-brand" />
-        <div className="min-w-0 flex-1">
-          <label htmlFor={id} className="block text-sm font-semibold">
-            {title} {required ? <span className="font-normal text-muted">(required)</span> : <span className="font-normal text-muted">(optional)</span>}
-          </label>
-          <p className="mt-0.5 text-xs text-muted">{hint}</p>
-          {file ? (
-            <p className="mt-2 flex items-center gap-2 text-sm">
-              <CheckCircle2 aria-hidden className="h-4 w-4 text-ok" />
-              <span className="truncate">{file.name}</span>
-              <button type="button" onClick={onClear} className="rounded p-1 text-muted hover:bg-canvas" aria-label={`Remove ${title}`}>
-                <X aria-hidden className="h-4 w-4" />
+      <label htmlFor={id} className="block text-sm font-semibold">
+        {title} <span className="text-xs font-normal text-muted">{required ? "required" : "optional"}</span>
+      </label>
+      <p className="mb-2 text-xs text-muted">{hint}</p>
+      <input
+        ref={input}
+        id={id}
+        type="file"
+        accept={accept}
+        className="sr-only"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) onFile(f);
+          e.target.value = "";
+        }}
+      />
+      <div className="flex items-center gap-2">
+        <Button onClick={() => input.current?.click()}>
+          <IconUpload aria-hidden className="h-4 w-4 text-muted" />
+          {file ? "Replace" : "Choose file"}
+        </Button>
+        {file ? (
+          <span className="flex min-w-0 items-center gap-1 text-sm">
+            <span className="truncate">{file.name}</span>
+            {onClear && (
+              <button type="button" onClick={onClear} className="rounded-md p-1 text-muted hover:bg-hover" aria-label={`Remove ${title}`}>
+                <IconClose aria-hidden className="h-4 w-4" />
               </button>
-            </p>
-          ) : (
-            <p className="mt-2 text-sm text-muted">Drop a file here, or choose one.</p>
-          )}
-          <input
-            ref={input}
-            id={id}
-            type="file"
-            accept={accept}
-            className="sr-only"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) onFile(f);
-              e.target.value = "";
-            }}
-          />
-          <Button className="mt-2" onClick={() => input.current?.click()}>
-            <Upload aria-hidden className="h-4 w-4" />
-            {file ? "Replace file" : "Choose file"}
-          </Button>
-        </div>
+            )}
+          </span>
+        ) : (
+          <span className="text-xs text-muted">or drop it here</span>
+        )}
       </div>
     </div>
   );
+}
+
+// Simple similarity between a name in the bookings file and a carer: surname match counts most,
+// then a shared first-name prefix. Returns the best carer id, or null when nothing is close.
+function norm(s: string): string[] {
+  return s
+    .toLowerCase()
+    .replace(/\(.*?\)/g, " ")
+    .replace(/[^a-z\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function suggestCarer(name: string, carers: { id: string; name: string }[]): string | null {
+  const a = norm(name);
+  if (a.length === 0) return null;
+  let best: { id: string; score: number } | null = null;
+  for (const c of carers) {
+    const b = norm(c.name);
+    if (b.length === 0) continue;
+    let score = 0;
+    if (a[a.length - 1] === b[b.length - 1] && a.length > 1 && b.length > 1) score += 3;
+    const fa = a[0];
+    const fb = b[0];
+    let k = 0;
+    while (k < Math.min(fa.length, fb.length) && fa[k] === fb[k]) k++;
+    if (k >= 2) score += 1 + (k >= 3 ? 1 : 0);
+    if (a.join(" ") === b.join(" ")) score += 5;
+    if (score > (best?.score ?? 0)) best = { id: c.id, score };
+  }
+  return best && best.score >= 3 ? best.id : null;
 }
 
 export function UploadStep() {
@@ -92,6 +119,7 @@ export function UploadStep() {
   const [syncError, setSyncError] = useState<string | null>(null);
   const [sampleError, setSampleError] = useState<string | null>(null);
   const info = app.bookingsInfo;
+  const [chosen, setChosen] = useState<Record<string, string>>({});
 
   const unmatched = (app.sync?.missing.unmatched_booking_carers ?? []).filter(
     (n) => !app.settings.carer_name_matches.some((m) => m.booking_name.toLowerCase() === n.toLowerCase()),
@@ -102,8 +130,7 @@ export function UploadStep() {
     try {
       await app.setBookings(await fetchSample("bookings.csv"));
       const err = await app.loadSettingsFile(await fetchSample("settings.json"));
-      if (err) setSettingsError(err);
-      else setSettingsError(null);
+      setSettingsError(err);
     } catch (e) {
       setSampleError(e instanceof Error ? e.message : "Could not load the sample files.");
     }
@@ -123,109 +150,116 @@ export function UploadStep() {
     }
   }
 
+  const stats: [string, number][] = info
+    ? [
+        ["Visits", info.visits],
+        ["Clients", info.clients],
+        ["Carers allocated", info.carers],
+        ["Double-ups", info.doubleUps],
+        ["Unallocated", info.unallocated],
+        ["Cancelled (ignored)", info.cancelled],
+      ]
+    : [];
+
   return (
-    <div className="max-w-5xl space-y-5">
-      <PageTitle
+    <div className="max-w-5xl">
+      <PageHeader
         title="Upload"
-        intro="Upload this week's bookings, and the settings file you kept from last week. Files are used for this run only and are not stored on the server."
+        subtitle="Bookings for one week, and the settings file you kept from last time."
+        actions={
+          <>
+            {app.mock && (
+              <Button onClick={loadSamples}>
+                <IconDemo aria-hidden className="h-4 w-4 text-muted" />
+                Use sample files
+              </Button>
+            )}
+            <Button variant="primary" onClick={() => app.setStep("settings")}>
+              Continue
+            </Button>
+          </>
+        }
       />
+      {sampleError && <Notice tone="bad" title={sampleError} />}
 
-      {app.mock && (
-        <Banner tone="warn" title="Demo mode">
-          <p>This version works on made-up carers, clients and visits (no real data). Use the sample files to try it. With the built-in mock, uploaded files are not used for planning.</p>
-          <Button className="mt-2" onClick={loadSamples}>
-            <FlaskConical aria-hidden className="h-4 w-4" />
-            Use the made-up sample files
-          </Button>
-          {sampleError && <p className="mt-1 text-bad">{sampleError}</p>}
-        </Banner>
-      )}
-
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="mb-8 grid gap-3 md:grid-cols-3">
         <DropZone
           id="bookings-file"
           title="Bookings CSV"
-          hint="One week, Monday to Sunday, from CareLineLive Reports > Bookings."
+          hint="Reports > Bookings, one Monday to Sunday week."
           accept=".csv,text/csv"
           required
           file={app.bookings}
           onFile={(f) => void app.setBookings(f)}
           onClear={() => void app.setBookings(null)}
-          Icon={FileText}
         />
         <DropZone
           id="settings-file"
           title="Settings file"
-          hint="The file you downloaded last week. Leave empty on the first run."
+          hint="Leave empty on the first run."
           accept=".json,application/json"
           file={app.settingsFileName ? { name: app.settingsFileName } : null}
           onFile={async (f) => setSettingsError(await app.loadSettingsFile(f))}
-          onClear={() => undefined}
-          Icon={FileText}
         />
         <DropZone
           id="continuity-file"
           title="Continuity report"
-          hint="The Continuity report (xlsx) for the 4 weeks before."
+          hint="xlsx, the 4 weeks before."
           accept=".xlsx"
           file={app.continuity}
           onFile={app.setContinuity}
           onClear={() => app.setContinuity(null)}
-          Icon={FileSpreadsheet}
         />
       </div>
-      {settingsError && <Banner tone="bad" title="The settings file could not be used">{settingsError}</Banner>}
-
-      {info && (
-        <Card title="What is in the bookings file">
-          <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-6">
-            {[
-              ["Visits", info.visits],
-              ["Clients", info.clients],
-              ["Carers allocated", info.carers],
-              ["Double-ups", info.doubleUps],
-              ["Unallocated", info.unallocated],
-              ["Cancelled (ignored)", info.cancelled],
-            ].map(([k, v]) => (
-              <div key={k as string}>
-                <dt className="text-muted">{k}</dt>
-                <dd className="text-xl font-semibold">{v}</dd>
-              </div>
-            ))}
-          </dl>
-          {info.firstDate && <p className="mt-3 text-sm text-muted">Week starting {info.firstDate}.</p>}
-          <div className="mt-3 space-y-2">
-            {info.problems.length === 0 ? (
-              <Banner tone="ok" title="No problems found in the file" />
-            ) : (
-              info.problems.map((p) => (
-                <Banner key={p} tone="bad" title={p} />
-              ))
-            )}
-          </div>
-        </Card>
+      {settingsError && (
+        <div className="mb-6">
+          <Notice tone="bad" title="The settings file could not be used">
+            {settingsError}
+          </Notice>
+        </div>
       )}
 
-      <Card
-        title="Sync from CareLineLive"
+      {info && (
+        <Section title="Bookings file">
+          <dl className="flex flex-wrap gap-x-8 gap-y-2">
+            {stats.map(([k, v]) => (
+              <div key={k}>
+                <dt className="text-xs text-muted">{k}</dt>
+                <dd className="text-base font-semibold">{v}</dd>
+              </div>
+            ))}
+            {info.firstDate && (
+              <div>
+                <dt className="text-xs text-muted">Week starting</dt>
+                <dd className="text-base font-semibold">{info.firstDate}</dd>
+              </div>
+            )}
+          </dl>
+          <div className="mt-3 space-y-2">
+            {info.problems.length === 0 ? (
+              <p className="text-sm text-ok">No problems found in the file.</p>
+            ) : (
+              info.problems.map((p) => <Notice key={p} tone="bad" title={p} />)
+            )}
+          </div>
+        </Section>
+      )}
+
+      <Section
+        title="CareLineLive"
+        info="Reads carers, clients, addresses, teams, transport types and leave. Read-only: nothing is written to CareLineLive."
         actions={
-          <Button variant="primary" onClick={runSync} disabled={syncing}>
-            {syncing ? <RefreshCw aria-hidden className="h-4 w-4 animate-spin" /> : <CloudDownload aria-hidden className="h-4 w-4" />}
+          <Button onClick={runSync} disabled={syncing}>
+            {syncing ? <IconRefresh aria-hidden className="h-4 w-4 animate-spin text-muted" /> : <IconSync aria-hidden className="h-4 w-4 text-muted" />}
             {syncing ? "Syncing" : "Sync from CareLineLive"}
           </Button>
         }
       >
-        <p className="text-sm text-muted">
-          Reads carers, clients, addresses, teams, transport types and leave (read-only). Nothing is written to CareLineLive.
-        </p>
-        {syncError && (
-          <div className="mt-3">
-            <Banner tone="bad" title="The sync failed">{syncError}</Banner>
-          </div>
-        )}
+        {!app.sync && !syncError && <p className="text-sm text-muted">Not synced yet.</p>}
+        {syncError && <Notice tone="bad" title="The sync failed">{syncError}</Notice>}
         {app.sync && (
-          <div className="mt-4 space-y-3">
-            <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+          <div className="space-y-3">
+            <dl className="flex flex-wrap gap-x-8 gap-y-2">
               {(
                 [
                   ["Carers", app.sync.counts.carers],
@@ -235,69 +269,72 @@ export function UploadStep() {
                 ] as const
               ).map(([k, v]) => (
                 <div key={k}>
-                  <dt className="text-muted">{k}</dt>
-                  <dd className="text-xl font-semibold">{v}</dd>
+                  <dt className="text-xs text-muted">{k}</dt>
+                  <dd className="text-base font-semibold">{v}</dd>
                 </div>
               ))}
             </dl>
             {app.sync.missing.addresses.length > 0 && (
-              <Banner tone="warn" title={`${app.sync.missing.addresses.length} client(s) have no address in CareLineLive`}>
-                Travel cannot be estimated for: {app.sync.missing.addresses.join(", ")}.
-              </Banner>
+              <Notice tone="warn" title={`${app.sync.missing.addresses.length} client(s) have no address`}>
+                Travel cannot be estimated for {app.sync.missing.addresses.join(", ")}.
+              </Notice>
             )}
             {app.sync.missing.carers_not_in_settings.length > 0 && (
-              <Banner tone="info" title={`${app.sync.missing.carers_not_in_settings.length} carer(s) were not in your settings file`}>
-                They were added to Settings with no working hours. Fill them in before running.
-              </Banner>
+              <Notice title={`${app.sync.missing.carers_not_in_settings.length} carer(s) added to Settings`}>
+                They have no working hours yet.
+              </Notice>
             )}
             {app.sync.missing.clients_not_in_settings.length > 0 && (
-              <Banner tone="info" title={`${app.sync.missing.clients_not_in_settings.length} client(s) were not in your settings file`}>
-                They were added to Settings with no rules.
-              </Banner>
+              <Notice title={`${app.sync.missing.clients_not_in_settings.length} client(s) added to Settings`}>
+                They have no rules yet.
+              </Notice>
             )}
             {unmatched.length > 0 && (
-              <Banner tone="warn" title={`${unmatched.length} carer name(s) in the bookings file could not be matched`}>
-                <p>Choose who each one is. Matches are saved in the settings file.</p>
-                <ul className="mt-2 space-y-2">
-                  {unmatched.map((n) => (
-                    <li key={n} className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium">{n}</span>
-                      <label className="sr-only" htmlFor={`match-${n}`}>
-                        Match {n} to a carer
-                      </label>
-                      <select
-                        id={`match-${n}`}
-                        defaultValue=""
-                        className={inputCls}
-                        onChange={(e) => {
-                          const carerId = e.target.value;
-                          if (carerId) app.setSettings((s) => ({ ...s, carer_name_matches: [...s.carer_name_matches, { booking_name: n, carer_id: carerId }] }));
-                        }}
-                      >
-                        <option value="">Choose a carer</option>
-                        {app.settings.carers.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name} ({c.id})
-                          </option>
-                        ))}
-                      </select>
-                    </li>
-                  ))}
+              <div>
+                <p className="mb-1 text-sm font-semibold">Confirm carer names ({unmatched.length})</p>
+                <p className="mb-2 text-xs text-muted">These names in the bookings file could not be matched. Matches are saved in the settings file.</p>
+                <ul className="space-y-1.5">
+                  {unmatched.map((n) => {
+                    const suggestion = suggestCarer(n, app.settings.carers);
+                    const value = chosen[n] ?? suggestion ?? "";
+                    const confirm = () => {
+                      if (value) {
+                        app.setSettings((st) => ({
+                          ...st,
+                          carer_name_matches: [...st.carer_name_matches, { booking_name: n, carer_id: value }],
+                        }));
+                      }
+                    };
+                    return (
+                      <li key={n} className="flex flex-wrap items-center gap-2">
+                        <span className="w-48 truncate">{n}</span>
+                        <label className="sr-only" htmlFor={`match-${n}`}>
+                          Match {n} to a carer
+                        </label>
+                        <select id={`match-${n}`} value={value} className={inputCls} onChange={(e) => setChosen((c) => ({ ...c, [n]: e.target.value }))}>
+                          <option value="">Choose a carer</option>
+                          {app.settings.carers.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name} ({c.id})
+                            </option>
+                          ))}
+                        </select>
+                        {value && value === suggestion && <span className="rounded-md bg-hover px-1.5 py-0.5 text-xs text-muted">suggested</span>}
+                        <Button onClick={confirm} disabled={!value}>
+                          Confirm
+                        </Button>
+                      </li>
+                    );
+                  })}
                 </ul>
-              </Banner>
+              </div>
             )}
             {app.sync.missing.addresses.length === 0 && unmatched.length === 0 && app.sync.missing.carers_not_in_settings.length === 0 && (
-              <Banner tone="ok" title="Everything matched" />
+              <p className="text-sm text-ok">Everything matched.</p>
             )}
           </div>
         )}
-      </Card>
-
-      <div className="flex justify-end">
-        <Button variant="primary" onClick={() => app.setStep("settings")}>
-          Continue to Settings
-        </Button>
-      </div>
+      </Section>
     </div>
   );
 }

@@ -99,6 +99,7 @@ export interface ReportCarer {
   scheduled_minutes: number;
   travel_minutes: number;
   miles: number;
+  travel_mode?: string; // "car" or other; the roster shows a car or a walking icon
   availability: { day: number; start: number; end: number }[];
   issues: string[];
 }
@@ -106,6 +107,7 @@ export interface ReportCarer {
 export interface ReportClient {
   id: string;
   ref: string;
+  display_name?: string; // for example "Smith, J"; falls back to ref
   area: string;
   recent_carers: string[];
 }
@@ -128,6 +130,7 @@ export interface ReportVisit {
   locked: boolean;
   lock_reason: string | null;
   unfilled_cause?: "rules" | "hours" | "weekly_max" | "travel_or_booked" | null;
+  change_class?: "carer" | "time_with_change" | "time_note" | "time_within_tolerance" | "unchanged" | null;
   unfilled_reason: string | null;
   unfilled_detail: string[];
 }
@@ -150,6 +153,9 @@ export interface Report {
   clients: ReportClient[];
   visits: ReportVisit[];
   routes: Record<string, Partial<Record<DayKey, RouteStop[]>>>;
+  // The current rota in the same shape as `routes`, with travel_before per stop. Optional:
+  // the roster rebuilds it from visits (without travel) when it is missing.
+  current_routes?: Record<string, Partial<Record<DayKey, RouteStop[]>>>;
 }
 
 export interface Comparison {

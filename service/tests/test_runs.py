@@ -4,6 +4,7 @@ docs/ENGINE_API.md, exports, privacy, locks, DELETE and expiry. Made-up data onl
 import csv
 import io
 import json
+import re
 import time
 
 import pytest
@@ -325,11 +326,36 @@ def test_progress_and_status_values(client, files):
 def test_no_client_names_or_home_locations_in_the_result(two_runs):
     for mode in ("new", "improve"):
         _, res = result_of(two_runs, mode)
+        res = json.loads(json.dumps(res))  # a copy: the shared result is left as it is
+        # the only client name in a result is the short display name ("Surname, I")
+        for rep in res["teams"].values():
+            for cl in rep["clients"]:
+                assert re.fullmatch(r"[A-Za-z' -]+, [A-Z]", cl["display_name"]), cl["display_name"]
+                assert cl["display_name"].split(",")[0] in fake_data.CLIENT_LAST
+                cl["display_name"] = ""
         text = json.dumps(res)
-        names = client_names()
-        found = {n for n in names if n in text}
-        assert not found, "client names must never appear in a result"
+        assert not {n for n in fake_data.CLIENT_FIRST if n in text}, "client first names must never appear"
+        assert not {n for n in fake_data.CLIENT_LAST if n in text}, "client surnames only in display_name"
         assert '"home"' not in text and '"location"' not in text and '"lat"' not in text
+
+
+def test_display_names_travel_modes_and_current_routes(two_runs):
+    _, res = result_of(two_runs, "improve")
+    modes = {c["id"]: c["travel_mode"] for rep in res["teams"].values() for c in rep["carers"]}
+    assert set(modes.values()) <= {"car", "foot", "bus"} and modes["K001"] == "car"
+    assert modes["K003"] == "foot" and modes["K006"] == "bus"
+    for rep in res["teams"].values():
+        cur = rep["current_routes"]
+        assert cur and set(cur) <= {c["id"] for c in rep["carers"]}
+        for days in cur.values():
+            for day, stops in days.items():
+                assert day in rep["days"]
+                for st in stops:
+                    assert STOP <= set(st)
+        # the current routes hold exactly the current rota's visits
+        cur_visits = sorted(s["visit_id"] for days in cur.values() for stops in days.values() for s in stops)
+        expected = sorted(v["id"] for v in rep["visits"] for _ in v["current_assigned"])
+        assert cur_visits == expected
 
 
 def test_logs_hold_no_names(logs, two_runs):
