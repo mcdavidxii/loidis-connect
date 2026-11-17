@@ -284,5 +284,5 @@ def settings_warnings(s: SettingsFile, week_start: date) -> list[dict]:
     a = s.agency
     if a.get("pay_pence_per_hour") is None or a.get("mileage_pence_per_mile") is None or a.get("travel_time_paid") is None:
         add("agency_defaults",
-            "Pay rate, mileage rate or travel-time-paid are not set; engine defaults are used to cost travel.")
+            "Pay rate, mileage rate or travel-time-paid are not set; standard rates are used to work out travel cost.")
     return out

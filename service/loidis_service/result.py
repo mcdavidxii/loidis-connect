@@ -88,29 +88,28 @@ def _humanise(text: str, names: dict[str, str]) -> str:
     return text
 
 
-def unfilled_cause(rb: RegionBuild, visit_id: str, sched: dict[str, int], engine_reason: str | None):
-    """Why a visit is unfilled, from the engine's own rules: ("rules" | "hours" | "weekly_max" |
-    "travel_or_booked", plain reason). Counts only; carers are never named here."""
+def unfilled_cause(rb: RegionBuild, visit_id: str, sched: dict[str, int], details: list[str]):
+    """Why a visit is unfilled, as ("rules" | "hours" | "weekly_max" | "travel_or_booked", plain
+    sentence). `details` are the nearest carers and what kept them busy (display names)."""
     p = rb.problem
     vv = replace(p.visit_by_id[visit_id], locked_carers=[])
     need = vv.carers_needed
     elig = [k for k in p.carers if carer_rule_failure(p, k, vv) is None]
+    rules = "skills, gender, not allowed or leave"
     if len(elig) < need:
         if need > 1 and elig:
-            return "rules", f"Needs {need} carers but only {len(elig)} are allowed to do this visit (rules)."
-        return "rules", engine_reason or "No carer is allowed to do this visit (rules)."
+            return "rules", f"This visit needs {need} carers but only {len(elig)} meet the rules for it ({rules})."
+        return "rules", f"No carer meets the rules for this visit ({rules})."
     work = [k for k in elig if any(fits_block(vv, b) for b in k.blocks_on(vv.day))]
     if len(work) < need:
-        return "hours", (
-            f"{len(elig)} carer(s) are allowed but only {len(work)} are working at this time "
-            f"(need {need}), after leave and working hours.")
+        if not work:
+            return "hours", "No carer is working then."
+        return "hours", f"Only {len(work)} carer(s) working then; this visit needs {need}."
     room = [k for k in work if sched.get(k.id, 0) + vv.duration <= k.max_minutes_week]
     if len(room) < need:
-        return "weekly_max", (
-            f"{len(work)} carer(s) are working at this time but only {len(room)} are under their "
-            f"weekly maximum (need {need}).")
-    return "travel_or_booked", engine_reason or (
-        f"{len(work)} suitable carer(s) are working, but all are booked or too far away at this time.")
+        return "weekly_max", "The carers who are working then are at their weekly maximum."
+    nearest = f" (nearest: {'; '.join(details[:2])})" if details else ""
+    return "travel_or_booked", f"Carers are busy or too far away at this time{nearest}."
 
 
 def _region_report(
@@ -152,9 +151,10 @@ def _region_report(
         cur = rb.current.get(v["id"], [])
         assigned = v["assigned"]
         moved = set(assigned) != set(cur) or (bool(assigned) and v["start"] != v["preferred_start"])
-        reason, cause = v.get("unfilled_reason"), None
+        reason, cause = None, None
+        details = [_humanise(d, names) for d in v.get("unfilled_detail", [])]
         if not assigned:
-            cause, reason = unfilled_cause(rb, v["id"], sched, reason)
+            cause, reason = unfilled_cause(rb, v["id"], sched, details)
         visits.append(
             {
                 "id": v["id"], "booking_id": meta.booking.booking_id, "client_id": v["client_id"],
@@ -165,7 +165,7 @@ def _region_report(
                 "lock_reason": meta.lock_reason,
                 "unfilled_reason": reason,
                 "unfilled_cause": cause,
-                "unfilled_detail": [_humanise(d, names) for d in v.get("unfilled_detail", [])],
+                "unfilled_detail": details,
                 "override_suggestions": v.get("override_suggestions", []),
                 "change_class": v.get("change_class"),
                 "new_time_needed": v.get("new_time_needed"),
@@ -239,7 +239,7 @@ def _not_allowed(
         elif why.startswith("missing skill"):
             text = f"current carer not allowed: {why}"
         elif why in ("on annual leave", "off sick", "absent"):
-            text = "current carer on leave" if why != "off sick" else "current carer off sick"
+            text = "current carer not allowed: on leave" if why != "off sick" else "current carer not allowed: off sick"
         elif why.startswith("DBS"):
             text = "current carer not allowed: DBS expired"
         elif why.startswith("mandatory training"):
@@ -306,7 +306,7 @@ def build_changes(
                         reasons.append(res[0])
                         forced = forced or res[1]
                 if not cur:
-                    reasons.append("fills unallocated booking")
+                    reasons.append("fills an unallocated booking")
                 if round(saved) >= 1:
                     reasons.append(f"saves {round(saved)} min travel")
                 gained = [k for k in new if k not in cur]
@@ -315,9 +315,9 @@ def build_changes(
                 ):
                     reasons.append("familiar carer")
                 if cur and len(cur) == len(new) == 1 and cur_minutes.get(cur[0], 0) - cur_minutes.get(new[0], 0) >= 240:
-                    reasons.append("evens hours")
+                    reasons.append("fairer hours")
                 if not reasons:
-                    reasons.append("lower overall cost in the plan")
+                    reasons.append("better overall (travel and hours)")
             else:
                 reasons.append("start moves to fit the other changes to this carer's day")
             meta = rb.visit_meta[v["id"]]
@@ -343,7 +343,7 @@ def build_changes(
             shift = v["start"] - v["preferred_start"]
             how = f"{abs(shift)} min {'later' if shift > 0 else 'earlier'}"
             reason = (
-                f"Same carer; {how} to fit the travel estimate. Check the gap."
+                f"Same carer; {how} to fit the travel time. Check the gap."
                 if cls == "time_note"
                 else f"Same carer; {how}, within the {tolerance} min arrival tolerance. No change needed."
             )
@@ -449,10 +449,10 @@ def build_result(
         warnings.append({
             "code": "current_rota_not_feasible",
             "message": (
-                f"{cur_full - cur_ok} of the {cur_full} bookings the current rota fills break the engine's "
-                "rules (skills, gender, do-not-send, leave, expired DBS or training, working hours) or cannot "
-                "be reached in time (a carer double-booked, or too far from their previous visit). The engine "
-                f"will not plan those, so only {cur_ok} of the current rota's fills are comparable "
+                f"{cur_full - cur_ok} of the {cur_full} bookings the current rota fills break the rules "
+                "(skills, gender, do-not-send, leave, expired DBS or training, working hours) or cannot "
+                "be reached in time (a carer double-booked, or too far from their previous visit). They "
+                f"cannot be planned as they are, so only {cur_ok} of the current rota's fills are comparable "
                 f"(fill_check). {lost} bookings are filled in the current rota but not in this plan."),
         })
     return {
@@ -536,7 +536,7 @@ def notes_csv(result: dict) -> str:
         it = idx[n["booking_id"]]
         v = it["v"]
         shift = abs(_mins(n["new_start"]) - _mins(n["booked_start"]))
-        note = f"within {tol} min – no edit needed" if n["kind"] == "time_within_tolerance" else "tight gap – check"
+        note = f"within {tol} min – no edit needed" if n["kind"] == "time_within_tolerance" else "Short gap – check travel"
         rows.append((n["date"], n["carer"].lower(), v["preferred_start"], [
             _day(n["date"]), _uk(n["date"]), _booked(v), n["new_start"], it["client"], v["booking_type"],
             n["booking_id"], n["carer"], n["reason"], shift, note, ""]))
@@ -564,14 +564,14 @@ def allocation_csv(result: dict) -> str:
             base = [_day(iso), _uk(iso)]
             tail = [clients.get(v["client_id"], ""), v["booking_type"], v["booking_id"]]
             if not v["assigned"]:
-                rows.append((iso, 0, "", booked, base + ["UNALLOCATED", clock(booked), clock(booked + v["duration"]), ""]
+                rows.append((iso, 0, "", booked, base + ["Unallocated", clock(booked), clock(booked + v["duration"]), ""]
                              + tail + ["", v["unfilled_reason"] or "No carer found", ""]))
                 continue
             assigned = [names.get(k, k) for k in v["assigned"]]
             if not v["current_assigned"]:
                 compared = "Was unallocated"
             elif set(v["assigned"]) == set(v["current_assigned"]):
-                compared = "Same"
+                compared = "No change"
             else:
                 compared = "Changed from " + "; ".join(cur)
             new_start = clock(planned) if planned != booked else ""

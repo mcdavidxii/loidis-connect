@@ -170,7 +170,7 @@ def parse_bookings(data: bytes) -> tuple[list[Booking], BookingsInfo]:
     if missing:
         info.problems.append(
             f"Columns not found in the bookings file: {', '.join(missing)}. "
-            "Use the optimised bookings CSV from Reports > Bookings."
+            "Use the bookings CSV export from Reports > Bookings."
         )
         return [], info
 

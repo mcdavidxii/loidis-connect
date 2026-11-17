@@ -210,7 +210,7 @@ class RunStore:
                     raise ServiceError("The planning process stopped unexpectedly.", 500)
                 continue
             if kind == "error":
-                raise ServiceError(f"The engine could not plan {regions[idx].name} ({payload}).", 500)
+                raise ServiceError(f"The plan could not be made for {regions[idx].name} ({payload}).", 500)
             if kind == "day":
                 days_done += 1
                 shown = min(7, days_done // len(regions) + 1)

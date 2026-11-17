@@ -74,7 +74,7 @@ def test_cross_region_carer_is_home_plus_guest(files):
         assert guest.max_minutes_week == 35 * 60
         locked = {v.id: v for v in dors.problem.visits if v.id in dorset}
         assert all(v.locked_carers == ["K001"] and v.window == 0 for v in locked.values())
-        assert all(dors.visit_meta[i].lock_reason == "carer's home region is elsewhere" for i in dorset)
+        assert all(dors.visit_meta[i].lock_reason == "kept: carer's home area is elsewhere" for i in dorset)
         # and nobody else has those visits locked
         assert not [v for v in dors.problem.visits if v.id not in dorset and "K001" in v.locked_carers]
         msg = next(w["message"] for w in b.warnings if w["code"] == "cross_region_carers")
@@ -116,7 +116,7 @@ def test_rule_breaking_current_carers_are_named(files):
     assert _why(leeds, dns.booking_id, "K002", {}) == "current carer not allowed: do-not-send"
     assert _why(leeds, bar.booking_id, "K006", {}) == "current carer not allowed: safeguarding bar"
     assert _why(leeds, dns2.booking_id, "K003", {}) == "current carer not allowed: training expired"
-    assert _why(leeds, leave.booking_id, "K002", {}) == "current carer on leave"
+    assert _why(leeds, leave.booking_id, "K002", {}) == "current carer not allowed: on leave"
     assert _why(leeds, gender.booking_id, "K004", {}) == "current carer not allowed: gender preference"
     # a carer who is allowed gets no reason, until the weekly maximum is exceeded
     ok = next(b for b in by_ref["CL-001"] if b.day.weekday() == 0)
@@ -162,7 +162,7 @@ def test_outside_hours_visits_with_current_carers_are_locked(files):
         v = leeds.problem.visit_by_id
         locked, free = v[nights[0].booking_id], v[nights[1].booking_id]
         assert locked.locked_carers == ["K005"] and locked.window == 0
-        assert leeds.visit_meta[locked.id].lock_reason == "outside working hours: kept with current carer(s)"
+        assert leeds.visit_meta[locked.id].lock_reason == "kept with the carer who already has it (outside everyone's hours)"
         assert not free.locked_carers  # not staffed now: left to the engine
         blk = [x for x in leeds.problem.carer_by_id["K005"].availability if x.day == locked.day]
         assert any(x.start <= locked.start - 90 and x.end >= locked.start + locked.duration + 90 for x in blk)

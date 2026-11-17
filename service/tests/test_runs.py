@@ -154,7 +154,7 @@ def test_forced_changes_are_counted_separately(two_runs):
     # a carer whose training has expired), so some changes are forced
     assert sm["forced_by_rules"] == len(forced) >= 1
     assert all(c["reason"].startswith("current carer") and c["from_carers"] for c in forced)
-    assert not any(c["reason"].startswith("current carer not allowed") or c["reason"].startswith("current carer on leave")
+    assert not any(c["reason"].startswith("current carer not allowed")
                    for c in res["changes"] if not c["forced_by_rules"])
     assert sm["new_time_needed"] == sum(1 for c in res["changes"] if c["new_time_needed"])
     assert sm["time_notes"] + sm["time_within_tolerance"] == len(res["time_notes"])
@@ -246,7 +246,7 @@ def test_improve_changes_are_explained(two_runs):
     _, res = result_of(two_runs, "improve")
     ch = res["changes"]
     assert [(c["date"], c["booked_start"]) for c in ch] == sorted((c["date"], c["booked_start"]) for c in ch)
-    allowed = ("current carer", "fills unallocated booking", "saves ", "familiar carer", "evens hours", "lower overall cost", "start moves to fit")
+    allowed = ("current carer", "fills an unallocated booking", "saves ", "familiar carer", "fairer hours", "better overall", "start moves to fit")
     for c in ch:
         assert set(c) == {"booking_id", "client_ref", "date", "booked_start", "new_start", "from_carers", "to_carers", "kind", "reason", "new_time_needed", "forced_by_rules"}
         assert c["kind"] in ("carer", "time_with_change")
@@ -254,7 +254,7 @@ def test_improve_changes_are_explained(two_runs):
         assert c["to_carers"] and c["reason"]
         assert all(p.strip().startswith(allowed) for p in c["reason"].split(","))
         assert all(" " in n for n in c["to_carers"])  # display names, not IDs
-    assert any(c["from_carers"] == [] and c["reason"].startswith("fills unallocated") for c in ch)
+    assert any(c["from_carers"] == [] and c["reason"].startswith("fills an unallocated") for c in ch)
     for n in res["time_notes"]:
         assert n["kind"] in ("time_note", "time_within_tolerance") and n["new_start"] != n["booked_start"]
         shift = abs(_mins(n["new_start"]) - _mins(n["booked_start"]))
@@ -310,11 +310,11 @@ def test_exports(client, two_runs):
     assert {r[0] for r in body} <= {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
     assert all(r[11] == "" for r in body)  # Done is blank, for ticking
     # sorted by date, then unallocated first, then carer, then start
-    keys = [(_key_date(r[1]), 0 if r[2] == "UNALLOCATED" else 1, r[2].lower(), r[3]) for r in body]
+    keys = [(_key_date(r[1]), 0 if r[2] == "Unallocated" else 1, r[2].lower(), r[3]) for r in body]
     assert keys == sorted(keys)
-    un = [r for r in body if r[2] == "UNALLOCATED"]
+    un = [r for r in body if r[2] == "Unallocated"]
     assert un and all(r[10] and r[9] == "" for r in un)  # the reason is in "Compared with current"
-    assert {r[10].split(" from")[0] for r in body if r[2] != "UNALLOCATED"} <= {"Same", "Changed", "Was unallocated"}
+    assert {r[10].split(" from")[0] for r in body if r[2] != "Unallocated"} <= {"No change", "Changed", "Was unallocated"}
     assert any(r[9] for r in body)  # a double-up names the other carer
     # a name in the export is a display name ("Surname, I"), not the full client name
     assert all(re.fullmatch(r"[A-Za-z' -]+, [A-Z]", r[6]) for r in body)
@@ -338,7 +338,7 @@ def test_exports(client, two_runs):
     assert len(body) == len(imp_res["time_notes"]) > 0
     tol = imp_res["arrival_tolerance_minutes"]
     for r in body:
-        assert r[10] in (f"within {tol} min \u2013 no edit needed", "tight gap \u2013 check")
+        assert r[10] in (f"within {tol} min \u2013 no edit needed", "Short gap \u2013 check travel")
         assert (int(r[9]) <= tol) == (r[10].startswith("within")) and r[11] == ""
     keys = [(_key_date(r[1]), r[7].lower(), r[2][:5]) for r in body]
     assert keys == sorted(keys)
@@ -508,3 +508,32 @@ def test_fake_data_is_made_up():
     assert fake_data.WEEK_START.isoformat() == "2026-11-16"
     names = {c.name for c in fake_data.agency()[0]} | {c.name for c in fake_data.agency()[1]}
     assert len(names) == 33
+
+
+BANNED = re.compile(r"\b(engine|solver|optimi[sz]\w*|model|penalt\w*|feasible|pence per minute)\b", re.I)
+
+
+def _strings(x):
+    if isinstance(x, str):
+        yield x
+    elif isinstance(x, dict):
+        for v in x.values():
+            yield from _strings(v)
+    elif isinstance(x, list):
+        for v in x:
+            yield from _strings(v)
+
+
+def test_coordinator_text_avoids_technical_words(client, two_runs):
+    for mode in ("new", "improve"):
+        run_id, res = result_of(two_runs, mode)
+        bad = {s for s in _strings(res) if BANNED.search(s)}
+        assert not bad, bad
+        names = ["allocation.csv"] + (["changes.csv", "notes.csv"] if mode == "improve" else [])
+        for n in names:
+            text = client.get(f"/runs/{run_id}/export/{n}").content.decode("utf-8-sig")
+            assert not BANNED.search(text), n
+    _, res = result_of(two_runs, "improve")
+    reasons = {v["unfilled_reason"] for rep in res["teams"].values() for v in rep["visits"] if v["unfilled_reason"]}
+    assert all(r.endswith(".") for r in reasons)
+    assert any(r.startswith("Carers are busy or too far away at this time") or r.startswith("No carer") for r in reasons)

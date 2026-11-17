@@ -129,7 +129,7 @@ def _lock_outside_hours(problem: Problem, meta: dict, current: dict[str, list[st
             c.availability = _merge_blocks(
                 c.availability + [Block(v.day, max(0, v.start - GUEST_PAD_MINUTES),
                                         v.start + v.duration + GUEST_PAD_MINUTES)])
-        meta[v.id] = VisitMeta(meta[v.id].booking, True, "outside working hours: kept with current carer(s)")
+        meta[v.id] = VisitMeta(meta[v.id].booking, True, "kept with the carer who already has it (outside everyone's hours)")
         n += 1
     return n
 
@@ -443,7 +443,7 @@ def build(
                 any_time = not sc.has_hours()
                 if any_time:
                     any_time_ids.append(cid)
-                    issues.append("Available any time: the engine chooses their hours")
+                    issues.append("Available any time: their hours are chosen in the plan")
                 for d in range(7):
                     if d in leave_days.get(cid, ()) or d in other_days:
                         continue
@@ -552,7 +552,7 @@ def build(
                 locked_carers = list(cur)  # a guest keeps their own visits here
             reason = None
             if guest_locked:
-                reason = "carer's home region is elsewhere"
+                reason = "kept: carer's home area is elsewhere"
             elif locked_carers:
                 reason = "locked by coordinator"
             elif critical:
@@ -616,5 +616,5 @@ def build(
         notices.append({
             "code": "available_any_time",
             "message": f"{len(any_ids)} carer(s) are available any time (no working hours set), so the "
-                       f"engine chooses their hours: {_ids(any_ids)}."})
+                       f"their hours are chosen in the plan: {_ids(any_ids)}."})
     return Build(week_start, regions, warnings, seconds, mode, notices)

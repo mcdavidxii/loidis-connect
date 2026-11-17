@@ -64,7 +64,7 @@ known columns; counts and column names only in messages), then in the background
    DELETE stops the search at once), with progress;
 5. builds `result`: a report per region, the comparison with the current rota, the list of
    changes with reasons worked out from the numbers (travel minutes saved on that carer's
-   day, familiar carer, fills an unallocated booking, evens hours), tight-gap notes, and
+   day, familiar carer, fills an unallocated booking, fairer hours), short-gap notes, and
    warnings.
 
 Missing DBS or training dates are never filled with placeholders: the rule is left
