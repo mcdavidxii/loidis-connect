@@ -203,7 +203,7 @@ def test_available_any_time_default_and_flag(files):
     k13 = region(b, "Leeds").problem.carer_by_id["K013"]
     assert sorted((x.day, x.start, x.end) for x in k13.availability) == [(i, 0, 2880) for i in range(7)]
     assert not any(w["code"] == "no_working_hours" for w in b.warnings)
-    assert b.notices and b.notices[0]["code"] == "available_any_time"
+    assert any(n["code"] == "available_any_time" for n in b.notices)
     # a visit that runs past midnight fits such a block (a block ending at 24:00 could not hold it)
     night = Visit("v", "c", 4, 22 * 60, 0, 9 * 60)
     assert fits_block(night, Block(4, 0, 2880)) and not fits_block(night, Block(4, 0, 1440))
@@ -217,7 +217,7 @@ def test_available_any_time_default_and_flag(files):
     b3 = build(rows, fetch_api_data(), SettingsFile.from_dict(d), "new", 0, {}, None)
     assert "K013" in region(b3, "Leeds").not_planned
     assert any(w["code"] == "no_working_hours" and "K013" in w["message"] for w in b3.warnings)
-    assert not b3.notices
+    assert not any(n["code"] == "available_any_time" for n in b3.notices)
     # leave still removes the day; the flag survives a round trip
     s = SettingsFile.from_dict(d)
     assert SettingsFile.from_json(s.to_json()).carer("K013").available_any_time is False

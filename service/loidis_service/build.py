@@ -24,6 +24,7 @@ from .cll import ApiCarer, ApiData
 from .continuity import parse_continuity, recent_carers_from_report
 from .errors import ServiceError
 from .matching import carer_name_sets, match_carers
+from .routing import road_provider
 from .settings_file import DAYS, SettingsFile, norm_name, settings_warnings
 
 from loidis_rota.models import (  # noqa: E402
@@ -63,6 +64,7 @@ class RegionBuild:
     current: dict[str, list[str]]  # visit id -> carers in the current rota
     not_planned: set[str]  # carers in the problem who are not planned
     carer_notes: dict[str, list[str]]  # carer id -> issues to show
+    routing: object = None  # RoutingInfo for this region
     client_display: dict[str, str] = field(default_factory=dict)  # client id -> "Surname, I" (result only)
 
 
@@ -353,6 +355,8 @@ def build(
     transport_defaulted: list[str] = []
     clients_not_in_settings: set[str] = set()
     padded_blocks = 0
+    routing_infos: list = []
+    no_geo_set: set[str] = set()
     any_time_ids: list[str] = []
     locked_outside = 0
     ignored_locks: set[str] = set()
@@ -412,6 +416,7 @@ def build(
             else:
                 home = _centroid(pts) if pts else centre
                 no_geo_carers.append(cid)
+                no_geo_set.add(cid)
                 issues.append("Home location unknown or too far away; a position near their clients was used for travel")
             mode_ = ac.mode if ac and ac.mode else None
             if mode_ is None:
@@ -570,11 +575,20 @@ def build(
             meta[b.booking_id] = VisitMeta(b, critical or bool(locked_carers), reason)
 
         problem = Problem(week_start, clients, carers, visits, absences, engine_settings())
+        # real road travel for car trips if a local OSRM server is set up for this region; the same
+        # provider scores the current rota, so the comparison stays fair. Otherwise the estimate.
+        stand_ins = {c.location for c in clients if c.id not in locs}
+        stand_ins |= {c.home for c in carers if c.id in no_geo_set}
+        provider, rinfo = road_provider(
+            region, [c.location for c in clients] + [c.home for c in carers if c.travel_mode == "car"], stand_ins)
+        if provider is not None:
+            problem.travel = provider
+        routing_infos.append(rinfo)
         locked_outside += _lock_outside_hours(problem, meta, current)
         regions.append(
             RegionBuild(
                 name=region, problem=problem, visit_meta=meta, client_ref=client_ref,
-                carer_name={c.id: display[c.id] for c in carers}, current=current,
+                carer_name={c.id: display[c.id] for c in carers}, current=current, routing=rinfo,
                 not_planned=not_planned, carer_notes=notes,
                 client_display={b.client_id: short_client_name(b.client_name) for b in bs},
             )
@@ -583,8 +597,9 @@ def build(
     # ---- warnings from the build ----------------------------------------------------------------
     if no_geo_clients:
         warn("missing_address",
-             f"{len(set(no_geo_clients))} client(s) have no geocoded address in CareLineLive, so a "
-             f"position near the team's other clients was used for travel: {_ids(sorted(set(no_geo_clients)))}.")
+             f"{len(set(no_geo_clients))} client(s) have no geocoded address in CareLineLive, so travel to "
+             f"them can't be estimated; a position near the team's other clients was used: "
+             f"{_ids(sorted(set(no_geo_clients)))}.")
     if no_geo_carers:
         warn("carer_no_location",
              f"{len(set(no_geo_carers))} carer(s) have no usable home location, so a position near "
@@ -611,10 +626,30 @@ def build(
              f"{len(ignored_locks)} lock(s) could not be applied (unknown booking, carer not in "
              "that region, or a double-up whose other carers are not known).")
     notices: list[dict] = []
+    if routing_infos:
+        roads = [r.region for r in routing_infos if r.used]
+        est = [r.region for r in routing_infos if not r.used]
+        if roads and not est:
+            text = "Travel: road routes (OpenStreetMap), worked out on this computer."
+        elif roads:
+            text = f"Travel: road routes for {', '.join(roads)}; estimated travel for {', '.join(est)}."
+        else:
+            text = "Travel: estimated (straight-line distance with an allowance for roads), not road routes."
+        notices.append({"code": "travel_source", "message": text})
+        down = [r.region for r in routing_infos if r.unavailable]
+        if down:
+            warn("routing_unavailable",
+                 f"Road routes could not be used for {', '.join(down)} (the routing server did not answer), so "
+                 "estimated travel was used there.")
+        off = sum(r.partial_points for r in routing_infos)
+        if off:
+            warn("routing_partial",
+                 f"{off} place(s) are too far from a mapped road (outside the map area), so estimated travel "
+                 "was used for trips to or from them.")
     any_ids = sorted(set(any_time_ids))
     if any_ids:
         notices.append({
             "code": "available_any_time",
-            "message": f"{len(any_ids)} carer(s) are available any time (no working hours set), so the "
+            "message": f"{len(any_ids)} carer(s) are available any time (no working hours set), so "
                        f"their hours are chosen in the plan: {_ids(any_ids)}."})
     return Build(week_start, regions, warnings, seconds, mode, notices)

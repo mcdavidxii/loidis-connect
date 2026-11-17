@@ -57,7 +57,8 @@ def test_missing_dates_warn_and_are_not_filled_with_placeholders(files):
     assert {(x.start, x.end) for x in carers["K013"].availability} == {(0, 2880)}  # no hours: available any time
     assert len(carers["K013"].availability) == 7 - 0
     assert "K013" not in next(r for r in b.regions if r.name == "Leeds").not_planned
-    assert b.notices[0]["code"] == "available_any_time" and "K013" in b.notices[0]["message"]
+    n = next(n for n in b.notices if n["code"] == "available_any_time")
+    assert "K013" in n["message"]
 
 
 def test_regions_follow_the_team_mapping(files):

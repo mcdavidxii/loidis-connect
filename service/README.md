@@ -138,6 +138,24 @@ They cover CSV validation, the settings round trip, carer matching, full runs in
 modes (result shape, rules, reasons), both exports, locks, DELETE/expiry/shutdown, no
 redirect following, and that logs and errors contain no names.
 
+## Road routing (optional)
+
+Off by default. To use real road travel for car trips, run the local OSRM servers (`tools/routing/README.md`:
+`build.ps1` once, then `servers.ps1 start`: Dorset on 127.0.0.1:5001, Leeds on 127.0.0.1:5002) and start the
+service with
+
+```
+LOIDIS_OSRM_URLS="Leeds=http://127.0.0.1:5002,Dorset=http://127.0.0.1:5001"
+```
+
+(region names as in the settings file's `agency.team_regions`; only `localhost`/`127.0.0.1` URLs are accepted).
+For each run and region the service asks OSRM once (`GET /table/v1/driving/...`, `annotations=duration,distance`,
+in chunks, redirects refused, 60 s timeout) for travel between every client and car-driving carer's home, keeps
+the table in memory for the run only (deleted with it), and uses it for the plan and for scoring the current
+rota. Walking and bus carers keep the estimate; so does any place more than 1 km from a mapped road (warning
+`routing_partial`) and everything if OSRM is unreachable (warning `routing_unavailable`). The result has a
+`travel_source` notice saying which was used. Only counts are logged. Tests use a fake OSRM server.
+
 ## Search time
 
 `agency.search_seconds_per_day` (settings file; 10 if absent, "Quick"; the UI also offers 30, "Thorough"; any 1 to 120 is valid) is the search time per day per

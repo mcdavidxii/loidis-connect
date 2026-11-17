@@ -119,6 +119,12 @@ class Settings:
     unfilled_penalty: int = 10_000_000
 
 
+def _default_travel():
+    from .travel import EstimateTravel  # imported here: travel imports this module
+
+    return EstimateTravel()
+
+
 @dataclass
 class Problem:
     week_start: date
@@ -127,6 +133,8 @@ class Problem:
     visits: list[Visit]
     absences: list[Absence] = field(default_factory=list)
     settings: Settings = field(default_factory=Settings)
+    # travel times and distances; default is the estimate. Not saved in the Problem JSON.
+    travel: TravelProvider = field(default_factory=_default_travel, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         self.client_by_id = {c.id: c for c in self.clients}

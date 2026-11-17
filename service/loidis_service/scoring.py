@@ -16,7 +16,6 @@ from dataclasses import replace
 
 from loidis_rota.models import Problem
 from loidis_rota.solver import DayResult, Stop
-from loidis_rota.travel import miles, travel_minutes
 
 from .build import RegionBuild
 
@@ -25,7 +24,7 @@ def current_problem(rb: RegionBuild) -> Problem:
     """The region's problem with no current_carers, so the report does not classify changes."""
     p = rb.problem
     visits = [replace(v, current_carers=[]) for v in p.visits]
-    return Problem(p.week_start, p.clients, p.carers, visits, p.absences, p.settings)
+    return Problem(p.week_start, p.clients, p.carers, visits, p.absences, p.settings, travel=p.travel)
 
 
 def score_current(rb: RegionBuild) -> tuple[Problem, list[DayResult]]:
@@ -54,14 +53,14 @@ def score_current(rb: RegionBuild) -> tuple[Problem, list[DayResult]]:
         stops = []
         for v in vs:
             loc = problem.client_by_id[v.client_id].location
-            tm = travel_minutes(pos, loc, carer.travel_mode)
-            mi = round(miles(pos, loc), 2) if drives else 0.0
+            tm = problem.travel.minutes(pos, loc, carer.travel_mode)
+            mi = round(problem.travel.miles(pos, loc), 2) if drives else 0.0
             stops.append(Stop(v.id, v.start, v.start + v.duration, tm, mi))
             pos = loc
         week[day].routes[k] = stops
         week[day].travel_home[k] = (
-            travel_minutes(pos, carer.home, carer.travel_mode),
-            round(miles(pos, carer.home), 2) if drives else 0.0,
+            problem.travel.minutes(pos, carer.home, carer.travel_mode),
+            round(problem.travel.miles(pos, carer.home), 2) if drives else 0.0,
         )
     return problem, week
 
@@ -88,7 +87,7 @@ def feasible_current(rb: RegionBuild, problem: Problem, week: list[DayResult]) -
                 loc = problem.client_by_id[v.client_id].location
                 if prev is not None:
                     pv, ploc = prev
-                    if pv.start + pv.duration + travel_minutes(ploc, loc, carer.travel_mode) > v.start:
+                    if pv.start + pv.duration + problem.travel.minutes(ploc, loc, carer.travel_mode) > v.start:
                         dropped.add(v.id)
                         continue
                 prev = (v, loc)

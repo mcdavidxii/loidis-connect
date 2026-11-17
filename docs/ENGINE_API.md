@@ -462,3 +462,20 @@ penalty, feasible or pence per minute (a test checks the result and the CSVs). T
   needed" or "Short gap – check travel".
 - **allocation.csv**: `Carer` "Unallocated"; `Compared with current` "No change", "Changed from <carer(s)>",
   "Was unallocated" (or the unfilled reason for an unallocated row). Column headers are unchanged.
+
+### Service notes: road routing
+- Car travel can use real road times and miles from a local OSRM server (`LOIDIS_OSRM_URLS`, see
+  `service/README.md`; off by default). Per run and region the service builds one table of travel
+  between every client and car-driving carer's home, in memory for the run only, and uses it for the plan
+  and for scoring the current rota, so the comparison stays fair. Walking and bus carers, and any place
+  the map does not cover, keep the estimate.
+- `notices` has `travel_source` with plain wording: "Travel: road routes (OpenStreetMap), worked out on
+  this computer.", "Travel: road routes for X; estimated travel for Y." or "Travel: estimated
+  (straight-line distance with an allowance for roads), not road routes." The UI should show it near the
+  travel figures.
+- Warnings: `routing_unavailable` (the routing server was set up but did not answer; estimates were used
+  for the regions named) and `routing_partial` (N places more than 1 km from a mapped road, for example a
+  carer living outside the county; estimated travel is used for trips to or from them).
+- `missing_address` now says travel to those clients can't be estimated (a position near the team's
+  other clients is used, and they are never routed). Carers with no usable home keep the nearby-position
+  fallback, are never routed, and are listed in `carer_no_location`.

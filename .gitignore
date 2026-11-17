@@ -19,3 +19,6 @@ __pycache__/
 
 # Python virtualenvs
 .venv/
+
+# Road-map data for the local routing server (public OpenStreetMap extracts, large)
+data/routing/

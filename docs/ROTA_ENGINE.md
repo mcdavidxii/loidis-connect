@@ -96,9 +96,15 @@ you approve"). The coordinator decides; the engine never books them.
 
 ## Travel times
 
-- Prototype: straight-line distance times a road factor, at typical speeds per mode.
-- Next: road routing, either Google Maps (live traffic, paid per request) or a
-  self-hosted OSRM server (free, no live traffic). Cache results between postcodes.
+- Default (the estimate): straight-line distance times a road factor (1.35), at typical speeds per mode.
+- Travel is pluggable (`loidis_rota/travel.py`): a `TravelProvider` gives minutes and miles for a pair of
+  places and a mode. `problem.travel` holds it (default `EstimateTravel`; it is not part of the Problem
+  JSON); the solver, the report and the scoring of a current rota all use it, so every plan being compared
+  uses the same figures. `solve_week(..., travel=provider)` and `cover_absence(..., travel=provider)` set it
+  for a call. `MatrixTravel(table)` holds precomputed car travel keyed by (from, to) place; a pair that is
+  not in the table, and every other mode (walking, bus), falls back to the estimate.
+- Road routing: a local OSRM server on public OpenStreetMap extracts (see `tools/routing/README.md`); the
+  service builds the table and passes a `MatrixTravel` (see `service/README.md`). Live traffic is not used.
 
 ## Open questions
 

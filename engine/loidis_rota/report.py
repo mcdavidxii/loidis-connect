@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from .models import DAYS, Problem, Visit, hhmm
 from .rules import DO_NOT_SEND, carer_rule_failure, fits_block
 from .solver import DayResult
-from .travel import travel_minutes
 
 
 def _unfilled_detail(problem: Problem, day: DayResult, visit: Visit, limit: int = 3) -> list[str]:
@@ -20,7 +19,7 @@ def _unfilled_detail(problem: Problem, day: DayResult, visit: Visit, limit: int 
             continue
         if not any(fits_block(visit, b) for b in carer.blocks_on(visit.day)):
             continue
-        candidates.append((travel_minutes(carer.home, client.location, carer.travel_mode), carer))
+        candidates.append((problem.travel.minutes(carer.home, client.location, carer.travel_mode), carer))
     candidates.sort(key=lambda x: x[0])
     for _, carer in candidates[:limit]:
         busy = [

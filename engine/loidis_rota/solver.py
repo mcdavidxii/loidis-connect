@@ -26,7 +26,7 @@ from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 
 from .models import Block, Carer, Problem, Visit
 from .rules import carer_rule_failure, explain_unfilled, fits_block
-from .travel import MODES, miles, travel_minutes
+from .travel import MODES
 
 DAY_MINUTES = 24 * 60
 
@@ -155,11 +155,12 @@ def solve_day(
     current_of = [None] * n_veh + [v.current_carers for v, _ in stops]
     n = len(locations)
 
+    tp = problem.travel
     travel = {
-        mode: [[travel_minutes(locations[i], locations[j], mode) for j in range(n)] for i in range(n)]
+        mode: [[tp.minutes(locations[i], locations[j], mode) for j in range(n)] for i in range(n)]
         for mode in MODES
     }
-    dist = [[miles(locations[i], locations[j]) for j in range(n)] for i in range(n)]
+    dist = [[tp.miles(locations[i], locations[j]) for j in range(n)] for i in range(n)]
 
     def build(strict_pairs: bool):
         """Build the routing model. strict_pairs adds "both carers or neither" for
@@ -397,7 +398,11 @@ def _rest_after(problem: Problem, res: DayResult) -> dict[str, int]:
     return out
 
 
-def solve_week(problem: Problem, seconds_per_day: int = 10, progress=None) -> list[DayResult]:
+def solve_week(problem: Problem, seconds_per_day: int = 10, progress=None, travel=None) -> list[DayResult]:
+    """Plan Monday to Sunday. `travel`: an optional TravelProvider for this call (else the
+    problem's own, the estimate by default)."""
+    if travel is not None:
+        problem.travel = travel
     used: dict[str, int] = {}
     not_before: dict[str, int] = {}
     results = []
@@ -418,11 +423,14 @@ def cover_absence(
     day: int,
     absent_carer: str,
     seconds: int = 10,
+    travel=None,
 ) -> tuple[DayResult, dict]:
     """Re-plan one day after a carer drops out, keeping everyone else's visits in place.
 
     Returns the new day plan and a summary of what changed.
     """
+    if travel is not None:
+        problem.travel = travel
     before = week[day]
     used: dict[str, int] = {}
     for d in range(7):
