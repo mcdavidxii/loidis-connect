@@ -13,8 +13,10 @@ import {
   ArrowUp,
   CalendarRange,
   Car,
+  BarChart3,
   Check,
   CheckCircle2,
+  ClipboardCheck,
   ChevronLeft,
   ChevronRight,
   CloudDownload,
@@ -26,6 +28,7 @@ import {
   FileText,
   FlaskConical,
   Footprints,
+  HeartHandshake,
   Info,
   ListChecks,
   Lock,
@@ -35,6 +38,7 @@ import {
   Printer,
   RefreshCw,
   RotateCcw,
+  Route,
   Search,
   Settings,
   Sparkles,
@@ -93,3 +97,13 @@ export const IconArrowUp = ArrowUp;
 export const IconArrowDown = ArrowDown;
 export const IconArrowRight = ArrowRight;
 export const IconEqual = Equal;
+
+// Overview figures
+export const IconStatBookings = ClipboardCheck;
+export const IconStatTravel = Car;
+export const IconStatMiles = Route;
+export const IconStatContinuity = HeartHandshake;
+export const IconStatHours = Clock;
+export const IconStatSpread = BarChart3;
+export const IconStatMoved = ArrowLeftRight;
+export const IconStatUnallocated = AlertCircle;

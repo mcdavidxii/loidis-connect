@@ -37,6 +37,8 @@ interface AppState {
   start: () => Promise<void>;
   result: RunResult | null;
   runId: string | null;
+  query: string; // the top-bar search, used by the roster
+  setQuery: (q: string) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -63,6 +65,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<RunResult | null>(null);
   const [runId, setRunId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const runIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -151,9 +154,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       bookings, bookingsInfo, setBookings, continuity, setContinuity, settingsFileName, loadSettingsFile,
       settings, setSettings, sync, setSync,
       mode, setMode, locks, toggleLock,
-      runState, runError, running, start, result, runId,
+      runState, runError, running, start, result, runId, query, setQuery,
     }),
-    [step, mock, bookings, bookingsInfo, setBookings, continuity, settingsFileName, loadSettingsFile, settings, sync, mode, locks, toggleLock, runState, runError, running, start, result, runId],
+    [step, mock, bookings, bookingsInfo, setBookings, continuity, settingsFileName, loadSettingsFile, settings, sync, mode, locks, toggleLock, runState, runError, running, start, result, runId, query],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

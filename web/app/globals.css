@@ -1,36 +1,39 @@
 @import "tailwindcss";
 
 /*
-  Design system (single source). Neutral greys for text, borders and surfaces; one brand
-  accent for primary buttons, selected navigation and focus; semantic colours only for
-  status, as muted tints. Booking-type colours exist only inside the roster.
-  Type: system stack, 14px body, 12px meta, 16px section titles, 20px page titles,
-  weights 400 and 600 only. Spacing on a 4/8px scale, 1px borders, 6px radius.
+  Design system (single source). Soft blue-grey page, white rounded panels (12px) with a very
+  soft shadow, one calm blue accent for primary actions, selected navigation and focus,
+  semantic colours only for status as soft tints. Booking-type colours exist only inside the
+  roster. Type: system stack, 14px body, 12px meta, 16px section titles, 20px page titles,
+  weights 400 and 600 only. Spacing on a 4/8px scale, 1px borders.
 */
 @theme {
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  --color-ink: #111827;
-  --color-muted: #6b7280;
-  --color-line: #e5e7eb;
-  --color-canvas: #f9fafb;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-canvas: #eef2f8;
   --color-surface: #ffffff;
-  --color-hover: #f3f4f6;
+  --color-hover: #f1f5f9;
 
-  --color-brand: #0f766e;
-  --color-brand-strong: #115e59;
-  --color-brand-soft: #f0fdfa;
+  --color-brand: #0f7b6c;
+  --color-brand-strong: #0b6457;
+  --color-brand-soft: #e6f4f1;
 
   --color-ok: #15803d;
-  --color-ok-soft: #f0fdf4;
+  --color-ok-soft: #ecfdf3;
   --color-warn: #a16207;
-  --color-warn-soft: #fefce8;
+  --color-warn-soft: #fff8e1;
   --color-bad: #b91c1c;
-  --color-bad-soft: #fef2f2;
+  --color-bad-soft: #fef0f0;
   --color-info: #1d4ed8;
-  --color-info-soft: #eff6ff;
+  --color-info-soft: #eaf1ff;
 
   --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --shadow-panel: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 20px rgba(15, 23, 42, 0.05);
 }
 
 html,
@@ -52,6 +55,7 @@ h3 {
 :focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgb(15 123 108 / 0.35);
 }
 
 /* One stroke width for every icon. */
@@ -74,9 +78,9 @@ svg.lucide {
 /* Status strips: colour plus a pattern, and always named in the legend. */
 .strip-unchanged { background: #9ca3af; }
 .strip-changed { background: #4338ca; }
-.strip-moved { background: repeating-linear-gradient(90deg, #b45309 0 4px, transparent 4px 7px); }
+.strip-moved { background: repeating-linear-gradient(90deg, #0e7490 0 4px, transparent 4px 7px); }
 .strip-locked { background: repeating-linear-gradient(90deg, #111827 0 2px, transparent 2px 4px); }
-.strip-unallocated { background: #b91c1c; }
+.strip-unallocated { background: #b45309; }
 
 .hour-line { border-left: 1px solid var(--color-line); }
 .off-hours { background: repeating-linear-gradient(135deg, #f3f4f6 0 3px, #fff 3px 8px); }
@@ -96,4 +100,10 @@ svg.lucide {
     background: #fff;
     font-size: 11px;
   }
+}
+
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-panel);
 }

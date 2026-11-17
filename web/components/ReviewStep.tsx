@@ -3,9 +3,25 @@
 import { addDays, niceDate } from "@/lib/time";
 import type { Change, FillCheck, ReportMetrics, RunResult, TimeNote } from "@/lib/types";
 import { useApp } from "./AppProvider";
-import { IconArrowDown, IconArrowRight, IconArrowUp, IconEqual, IconLock, IconUnallocated, IconWarning } from "./icons";
+import {
+  IconArrowDown,
+  IconArrowRight,
+  IconArrowUp,
+  IconEqual,
+  IconLock,
+  IconStatBookings,
+  IconStatContinuity,
+  IconStatHours,
+  IconStatMiles,
+  IconStatMoved,
+  IconStatSpread,
+  IconStatTravel,
+  IconStatUnallocated,
+  IconUnallocated,
+  IconWarning,
+} from "./icons";
 import { Roster } from "./Roster";
-import { Badge, Button, Notice, PageHeader, Section, tableCls, tdCls, thCls } from "./ui";
+import { Badge, Button, Notice, PageHeader, Section, StatPanel, tableCls, tdCls, thCls } from "./ui";
 
 type Good = "down" | "up" | "none";
 
@@ -27,19 +43,6 @@ function Delta({ engine, current, good, unit = "", dp = 0 }: { engine: number; c
       {unit}
       {better != null && <span>{better ? "better" : "worse"}</span>}
     </span>
-  );
-}
-
-function Stat({ label, value, current, children }: { label: string; value: string | number; current: string | number; children?: React.ReactNode }) {
-  return (
-    <div className="min-w-0 px-3 first:pl-0">
-      <dt className="truncate text-xs text-muted">{label}</dt>
-      <dd>
-        <span className="block text-xl font-semibold leading-tight">{value}</span>
-        <span className="block text-xs text-muted">Current {current}</span>
-        {children}
-      </dd>
-    </div>
   );
 }
 
@@ -66,7 +69,7 @@ function FillCheckText({ fc }: { fc: FillCheck }) {
     ] as const
   ).filter(([, n]) => n > 0);
   return (
-    <details className="mt-3 text-sm">
+    <details className="text-sm">
       <summary className="cursor-pointer text-muted">Why fewer or more bookings are filled</summary>
       <div className="mt-2 space-y-1 text-muted">
         <p>
@@ -93,34 +96,38 @@ function Overview({ result }: { result: RunResult }) {
   const c = result.comparison.current;
   const pct = (m: ReportMetrics) => `${Math.round(m.continuity_rate * 100)}%`;
   const range = (m: ReportMetrics) => `${m.hours_min}-${m.hours_max} h`;
+  const ic = "h-5 w-5";
   return (
-    <Section title={result.mode === "new" ? "Engine plan against the current rota" : "After changes against the current rota"}>
-      <dl className="grid grid-cols-2 gap-y-4 divide-x divide-line md:grid-cols-4 xl:grid-cols-8">
-        <Stat label="Bookings filled" value={`${e.filled} of ${e.visits}`} current={c.filled}>
+    <section aria-label="Overview" className="mb-6">
+      <h2 className="mb-3 text-base">{result.mode === "new" ? "Engine plan against the current rota" : "After changes against the current rota"}</h2>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatPanel icon={<IconStatBookings aria-hidden className={ic} />} label="Bookings filled" value={`${e.filled} of ${e.visits}`} sub={`Current ${c.filled}`}>
           <Delta engine={e.filled} current={c.filled} good="up" />
-        </Stat>
-        <Stat label="Unallocated" value={e.unfilled} current={c.unfilled}>
+        </StatPanel>
+        <StatPanel icon={<IconStatUnallocated aria-hidden className={ic} />} label="Unallocated" value={e.unfilled} sub={`Current ${c.unfilled}`}>
           <Delta engine={e.unfilled} current={c.unfilled} good="down" />
-        </Stat>
-        <Stat label="Travel time" value={`${e.travel_hours} h`} current={`${c.travel_hours} h`}>
+        </StatPanel>
+        <StatPanel icon={<IconStatTravel aria-hidden className={ic} />} label="Travel time" value={`${e.travel_hours} h`} sub={`Current ${c.travel_hours} h`}>
           <Delta engine={e.travel_hours} current={c.travel_hours} good="down" unit=" h" dp={1} />
-        </Stat>
-        <Stat label="Miles" value={e.miles} current={c.miles}>
+        </StatPanel>
+        <StatPanel icon={<IconStatMiles aria-hidden className={ic} />} label="Miles" value={e.miles} sub={`Current ${c.miles}`}>
           <Delta engine={e.miles} current={c.miles} good="down" dp={1} />
-        </Stat>
-        <Stat label="Continuity" value={pct(e)} current={pct(c)}>
+        </StatPanel>
+        <StatPanel icon={<IconStatContinuity aria-hidden className={ic} />} label="Continuity" value={pct(e)} sub={`Current ${pct(c)}`}>
           <Delta engine={Math.round(e.continuity_rate * 100)} current={Math.round(c.continuity_rate * 100)} good="up" unit=" pts" />
-        </Stat>
-        <Stat label="Care hours per carer" value={range(e)} current={range(c)}>
-          <span className="text-xs text-muted">Median {e.hours_median} h</span>
-        </Stat>
-        <Stat label="Spread of hours" value={`${e.hours_stdev} h`} current={`${c.hours_stdev} h`}>
+        </StatPanel>
+        <StatPanel icon={<IconStatHours aria-hidden className={ic} />} label="Care hours per carer" value={range(e)} sub={`Current ${range(c)}, median ${e.hours_median} h`} />
+        <StatPanel icon={<IconStatSpread aria-hidden className={ic} />} label="Spread of hours" value={`${e.hours_stdev} h`} sub={`Current ${c.hours_stdev} h`}>
           <Delta engine={e.hours_stdev} current={c.hours_stdev} good="down" unit=" h" dp={1} />
-        </Stat>
-        <Stat label="Visits moved" value={e.visits_moved} current={0} />
-      </dl>
-      {result.fill_check && <FillCheckText fc={result.fill_check} />}
-    </Section>
+        </StatPanel>
+        <StatPanel icon={<IconStatMoved aria-hidden className={ic} />} label="Visits moved" value={e.visits_moved} sub="Different carer or time" />
+      </div>
+      {result.fill_check && (
+        <div className="panel mt-4 px-5 py-3">
+          <FillCheckText fc={result.fill_check} />
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -170,7 +177,7 @@ function Unallocated({ result }: { result: RunResult }) {
                 </td>
                 <td className={tdCls}>
                   {v.unfilled_cause ? (
-                    <Badge tone="bad" icon={<IconUnallocated aria-hidden className="h-3 w-3" />}>
+                    <Badge tone="warn" icon={<IconUnallocated aria-hidden className="h-3 w-3" />}>
                       {CAUSE_TEXT[v.unfilled_cause] ?? v.unfilled_cause}
                     </Badge>
                   ) : (
@@ -330,12 +337,12 @@ function Changes({ result }: { result: RunResult }) {
           </div>
         )}
       </Section>
-      <details className="mb-4 text-sm">
+      <details className="panel mb-4 p-4 text-sm">
         <summary className="cursor-pointer font-semibold">Tight gaps to check ({tight.length})</summary>
         <p className="my-2 text-xs text-muted">Same carer; the start moves by more than the arrival tolerance to fit travel. Check the gap is realistic.</p>
         <NoteTable notes={tight} nm={nm} />
       </details>
-      <details className="mb-8 text-sm">
+      <details className="panel mb-6 p-4 text-sm">
         <summary className="cursor-pointer font-semibold">Small time shifts, no edit needed ({small.length})</summary>
         <p className="my-2 text-xs text-muted">Within {tol} min of the booked time (arrival tolerance, a placeholder until confirmed).</p>
         <NoteTable notes={small} nm={nm} />
@@ -349,7 +356,7 @@ export function ReviewStep() {
   const result = app.result;
   if (!result) {
     return (
-      <div className="max-w-3xl">
+      <div className="w-full">
         <PageHeader title="Review" />
         <Notice title="No result yet">Run the engine first.</Notice>
       </div>
@@ -357,7 +364,7 @@ export function ReviewStep() {
   }
   const lockCount = Object.keys(app.locks).length;
   return (
-    <div className="max-w-[1500px]">
+    <div className="w-full">
       <PageHeader
         title="Review"
         subtitle={result.mode === "new" ? "New rota: the engine's full allocation against your current rota." : "Improve my rota: suggested changes to your current rota."}
@@ -371,7 +378,7 @@ export function ReviewStep() {
         }
       />
       {result.warnings.length > 0 && (
-        <details className="mb-6 rounded-md border border-line bg-warn-soft px-3 py-2 text-sm">
+        <details className="mb-6 rounded-xl bg-warn-soft px-4 py-3 text-sm">
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">
             <IconWarning aria-hidden className="h-4 w-4 text-warn" />
             {result.warnings.length} warning{result.warnings.length > 1 ? "s" : ""}

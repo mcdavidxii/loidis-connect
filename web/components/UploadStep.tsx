@@ -41,7 +41,7 @@ function DropZone({
         const f = e.dataTransfer.files[0];
         if (f) onFile(f);
       }}
-      className={`rounded-md border border-dashed px-3 py-2.5 ${over ? "border-brand bg-brand-soft" : "border-[#d1d5db] bg-surface"}`}
+      className={`rounded-xl border border-dashed px-4 py-3.5 ${over ? "border-brand bg-brand-soft" : "border-[#cbd5e1] bg-surface"}`}
     >
       <label htmlFor={id} className="block text-sm font-semibold">
         {title} <span className="text-xs font-normal text-muted">{required ? "required" : "optional"}</span>
@@ -162,7 +162,7 @@ export function UploadStep() {
     : [];
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full">
       <PageHeader
         title="Upload"
         subtitle="Bookings for one week, and the settings file you kept from last time."

@@ -39,7 +39,7 @@ function Tick({ id, done, onToggle, label }: { id: string; done: boolean; onTogg
       <input
         type="checkbox"
         aria-label={`Done: ${label}`}
-        className="h-4 w-4 accent-[#0f766e] print:hidden"
+        className="h-4 w-4 accent-[#0f7b6c] print:hidden"
         checked={done}
         onChange={() => onToggle(id)}
       />
@@ -90,7 +90,7 @@ export function Worksheet({ result }: { result: RunResult }) {
               type="button"
               aria-selected={dayIdx === i}
               onClick={() => setDayIdx(i)}
-              className={`h-8 rounded-md border px-2.5 text-sm ${dayIdx === i ? "border-brand bg-brand-soft font-semibold" : "border-line bg-surface hover:bg-hover"}`}
+              className={`h-9 rounded-lg border px-3 text-sm ${dayIdx === i ? "border-brand bg-brand-soft font-semibold" : "border-line bg-surface hover:bg-hover"}`}
             >
               {d[0].toUpperCase() + d.slice(1)} {niceDate(dayDate(i)).split(" ")[0]}
               <span className="ml-1 text-xs text-muted">{dayTotal(i)}</span>
@@ -100,7 +100,7 @@ export function Worksheet({ result }: { result: RunResult }) {
         <div className="flex items-center gap-4 text-sm">
           {!improve && (
             <label className="flex items-center gap-1.5">
-              <input type="checkbox" className="accent-[#0f766e]" checked={onlyChanged} onChange={(e) => setOnlyChanged(e.target.checked)} />
+              <input type="checkbox" className="accent-[#0f7b6c]" checked={onlyChanged} onChange={(e) => setOnlyChanged(e.target.checked)} />
               Show only changed
             </label>
           )}
@@ -148,8 +148,8 @@ export function Worksheet({ result }: { result: RunResult }) {
 
 function UnallocatedBlock({ rows, done, onToggle }: { rows: UnallocatedRow[]; done: Set<string>; onToggle: (k: string) => void }) {
   return (
-    <div className="mb-5 break-inside-avoid rounded-md border border-bad/40 bg-bad-soft px-3 py-2">
-      <h4 className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-bad">
+    <div className="mb-5 break-inside-avoid rounded-md border border-warn/40 bg-warn-soft px-3 py-2">
+      <h4 className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-warn">
         <IconUnallocated aria-hidden className="h-4 w-4" />
         Still unallocated ({rows.length})
       </h4>

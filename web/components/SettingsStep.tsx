@@ -5,7 +5,7 @@ import { hasAnyHours, isAnyTime, settingsToJson, settingsWarnings } from "@/lib/
 import { DAYS, DAY_LABELS, type DayKey, type HoursBlock, type SettingsCarer, type SettingsClient } from "@/lib/types";
 import { useApp } from "./AppProvider";
 import { IconAdd, IconDelete, IconDownload, IconUpload, IconWarning } from "./icons";
-import { Badge, Button, Notice, PageHeader, Section, inputCls, tableCls, tdCls, thCls } from "./ui";
+import { Badge, Button, Notice, PageHeader, inputCls, tableCls, tdCls, thCls } from "./ui";
 
 type Tab = "carers" | "clients" | "agency";
 // Default block when "Add" is pressed on a day: a 12-hour day shift, edited per carer.
@@ -72,7 +72,7 @@ function CarerPicker({ label, carers, value, onChange }: { label: string; carers
           <label key={c.id} className="inline-flex items-center gap-1.5 text-sm">
             <input
               type="checkbox"
-              className="accent-[#0f766e]"
+              className="accent-[#0f7b6c]"
               checked={value.includes(c.id)}
               onChange={() => onChange(value.includes(c.id) ? value.filter((x) => x !== c.id) : [...value, c.id])}
             />
@@ -230,7 +230,7 @@ function CarersTab() {
         </tbody>
       </table>
 
-      <Section title={carer.name} className="mt-6">
+      <div className="mt-6 border-t border-line pt-5"><h2 className="mb-3 text-base">{carer.name}</h2>
         <div className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-4">
             <Field label="Weekly maximum hours" hint="Empty: not checked.">
@@ -250,7 +250,7 @@ function CarersTab() {
               <input type="date" className={inputCls} value={carer.training_expiry ?? ""} onChange={(e) => patch({ training_expiry: e.target.value || null })} />
             </Field>
             <label className="flex items-center gap-2 self-end pb-1 text-sm">
-              <input type="checkbox" className="accent-[#0f766e]" checked={carer.active} onChange={(e) => patch({ active: e.target.checked })} />
+              <input type="checkbox" className="accent-[#0f7b6c]" checked={carer.active} onChange={(e) => patch({ active: e.target.checked })} />
               Active in planning
             </label>
           </div>
@@ -259,7 +259,7 @@ function CarersTab() {
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
               <input
                 type="checkbox"
-                className="accent-[#0f766e]"
+                className="accent-[#0f7b6c]"
                 checked={isAnyTime(carer)}
                 onChange={(e) =>
                   e.target.checked
@@ -280,7 +280,7 @@ function CarersTab() {
             )}
           </div>
         </div>
-      </Section>
+      </div>
     </div>
   );
 }
@@ -332,7 +332,7 @@ function ClientsTab() {
         </tbody>
       </table>
 
-      <Section title={client.ref} className="mt-6">
+      <div className="mt-6 border-t border-line pt-5"><h2 className="mb-3 text-base">{client.ref}</h2>
         <div className="space-y-5">
           <Field label="Gender preference of carer">
             <select
@@ -355,7 +355,7 @@ function ClientsTab() {
             onChange={(time_critical_booking_types) => patch({ time_critical_booking_types })}
           />
         </div>
-      </Section>
+      </div>
     </div>
   );
 }
@@ -509,7 +509,7 @@ export function SettingsStep() {
   ];
 
   return (
-    <div className="max-w-6xl">
+    <div className="w-full">
       <PageHeader
         title="Settings"
         subtitle="Kept in a settings file you download and upload again next week. It holds personal data."
@@ -555,7 +555,7 @@ export function SettingsStep() {
         </p>
       )}
       {warnings.length > 0 && (
-        <details className="mb-5 rounded-md border border-line bg-warn-soft px-3 py-2 text-sm">
+        <details className="mb-5 rounded-xl bg-warn-soft px-4 py-3 text-sm">
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">
             <IconWarning aria-hidden className="h-4 w-4 text-warn" />
             {warnings.length} thing(s) to check before running
@@ -568,7 +568,7 @@ export function SettingsStep() {
         </details>
       )}
 
-      <div role="tablist" aria-label="Settings sections" className="mb-4 flex gap-4 border-b border-line">
+      <div role="tablist" aria-label="Settings sections" className="mb-4 inline-flex gap-0.5 rounded-lg bg-hover p-0.5">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -578,13 +578,13 @@ export function SettingsStep() {
             aria-controls={`panel-${t.id}`}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`-mb-px h-9 border-b-2 text-sm ${tab === t.id ? "border-brand font-semibold text-ink" : "border-transparent text-muted hover:text-ink"}`}
+            className={`h-8 rounded-md px-3 text-sm ${tab === t.id ? "bg-surface font-semibold text-ink shadow-sm" : "text-muted hover:text-ink"}`}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
+      <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="panel p-6">
         {tab === "carers" && <CarersTab />}
         {tab === "clients" && <ClientsTab />}
         {tab === "agency" && <AgencyTab />}

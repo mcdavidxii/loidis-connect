@@ -23,7 +23,7 @@ export function RunStep() {
   const pct = Math.round((runState?.progress ?? 0) * 100);
 
   return (
-    <div className="max-w-3xl">
+    <div className="w-full">
       <PageHeader
         title="Run"
         subtitle="The engine only suggests. You make every change in CareLineLive yourself."
@@ -62,7 +62,7 @@ export function RunStep() {
           title="Change cost"
           info="How much a change must save before we suggest it. A carer's paid time costs about 21p a minute, so £10 is roughly 48 minutes of travel. A lower cost gives a longer list of changes."
         >
-          <fieldset className="grid gap-2 sm:grid-cols-2">
+          <fieldset className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
             <legend className="sr-only">Change cost</legend>
             {COSTS.map((c) => (
               <RadioRow

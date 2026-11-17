@@ -16,7 +16,7 @@ export function ExportStep() {
   const { result, runId, settings, setStep } = useApp();
   if (!result || !runId) {
     return (
-      <div className="max-w-3xl">
+      <div className="w-full">
         <PageHeader title="Export" />
         <Notice title="Nothing to export yet">Run the engine first.</Notice>
       </div>
@@ -49,7 +49,7 @@ export function ExportStep() {
   });
 
   return (
-    <div className="max-w-6xl">
+    <div className="w-full">
       <div className="print:hidden">
         <PageHeader
           title="Export"
