@@ -21,7 +21,7 @@ from .cll import fetch_api_data
 from .continuity import parse_continuity
 from .errors import ServiceError
 from .matching import match_carers
-from .result import allocation_csv, changes_csv
+from .result import allocation_csv, changes_csv, notes_csv
 from .runs import RunStore
 from .settings_file import SettingsFile
 
@@ -32,9 +32,9 @@ def _json(body, status: int = 200) -> JSONResponse:
     return JSONResponse(body, status_code=status, headers={"Cache-Control": "no-store"})
 
 
-def _download(text: str, filename: str, media: str) -> Response:
+def _download(text: str, filename: str, media: str, bom: bool = False) -> Response:
     return Response(
-        text.encode("utf-8"),
+        text.encode("utf-8-sig" if bom else "utf-8"),  # BOM (exports only) so Excel shows names and pound signs
         media_type=f"{media}; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{filename}"', "Cache-Control": "no-store"},
     )
@@ -176,14 +176,21 @@ def create_app(store: RunStore | None = None) -> FastAPI:
         run = get_run(run_id)
         if run.result is None:
             raise ServiceError("No result yet.", 409)
-        return _download(allocation_csv(run.result), "allocation.csv", "text/csv")
+        return _download(allocation_csv(run.result), "allocation.csv", "text/csv", bom=True)
 
     @app.get("/runs/{run_id}/export/changes.csv")
     async def export_changes(run_id: str):
         run = get_run(run_id)
         if run.result is None:
             raise ServiceError("No result yet.", 409)
-        return _download(changes_csv(run.result), "changes.csv", "text/csv")
+        return _download(changes_csv(run.result), "changes.csv", "text/csv", bom=True)
+
+    @app.get("/runs/{run_id}/export/notes.csv")
+    async def export_notes(run_id: str):
+        run = get_run(run_id)
+        if run.result is None:
+            raise ServiceError("No result yet.", 409)
+        return _download(notes_csv(run.result), "notes.csv", "text/csv", bom=True)
 
     @app.post("/sync")
     async def sync(request: Request):

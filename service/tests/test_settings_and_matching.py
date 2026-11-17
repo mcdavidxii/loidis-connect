@@ -47,15 +47,17 @@ def test_missing_dates_warn_and_are_not_filled_with_placeholders(files):
     codes = {w["code"]: w["message"] for w in settings_warnings(s, date(2026, 11, 16))}
     assert "K010" in codes["no_dbs_date"]
     assert "K003" in codes["expired"]
-    assert "K013" in codes["no_working_hours"]
+    assert "no_working_hours" not in codes  # no hours now means available any time
     rows, _ = parse_bookings(files["bookings"])
     b = build(rows, fetch_api_data(), s, "new", 0, {}, None)
     carers = {c.id: c for r in b.regions for c in r.problem.carers}
     assert carers["K010"].dbs_expiry == NOT_CHECKED == date.max  # unchecked, never 2099
     assert carers["K010"].training_expiry == date(2027, 6, 30)
     assert all(c.dbs_expiry.year != 2099 and c.training_expiry.year != 2099 for c in carers.values())
-    assert carers["K013"].availability == []  # no hours: not planned
-    assert "K013" in next(r for r in b.regions if r.name == "Leeds").not_planned
+    assert {(x.start, x.end) for x in carers["K013"].availability} == {(0, 2880)}  # no hours: available any time
+    assert len(carers["K013"].availability) == 7 - 0
+    assert "K013" not in next(r for r in b.regions if r.name == "Leeds").not_planned
+    assert b.notices[0]["code"] == "available_any_time" and "K013" in b.notices[0]["message"]
 
 
 def test_regions_follow_the_team_mapping(files):

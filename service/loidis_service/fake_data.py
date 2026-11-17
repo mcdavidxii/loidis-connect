@@ -375,7 +375,7 @@ def settings_dict(all_matches: bool = True) -> dict:
             {
                 "id": c.id, "name": c.name, "teams": [c.team], "working_hours": c.hours,
                 "weekly_max_hours": c.weekly_max, "skills": c.skills, "dbs_expiry": c.dbs,
-                "training_expiry": c.training, "active": c.active,
+                "training_expiry": c.training, "active": c.active, "available_any_time": True,
             }
             for c in carers
         ],

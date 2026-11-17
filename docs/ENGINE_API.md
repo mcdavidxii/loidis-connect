@@ -125,15 +125,38 @@ IDs, client reference codes and counts, never names. The service also raises
 `carer_no_team`, `hours_padded` and `lock_ignored` (see [Service notes](#service-notes)). The trial's placeholders (DBS and training 2099, empty
 rules) must not be used to fill gaps.
 
-### `GET /runs/{id}/export/allocation.csv`
-The full allocation, one row per booking, both teams:
-`booking_id, client_ref, date, start, end, booking_type, team, carer_1, carer_2, status`
-where `status` is `changed`, `unchanged` or `unallocated`.
+### Exports (layout of 2026-11-17, replaces the first draft)
+The coordinator copies the export into CareLineLive by hand, day by day, carer by carer, so
+each line is one instruction. All exports are UTF-8 **with BOM** (Excel shows names and pound
+signs), dates `dd/mm/yyyy`, times `HH:MM`, sent as downloads (`Content-Disposition`), and end
+with a blank `Done` column for ticking. Carer and client names are the display names of the
+result (personal data for the coordinator only).
 
-### `GET /runs/{id}/export/changes.csv`
-`booking_id, client_ref, date, booked_start, new_start, from_carers, to_carers, kind,
-reason`. Carer lists are joined with `; `. Time notes are appended with
-`kind = time_note`. Both exports are sent as downloads (`Content-Disposition`).
+### `GET /runs/{id}/export/allocation.csv` (New rota)
+Columns, in order: `Day, Date, Carer, Start, End, New start, Client, Booking type, Booking ID,
+Double-up with, Compared with current, Done`. One row per carer per booking (a double-up has a
+row for each carer; `Double-up with` names the other), sorted by date, then carer, then start.
+`Start`/`End` are the booked times; `New start` is blank if the plan keeps the booked start.
+`Compared with current` is `Same`, `Changed from <carer(s)>` or `Was unallocated`. Unfilled
+bookings come first on each day with `Carer` = `UNALLOCATED` and the reason in
+`Compared with current`.
+
+### `GET /runs/{id}/export/changes.csv` (Improve my rota)
+Columns, in order: `Day, Date, Give to, Booked time, New start, Client, Booking type, Booking ID,
+Action, Currently with, Required, Why, Done`. One row per booking to change, sorted by date, then
+`Give to`, then booked start. `Booked time` is `HH:MM–HH:MM` (en dash). `Action` is `Allocate`
+(unallocated booking), `Reassign`, `Reassign + change time` or `Change time` (same carer in
+`Give to`). `Currently with` is the current carer(s) or `Unallocated`. `Required` is `Yes` when
+`forced_by_rules`, else blank. `Why` is the change reason. Within-tolerance shifts and time notes
+are not in this file.
+
+### `GET /runs/{id}/export/notes.csv` (Improve my rota)
+Columns, in order: `Day, Date, Booked time, New start, Client, Booking type, Booking ID,
+Currently with, Why, Shift (min), Note, Done`, sorted by date, carer, booked start. One row per
+entry of `time_notes` (same carer, start moved). `Shift (min)` is the size of the shift (no sign;
+`New start` shows the direction). `Note` is `within N min – no edit needed` (N is
+`arrival_tolerance_minutes`, now also in the result) or `tight gap – check`. In New rota mode
+the file has only the header.
 
 ### `DELETE /runs/{id}`
 Deletes the uploaded files and the result. `{ "deleted": true }`. Idempotent in effect
@@ -241,7 +264,8 @@ It holds personal data. Versioned so that a later release can read old files.
 | `version` | Integer, currently `1`. A service must reject a version it does not know, with a plain message. |
 | `agency.*` | The agency settings table in `MVP.md`. `null` for the pay, mileage and travel-time fields means "engine default" (and raises the `agency_defaults` warning). `change_cost_pence` is overridden by the `change_cost_pence` form field of `POST /runs`. |
 | `agency.team_regions` | **Added by the service.** Which planning region each CareLineLive team belongs to; teams in the same region are planned together and each region is one entry in `result.teams`. Optional; the default is the mapping shown (Leeds; Dorset = Dorchester + Weymouth). A client's team comes from the `Team` column of the bookings; a carer's regions come from `carers[].teams` (else CareLineLive, else the regions of the visits they are on now). |
-| `carers[].working_hours` | Keys `mon`..`sun`; each a list of blocks with `HH:MM` `start` and `end`. An `end` earlier than or equal to `start` means the block ends the next day (a night). A missing day or empty list means not working. A carer with no hours at all is not planned. |
+| `carers[].working_hours` | Keys `mon`..`sun`; each a list of blocks with `HH:MM` `start` and `end`. An `end` earlier than or equal to `start` means the block ends the next day (a night). **A carer with no blocks at all is available any time** (see `available_any_time`); a carer with some blocks is only available in them (a missing day or empty list on such a carer means not working that day). |
+| `carers[].available_any_time` | **Added by the service.** Boolean, default `true` (also when the key is missing, and for carers new to the file). With no working-hours blocks: `true` = available 00:00 to 24:00 every day they are not on leave, and the engine chooses their hours; `false` = not planned. Explicit blocks always win. |
 | `carers[].weekly_max_hours` | Number or `null` (rule not checked, warning raised). |
 | `carers[].dbs_expiry`, `training_expiry` | `YYYY-MM-DD` or `null`. `null` means that rule is not checked, with a warning. A date before the visit means the carer is not planned for it. |
 | `carers[].active` | `false` for carers who are employed but not on the rota. |
@@ -397,3 +421,23 @@ the web app already sends or reads.
 - `teams[].current_routes` is the current rota's routes in the same shape as `routes`
   (`{ <carer id>: { <day>: [ { visit_id, client_id, start, end, travel_before, miles_before,
   shared_with[] } ] } }`), from the scoring of the current rota with the same travel model.
+
+### Service notes: availability any time, exports
+- **Available any time (decision 2026-11-17).** A carer with no working-hours blocks is available at
+  any time unless `available_any_time` is `false`. The engine gets one block a day from 00:00 to
+  48:00 (a block ending at 24:00 could not hold a visit that runs past midnight, because the engine
+  needs the whole visit inside the block; the next day's block starts at 00:00 again, and the
+  engine's rest after anything ending past midnight stops a late-night carer starting early). In
+  the result the block is shown as 00:00 to 24:00. The weekly maximum, equal-hours balancing and
+  leave still apply. The `no_working_hours` warning is now raised only for a carer marked not
+  available with no hours. A quiet **notice** replaces it: the result has `notices`, a list of
+  `{ code, message }` (not warnings), with `available_any_time` and a count: "N carer(s) are
+  available any time (no working hours set), so the engine chooses their hours".
+- **Long days.** Nothing stops one carer getting a very long or split day (for example 06:00 and
+  23:00 visits): there is no per-day hours limit, no span limit and no break rule; only the weekly
+  maximum (a carer with none set has no limit at all) and the 11-hour rest after anything that runs
+  past midnight. Proposed, not built: settings `max_hours_per_day` and `max_span_hours` (first start
+  to last end), done in the engine as a cap on the day's work and `SetSpanUpperBoundForVehicle` on
+  the time dimension.
+- **Exports** are laid out as above (UTF-8 with BOM, `dd/mm/yyyy`, `HH:MM`); the old column lists
+  are gone and `notes.csv` is new. The result has `arrival_tolerance_minutes`.

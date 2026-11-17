@@ -24,6 +24,9 @@ export interface SettingsCarer {
   name: string;
   teams: string[];
   working_hours: Partial<Record<DayKey, HoursBlock[]>>;
+  // true (default for new carers): available 00:00-24:00 and the engine chooses their hours.
+  // A carer with no blocks is treated the same way.
+  available_any_time?: boolean;
   weekly_max_hours: number | null;
   skills: string[];
   dbs_expiry: string | null; // YYYY-MM-DD
@@ -222,6 +225,7 @@ export interface RunResult {
   comparison: Comparison;
   changes: Change[];
   time_notes: TimeNote[];
+  arrival_tolerance_minutes?: number;
   change_summary?: ChangeSummary | null;
   fill_check?: FillCheck | null;
   warnings: RunWarning[];

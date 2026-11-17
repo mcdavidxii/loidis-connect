@@ -19,6 +19,7 @@ import {
   ChevronRight,
   CloudDownload,
   Clock,
+  Copy,
   Download,
   Equal,
   FileSpreadsheet,
@@ -31,6 +32,7 @@ import {
   Pencil,
   Play,
   Plus,
+  Printer,
   RefreshCw,
   RotateCcw,
   Search,
@@ -64,6 +66,8 @@ export const IconPrev = ChevronLeft;
 export const IconNext = ChevronRight;
 export const IconRefresh = RefreshCw;
 export const IconClose = X;
+export const IconCopy = Copy;
+export const IconPrint = Printer;
 
 // General
 export const IconWarning = AlertTriangle;

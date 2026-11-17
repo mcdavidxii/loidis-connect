@@ -73,6 +73,6 @@ export function deleteRun(id: string): void {
   fetch(`${BASE}/runs/${encodeURIComponent(id)}`, { method: "DELETE", keepalive: true }).catch(() => undefined);
 }
 
-export function exportUrl(id: string, file: "allocation.csv" | "changes.csv"): string {
+export function exportUrl(id: string, file: "allocation.csv" | "changes.csv" | "notes.csv"): string {
   return `${BASE}/runs/${encodeURIComponent(id)}/export/${file}`;
 }

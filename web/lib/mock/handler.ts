@@ -2,11 +2,12 @@
 // Everything here is made up. Runs live in memory only and are purged after 30 minutes.
 
 import { parseCsv, toCsv } from "../csv";
-import { hhmm, toMins } from "../time";
+import { toMins } from "../time";
 import type { RunResult, RunState, SettingsFile, SyncResult } from "../types";
 import { validateSettings } from "../settings";
 import { getAgency, exampleSettings, isoDate } from "./agency";
 import { runMock, sampleBookingRows } from "./engine";
+import { allocationCsvRows, buildWorksheet, changesCsvRows, notesCsvRows } from "../worksheet";
 
 interface StoredRun {
   created: number;
@@ -30,7 +31,7 @@ function json(body: unknown, status = 200): Response {
 }
 
 function download(text: string, filename: string, type: string): Response {
-  return new Response(text, {
+  return new Response("\uFEFF" + text, {
     headers: {
       "Content-Type": `${type}; charset=utf-8`,
       "Content-Disposition": `attachment; filename="${filename}"`,
@@ -186,36 +187,10 @@ export async function handleMock(req: Request, path: string[]): Promise<Response
     }
     if (c === "export" && method === "GET" && run.result) {
       const res = run.result;
-      if (d === "allocation.csv") {
-        const rows: (string | number)[][] = [
-          ["booking_id", "client_ref", "date", "start", "end", "booking_type", "team", "carer_1", "carer_2", "status"],
-        ];
-        for (const [team, rep] of Object.entries(res.teams)) {
-          const names = new Map(rep.carers.map((x) => [x.id, x.name]));
-          const refs = new Map(rep.clients.map((x) => [x.id, x.ref]));
-          for (const v of [...rep.visits].sort((x, y) => x.day - y.day || x.preferred_start - y.preferred_start)) {
-            const start = v.start ?? v.preferred_start;
-            rows.push([
-              v.booking_id, refs.get(v.client_id) ?? "", isoDate(rep.week_start, v.day), hhmm(start), hhmm(start + v.duration),
-              v.booking_type, team, names.get(v.assigned[0]) ?? "", names.get(v.assigned[1]) ?? "",
-              v.assigned.length ? (v.moved ? "changed" : "unchanged") : "unallocated",
-            ]);
-          }
-        }
-        return download(toCsv(rows), "allocation.csv", "text/csv");
-      }
-      if (d === "changes.csv") {
-        const rows: (string | number)[][] = [
-          ["booking_id", "client_ref", "date", "booked_start", "new_start", "from_carers", "to_carers", "kind", "reason"],
-          ...res.changes.map((x) => [
-            x.booking_id, x.client_ref, x.date, x.booked_start, x.new_start ?? "", x.from_carers.join("; "), x.to_carers.join("; "), x.kind, x.reason,
-          ]),
-          ...res.time_notes.map((x) => [
-            x.booking_id, x.client_ref, x.date, x.booked_start, x.new_start, x.carer, x.carer, x.kind, x.reason,
-          ]),
-        ];
-        return download(toCsv(rows), "changes.csv", "text/csv");
-      }
+      const w = buildWorksheet(res);
+      if (d === "allocation.csv") return download(toCsv(allocationCsvRows(w)), "allocation.csv", "text/csv");
+      if (d === "changes.csv") return download(toCsv(changesCsvRows(w)), "changes.csv", "text/csv");
+      if (d === "notes.csv") return download(toCsv(notesCsvRows(w)), "notes.csv", "text/csv");
     }
     if (c === "export" && !run.result) return json({ error: "No result." }, 409);
   }

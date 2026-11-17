@@ -19,7 +19,7 @@ import type {
 } from "../types";
 import { DAYS } from "../types";
 import { hhmm, toMins } from "../time";
-import { settingsWarnings } from "../settings";
+import { isAnyTime, settingsWarnings } from "../settings";
 import { type FakeCarer, type FakeClient, type FakeVisit, getAgency, isoDate, rng } from "./agency";
 
 const PENCE_PER_TRAVEL_MIN = 21;
@@ -48,7 +48,7 @@ function buildCtx(settings: SettingsFile | null): Ctx {
     if (!s.active) inactive.add(c.id);
     return {
       ...c,
-      hours: s.working_hours,
+      hours: isAnyTime(s) ? Object.fromEntries(DAYS.map((d) => [d, [{ start: "00:00", end: "24:00" }]])) : s.working_hours,
       skills: s.skills,
       weeklyMaxHours: s.weekly_max_hours ?? 60,
       dbsExpiry: s.dbs_expiry,
@@ -614,6 +614,7 @@ export function runMock(p: MockParams): RunResult {
     comparison,
     changes,
     time_notes: timeNotes,
+    arrival_tolerance_minutes: ctx.tolerance,
     fill_check: fillCheck(ctx, sol, cur),
     change_summary:
       p.mode === "improve"

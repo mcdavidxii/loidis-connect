@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { hasAnyHours, settingsToJson, settingsWarnings } from "@/lib/settings";
+import { hasAnyHours, isAnyTime, settingsToJson, settingsWarnings } from "@/lib/settings";
 import { DAYS, DAY_LABELS, type DayKey, type HoursBlock, type SettingsCarer, type SettingsClient } from "@/lib/types";
 import { useApp } from "./AppProvider";
 import { IconAdd, IconDelete, IconDownload, IconUpload, IconWarning } from "./icons";
@@ -178,7 +178,7 @@ function CarersTab() {
   const carer = settings.carers.find((c) => c.id === sel) ?? settings.carers[0];
   const patch = (p: Partial<SettingsCarer>) =>
     setSettings((s) => ({ ...s, carers: s.carers.map((c) => (c.id === carer?.id ? { ...c, ...p } : c)) }));
-  const incomplete = (c: SettingsCarer) => c.active && (!hasAnyHours(c) || !c.dbs_expiry || !c.training_expiry || c.weekly_max_hours == null);
+  const incomplete = (c: SettingsCarer) => c.active && (!c.dbs_expiry || !c.training_expiry || c.weekly_max_hours == null);
 
   if (!carer) return <Notice title="No carers yet">Upload a settings file or sync from CareLineLive on the Upload screen.</Notice>;
   return (
@@ -189,6 +189,7 @@ function CarersTab() {
           <tr>
             <th scope="col" className={thCls}>Carer</th>
             <th scope="col" className={thCls}>Team</th>
+            <th scope="col" className={thCls}>Hours</th>
             <th scope="col" className={thCls}>Max hours</th>
             <th scope="col" className={thCls}>DBS expiry</th>
             <th scope="col" className={thCls}>Training expiry</th>
@@ -209,6 +210,7 @@ function CarersTab() {
                 </button>
               </th>
               <td className={tdCls}>{c.teams.join(", ")}</td>
+              <td className={tdCls}>{isAnyTime(c) ? "Any time" : `${DAYS.filter((d) => (c.working_hours[d]?.length ?? 0) > 0).length} days`}</td>
               <td className={tdCls}>{c.weekly_max_hours ?? "-"}</td>
               <td className={tdCls}>{c.dbs_expiry ?? "-"}</td>
               <td className={tdCls}>{c.training_expiry ?? "-"}</td>
@@ -253,7 +255,30 @@ function CarersTab() {
             </label>
           </div>
           <Chips label="Skills" options={SKILL_OPTIONS} value={carer.skills} onChange={(skills) => patch({ skills })} />
-          <HoursEditor carer={carer} onChange={(working_hours) => patch({ working_hours })} />
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
+              <input
+                type="checkbox"
+                className="accent-[#0f766e]"
+                checked={isAnyTime(carer)}
+                onChange={(e) =>
+                  e.target.checked
+                    ? patch({ available_any_time: true, working_hours: {} })
+                    : patch({
+                        available_any_time: false,
+                        // With no blocks a carer counts as any time, so start with one 12-hour block.
+                        working_hours: hasAnyHours(carer) ? carer.working_hours : { mon: [{ ...DEFAULT_SHIFT }] },
+                      })
+                }
+              />
+              Available any time
+            </label>
+            {isAnyTime(carer) ? (
+              <p className="text-sm text-muted">The engine chooses this carer&apos;s hours (00:00–24:00).</p>
+            ) : (
+              <HoursEditor carer={carer} onChange={(working_hours) => patch({ working_hours })} />
+            )}
+          </div>
         </div>
       </Section>
     </div>
@@ -524,6 +549,11 @@ export function SettingsStep() {
         </div>
       )}
 
+      {settings.carers.some((c) => c.active && isAnyTime(c)) && (
+        <p className="mb-4 text-sm text-muted">
+          {settings.carers.filter((c) => c.active && isAnyTime(c)).length} carer(s) are available any time; the engine chooses their hours.
+        </p>
+      )}
       {warnings.length > 0 && (
         <details className="mb-5 rounded-md border border-line bg-warn-soft px-3 py-2 text-sm">
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">

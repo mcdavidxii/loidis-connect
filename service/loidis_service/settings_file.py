@@ -57,6 +57,9 @@ class CarerSettings:
     dbs_expiry: date | None = None
     training_expiry: date | None = None
     active: bool = True
+    # no working-hours blocks and True (the default): available 00:00-24:00 every day; the engine
+    # chooses their hours. Explicit blocks always win. False with no blocks: not planned.
+    available_any_time: bool = True
 
     def blocks(self, day: int) -> list[tuple[int, int]]:
         """Working blocks for a weekday as (start, end) minutes; a block that ends at or
@@ -117,7 +120,7 @@ class SettingsFile:
                 "weekly_max_hours": c.weekly_max_hours, "skills": c.skills,
                 "dbs_expiry": c.dbs_expiry.isoformat() if c.dbs_expiry else None,
                 "training_expiry": c.training_expiry.isoformat() if c.training_expiry else None,
-                "active": c.active,
+                "active": c.active, "available_any_time": c.available_any_time,
             }
 
         def client(c: ClientSettings) -> dict:
@@ -206,6 +209,7 @@ class SettingsFile:
                     skills=list(c.get("skills") or []),
                     dbs_expiry=dates["dbs_expiry"], training_expiry=dates["training_expiry"],
                     active=c.get("active", True) is not False,
+                    available_any_time=c.get("available_any_time", True) is not False,
                 )
             )
         if bad_hours:
@@ -248,10 +252,11 @@ def settings_warnings(s: SettingsFile, week_start: date) -> list[dict]:
     def add(code: str, message: str) -> None:
         out.append({"code": code, "message": message})
 
-    no_hours = [c for c in active if not c.has_hours()]
+    no_hours = [c for c in active if not c.has_hours() and not c.available_any_time]
     if no_hours:
         add("no_working_hours",
-            f"{len(no_hours)} active carer(s) have no working hours and will not be planned: "
+            f"{len(no_hours)} active carer(s) are marked not available and have no working hours, so "
+            f"they will not be planned: "
             f"{', '.join(c.id for c in no_hours)}.")
     no_dbs = [c for c in active if not c.dbs_expiry]
     if no_dbs:

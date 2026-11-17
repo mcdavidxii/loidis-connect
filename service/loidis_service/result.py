@@ -17,7 +17,7 @@ from loidis_rota.report import build_report
 from loidis_rota.rules import carer_rule_failure, fits_block
 from loidis_rota.solver import DayResult
 
-from .build import Build, RegionBuild
+from .build import ANY_TIME_END, Build, RegionBuild
 from .csvutil import to_csv
 from .scoring import feasible_current, score_current
 
@@ -135,7 +135,9 @@ def _region_report(
                 "gender": c["gender"], "skills": c["skills"],
                 "contracted_minutes": c["contracted_minutes"], "max_minutes": c["max_minutes"],
                 "scheduled_minutes": c["scheduled_minutes"], "travel_minutes": c["travel_minutes"],
-                "miles": c["miles"], "availability": c["availability"], "issues": issues,
+                "miles": c["miles"],
+                "availability": [{**a, "end": 1440} if a["end"] >= ANY_TIME_END else a for a in c["availability"]],
+                "issues": issues,
                 "travel_mode": c["travel_mode"],
             }
         )
@@ -462,44 +464,120 @@ def build_result(
         "change_summary": change_summary(changes, time_notes) if improve else None,
         "fill_check": fill_check,
         "time_notes": time_notes,
+        "arrival_tolerance_minutes": int(getattr(build.regions[0].problem.settings, "arrival_tolerance_minutes", 0) or 0),
         "warnings": warnings,
+        "notices": list(build.notices),
     }
 
 
 # --------------------------------------------------------------------------- exports
-def allocation_csv(result: dict) -> str:
-    rows: list[list] = [
-        ["booking_id", "client_ref", "date", "start", "end", "booking_type", "team", "carer_1", "carer_2", "status"]
-    ]
-    for team, rep in result["teams"].items():
-        names = {c["id"]: c["name"] for c in rep["carers"]}
-        refs = {c["id"]: c["ref"] for c in rep["clients"]}
-        week = rep["week_start"]
-        from datetime import date
+# One line per instruction for the coordinator, who copies them into CareLineLive by hand.
+# UTF-8 with BOM (the app adds it), dates dd/mm/yyyy, times HH:MM, plain-English headers.
+CHANGES_COLUMNS = ["Day", "Date", "Give to", "Booked time", "New start", "Client", "Booking type",
+                   "Booking ID", "Action", "Currently with", "Required", "Why", "Done"]
+NOTES_COLUMNS = ["Day", "Date", "Booked time", "New start", "Client", "Booking type", "Booking ID",
+                 "Currently with", "Why", "Shift (min)", "Note", "Done"]
+ALLOCATION_COLUMNS = ["Day", "Date", "Carer", "Start", "End", "New start", "Client", "Booking type",
+                      "Booking ID", "Double-up with", "Compared with current", "Done"]
+_DAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-        monday = date.fromisoformat(week)
-        for v in sorted(rep["visits"], key=lambda x: (x["day"], x["preferred_start"], x["booking_id"])):
-            start = v["start"] if v["start"] is not None else v["preferred_start"]
-            a = v["assigned"]
-            rows.append(
-                [
-                    v["booking_id"], refs.get(v["client_id"], ""), (monday + timedelta(days=v["day"])).isoformat(),
-                    clock(start), clock(start + v["duration"]), v["booking_type"], team,
-                    names.get(a[0], a[0]) if len(a) > 0 else "", names.get(a[1], a[1]) if len(a) > 1 else "",
-                    ("changed" if v["moved"] else "unchanged") if a else "unallocated",
-                ]
-            )
-    return to_csv(rows)
+
+def _uk(iso: str) -> str:
+    y, m, d = iso.split("-")
+    return f"{d}/{m}/{y}"
+
+
+def _day(iso: str) -> str:
+    from datetime import date
+
+    return _DAY[date.fromisoformat(iso).weekday()]
+
+
+def _index(result: dict) -> dict[str, dict]:
+    """booking id -> {visit, client display name, week_start}."""
+    out = {}
+    for rep in result["teams"].values():
+        names = {c["id"]: c["display_name"] for c in rep["clients"]}
+        for v in rep["visits"]:
+            out[v["booking_id"]] = {"v": v, "client": names.get(v["client_id"], ""), "week": rep["week_start"]}
+    return out
+
+
+def _booked(v: dict) -> str:
+    return f"{clock(v['preferred_start'])}–{clock(v['preferred_start'] + v['duration'])}"
 
 
 def changes_csv(result: dict) -> str:
-    rows: list[list] = [
-        ["booking_id", "client_ref", "date", "booked_start", "new_start", "from_carers", "to_carers", "kind", "reason"]
-    ]
-    for x in result["changes"]:
-        rows.append([x["booking_id"], x["client_ref"], x["date"], x["booked_start"], x["new_start"] or "",
-                     "; ".join(x["from_carers"]), "; ".join(x["to_carers"]), x["kind"], x["reason"]])
-    for x in result["time_notes"]:
-        rows.append([x["booking_id"], x["client_ref"], x["date"], x["booked_start"], x["new_start"],
-                     x["carer"], x["carer"], x["kind"], x["reason"]])
-    return to_csv(rows)
+    idx = _index(result)
+    rows = []
+    for c in result["changes"]:
+        it = idx[c["booking_id"]]
+        v = it["v"]
+        if not c["from_carers"]:
+            action = "Allocate"
+        elif set(c["from_carers"]) == set(c["to_carers"]):
+            action = "Change time"
+        else:
+            action = "Reassign + change time" if c["new_time_needed"] else "Reassign"
+        give = "; ".join(c["to_carers"])
+        rows.append((c["date"], give.lower(), v["preferred_start"], [
+            _day(c["date"]), _uk(c["date"]), give, _booked(v), c["new_start"] or "", it["client"],
+            v["booking_type"], c["booking_id"], action, "; ".join(c["from_carers"]) or "Unallocated",
+            "Yes" if c["forced_by_rules"] else "", c["reason"], ""]))
+    rows.sort(key=lambda r: r[:3])
+    return to_csv([CHANGES_COLUMNS] + [r[3] for r in rows])
+
+
+def notes_csv(result: dict) -> str:
+    idx = _index(result)
+    tol = result.get("arrival_tolerance_minutes", 0)
+    rows = []
+    for n in result["time_notes"]:
+        it = idx[n["booking_id"]]
+        v = it["v"]
+        shift = abs(_mins(n["new_start"]) - _mins(n["booked_start"]))
+        note = f"within {tol} min – no edit needed" if n["kind"] == "time_within_tolerance" else "tight gap – check"
+        rows.append((n["date"], n["carer"].lower(), v["preferred_start"], [
+            _day(n["date"]), _uk(n["date"]), _booked(v), n["new_start"], it["client"], v["booking_type"],
+            n["booking_id"], n["carer"], n["reason"], shift, note, ""]))
+    rows.sort(key=lambda r: r[:3])
+    return to_csv([NOTES_COLUMNS] + [r[3] for r in rows])
+
+
+def _mins(hhmm: str) -> int:
+    h, m = hhmm.split(":")
+    return int(h) * 60 + int(m)
+
+
+def allocation_csv(result: dict) -> str:
+    from datetime import date
+
+    rows = []
+    for rep in result["teams"].values():
+        names = {c["id"]: c["name"] for c in rep["carers"]}
+        clients = {c["id"]: c["display_name"] for c in rep["clients"]}
+        monday = date.fromisoformat(rep["week_start"])
+        for v in rep["visits"]:
+            iso = (monday + timedelta(days=v["day"])).isoformat()
+            booked, planned = v["preferred_start"], v["start"]
+            cur = [names.get(k, k) for k in v["current_assigned"]]
+            base = [_day(iso), _uk(iso)]
+            tail = [clients.get(v["client_id"], ""), v["booking_type"], v["booking_id"]]
+            if not v["assigned"]:
+                rows.append((iso, 0, "", booked, base + ["UNALLOCATED", clock(booked), clock(booked + v["duration"]), ""]
+                             + tail + ["", v["unfilled_reason"] or "No carer found", ""]))
+                continue
+            assigned = [names.get(k, k) for k in v["assigned"]]
+            if not v["current_assigned"]:
+                compared = "Was unallocated"
+            elif set(v["assigned"]) == set(v["current_assigned"]):
+                compared = "Same"
+            else:
+                compared = "Changed from " + "; ".join(cur)
+            new_start = clock(planned) if planned != booked else ""
+            for k in assigned:
+                other = "; ".join(x for x in assigned if x != k)
+                rows.append((iso, 1, k.lower(), booked, base + [k, clock(booked), clock(booked + v["duration"]),
+                                                                new_start] + tail + [other, compared, ""]))
+    rows.sort(key=lambda r: r[:4])
+    return to_csv([ALLOCATION_COLUMNS] + [r[4] for r in rows])

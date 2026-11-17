@@ -80,3 +80,20 @@ svg.lucide {
 
 .hour-line { border-left: 1px solid var(--color-line); }
 .off-hours { background: repeating-linear-gradient(135deg, #f3f4f6 0 3px, #fff 3px 8px); }
+
+/* ---- Print: the Export worksheet only, one day per page, no app chrome ---- */
+@page {
+  margin: 14mm 12mm;
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+    font-size: 10px;
+    color: #374151;
+  }
+}
+@media print {
+  html,
+  body {
+    background: #fff;
+    font-size: 11px;
+  }
+}

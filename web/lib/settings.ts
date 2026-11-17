@@ -31,6 +31,7 @@ export function blankCarer(id: string, name: string, teams: string[]): SettingsC
     name,
     teams,
     working_hours: {},
+    available_any_time: true,
     weekly_max_hours: null,
     skills: [],
     dbs_expiry: null,
@@ -43,16 +44,22 @@ export function hasAnyHours(c: SettingsCarer): boolean {
   return DAYS.some((d) => (c.working_hours[d]?.length ?? 0) > 0);
 }
 
+// Available any time: the flag is on, or there are no hour blocks at all.
+// Explicit hour blocks always win; with none, the carer is any time unless the flag is false.
+export function isAnyTime(c: SettingsCarer): boolean {
+  return !hasAnyHours(c) && c.available_any_time !== false;
+}
+
 // Warnings for rules that cannot be checked because an input is missing.
 // `today` is passed in so the same function runs in the browser and in the mock.
 export function settingsWarnings(s: SettingsFile, today: string): RunWarning[] {
   const out: RunWarning[] = [];
   const active = s.carers.filter((c) => c.active);
-  const noHours = active.filter((c) => !hasAnyHours(c));
+  const noHours = active.filter((c) => !hasAnyHours(c) && c.available_any_time === false);
   if (noHours.length) {
     out.push({
       code: "no_working_hours",
-      message: `${noHours.length} active carer(s) have no working hours and will not be planned: ${noHours.map((c) => c.id).join(", ")}.`,
+      message: `${noHours.length} active carer(s) are marked not available any time but have no working hours, so they will not be planned: ${noHours.map((c) => c.id).join(", ")}.`,
     });
   }
   const noDbs = active.filter((c) => !c.dbs_expiry);
@@ -103,7 +110,10 @@ export function validateSettings(raw: unknown): { settings?: SettingsFile; error
       version: 1,
       saved_at: o.saved_at ?? null,
       agency: { ...DEFAULT_AGENCY, ...(o.agency ?? {}) },
-      carers: o.carers.map((c) => ({ ...blankCarer(c.id, c.name, c.teams ?? []), ...c })),
+      carers: o.carers.map((c) => {
+        const merged = { ...blankCarer(c.id, c.name, c.teams ?? []), ...c };
+        return { ...merged, available_any_time: c.available_any_time ?? true };
+      }),
       clients: o.clients.map((c) => ({
         ...c,
         gender_preference: c.gender_preference ?? null,

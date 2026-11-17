@@ -70,8 +70,15 @@ known columns; counts and column names only in messages), then in the background
 Missing DBS or training dates are never filled with placeholders: the rule is left
 unchecked and a warning is raised. A carer with no working hours is not planned.
 
+Exports (UTF-8 with BOM, `dd/mm/yyyy`, `HH:MM`, a blank `Done` column for ticking):
+`allocation.csv`, `changes.csv`, `notes.csv`; the exact column lists are in `docs/ENGINE_API.md`.
+
+A carer with no working hours is available any time (settings `available_any_time`, default true;
+explicit hours win); the result notes it in `notices`, not as a warning. Nothing limits a carer's
+hours per day yet (only the weekly maximum): see the Service notes.
+
 Endpoints: `GET /health`, `POST /runs`, `GET /runs/{id}`, `GET /runs/{id}/export/allocation.csv`,
-`GET /runs/{id}/export/changes.csv`, `DELETE /runs/{id}`, `POST /sync`,
+`GET /runs/{id}/export/changes.csv`, `GET /runs/{id}/export/notes.csv`, `DELETE /runs/{id}`, `POST /sync`,
 `GET /sample/bookings.csv`, `GET /sample/settings.json`, and `POST /validate` (extra).
 Differences from the first draft of the contract are in `../docs/ENGINE_API.md`, under
 "Service notes".

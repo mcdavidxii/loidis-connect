@@ -31,7 +31,7 @@ export function Shell() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-12 items-center justify-between border-b border-line bg-surface px-4">
+      <header className="flex h-12 print:hidden items-center justify-between border-b border-line bg-surface px-4">
         <div className="flex items-baseline gap-2">
           <span className="font-semibold">Loidis Connect</span>
           <span className="text-xs text-muted">Rota engine test</span>
@@ -46,7 +46,7 @@ export function Shell() {
       </header>
 
       <div className="flex flex-1">
-        <nav aria-label="Steps" className="flex w-44 shrink-0 flex-col justify-between border-r border-line bg-surface p-2">
+        <nav aria-label="Steps" className="flex print:hidden w-44 shrink-0 flex-col justify-between border-r border-line bg-surface p-2">
           <ol className="space-y-0.5">
             {STEPS.map(({ id, label }, i) => {
               const current = app.step === id;
@@ -76,7 +76,7 @@ export function Shell() {
           <p className="px-2 pb-1 text-xs text-muted">Nothing is stored on the server. Results are deleted when you close this page.</p>
         </nav>
 
-        <main className="min-w-0 flex-1 px-6 py-5">
+        <main className="min-w-0 flex-1 px-6 py-5 print:p-0">
           {app.step === "upload" && <UploadStep />}
           {app.step === "settings" && <SettingsStep />}
           {app.step === "run" && <RunStep />}

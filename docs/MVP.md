@@ -126,8 +126,12 @@ as warnings; a carer with no working hours is not planned.
 
 **Carers.** One row per carer: team(s), gender, transport, and the fields only Loidis
 Connect holds:
-- **Working hours:** blocks per weekday (for example Mon-Fri 07:00-14:00), including
-  nights.
+- **Working hours (optional):** blocks per weekday (for example Mon-Fri 07:00-14:00),
+  including nights. **Default: available any time** (decision 2026-11-17): a carer with no
+  hours entered can be planned at any time of day, and the engine chooses their hours; hours
+  only restrict where the coordinator needs them to. A carer can instead be marked not
+  available. Trade-off: no input needed, but until per-day limits exist (maximum hours per day,
+  maximum span) the engine may plan long or split days; the weekly maximum still applies.
 - **Weekly maximum hours.**
 - **Skills** (for example hoist, medication, nights).
 - **DBS expiry and training expiry** (from the API if available, see open questions;
@@ -194,7 +198,7 @@ Teams are planned separately (Leeds; Dorset = Dorchester and Weymouth), as in th
 |---|---|---|
 | Visits for the week | Optimised bookings CSV (Reports > Bookings, CSV option), uploaded | Booking ID, client ID, date, times, booking type, expected and allocated carers, carers by name, team. The allocated carers are the "current rota" |
 | Carers, clients, addresses, teams, transport, leave | CareLineLive API, GET only, fetched during the run | Map coordinates from CareLineLive's own geocoding; flag any missing |
-| Working hours, weekly maximum, skills | Settings file | Decision 2026-11-16 |
+| Working hours (default any time), weekly maximum, skills | Settings file | Decisions 2026-11-16 and 2026-11-17 |
 | Do-not-send, safeguarding bar, gender preference, required skills, time-critical | Settings file | Decision 2026-11-16 |
 | DBS and training expiry | API if available (to check), else settings file | |
 | Carer name matches | Settings file | |

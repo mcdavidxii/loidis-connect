@@ -37,6 +37,11 @@ UNLIMITED_MINUTES = 7 * 24 * 60
 FAR_HOME_KM = 100  # a geocoded home this far from every client the carer visits is unusable
 MAX_NAMES_IN_WARNING = 30
 PAD_MAX_MINUTES = 90
+# "Available any time" is one block per day from 00:00 to 48:00. A block that ended at 24:00 could
+# not hold a visit that runs past midnight (the engine needs the whole visit inside the block); the
+# next day's block starts at 00:00 again, and the engine's rest after a stop past midnight keeps a
+# carer from starting the next morning.
+ANY_TIME_END = 2 * 24 * 60
 GUEST_PAD_MINUTES = 90  # travel slack around a guest carer's own visits, as in the trial
 DEFAULT_ARRIVAL_TOLERANCE = 15  # placeholder, to confirm with the coordinator
 
@@ -68,6 +73,7 @@ class Build:
     warnings: list[dict]
     seconds_per_day: int
     mode: str
+    notices: list[dict] = field(default_factory=list)  # information, not warnings
 
 
 def _pad_blocks(blocks: list[Block], critical: list, week_start: date, home: Location, mode: str) -> int:
@@ -269,7 +275,7 @@ def build(
         sc = settings.carer(cid)
         if regs:
             home_of[cid] = regs[0]
-        elif sc and sc.active and sc.has_hours() and not teams_of(cid):
+        elif sc and sc.active and (sc.has_hours() or sc.available_any_time) and not teams_of(cid):
             home_of[cid] = largest  # no team known, no visits: the busiest region
             no_team.append(cid)
     if no_team:
@@ -347,6 +353,7 @@ def build(
     transport_defaulted: list[str] = []
     clients_not_in_settings: set[str] = set()
     padded_blocks = 0
+    any_time_ids: list[str] = []
     locked_outside = 0
     ignored_locks: set[str] = set()
     all_booking_ids = {b.booking_id for b in live}
@@ -430,13 +437,20 @@ def build(
                 issues.append("Not in the settings file: no working hours, so not planned")
             elif not sc.active:
                 issues.append("Not active in planning")
-            elif not sc.has_hours():
-                issues.append("No working hours: not planned")
+            elif not sc.has_hours() and not sc.available_any_time:
+                issues.append("Marked not available and no working hours: not planned")
             else:
+                any_time = not sc.has_hours()
+                if any_time:
+                    any_time_ids.append(cid)
+                    issues.append("Available any time: the engine chooses their hours")
                 for d in range(7):
                     if d in leave_days.get(cid, ()) or d in other_days:
                         continue
-                    blocks += [Block(d, s, e) for s, e in sc.blocks(d)]
+                    if any_time:
+                        blocks.append(Block(d, 0, ANY_TIME_END))
+                    else:
+                        blocks += [Block(d, s, e) for s, e in sc.blocks(d)]
                 n_padded = _pad_blocks(blocks, critical, week_start, Location(*home), mode_)
                 if n_padded:
                     padded_blocks += n_padded
@@ -596,4 +610,11 @@ def build(
         warn("lock_ignored",
              f"{len(ignored_locks)} lock(s) could not be applied (unknown booking, carer not in "
              "that region, or a double-up whose other carers are not known).")
-    return Build(week_start, regions, warnings, seconds, mode)
+    notices: list[dict] = []
+    any_ids = sorted(set(any_time_ids))
+    if any_ids:
+        notices.append({
+            "code": "available_any_time",
+            "message": f"{len(any_ids)} carer(s) are available any time (no working hours set), so the "
+                       f"engine chooses their hours: {_ids(any_ids)}."})
+    return Build(week_start, regions, warnings, seconds, mode, notices)

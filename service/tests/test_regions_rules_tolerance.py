@@ -190,3 +190,50 @@ def test_hours_per_carer_counts_each_carer_once_without_guests():
     assert m["hours_stdev"] == 9.4  # population stdev of 30, 30, 50
     one = contract_metrics([b], 0)  # a region alone leaves the guest out
     assert (one["hours_min"], one["hours_max"]) == (30.0, 30.0)
+
+
+def test_available_any_time_default_and_flag(files):
+    from loidis_rota.models import Block, Visit
+    from loidis_rota.rules import fits_block
+
+    d = json.loads(files["settings"])
+    rows = parse_bookings(files["bookings"])[0]
+    # K013 has no hours and no flag in the file: any time, one block a day from 00:00 to 48:00
+    b = build(rows, fetch_api_data(), SettingsFile.from_dict(d), "new", 0, {}, None)
+    k13 = region(b, "Leeds").problem.carer_by_id["K013"]
+    assert sorted((x.day, x.start, x.end) for x in k13.availability) == [(i, 0, 2880) for i in range(7)]
+    assert not any(w["code"] == "no_working_hours" for w in b.warnings)
+    assert b.notices and b.notices[0]["code"] == "available_any_time"
+    # a visit that runs past midnight fits such a block (a block ending at 24:00 could not hold it)
+    night = Visit("v", "c", 4, 22 * 60, 0, 9 * 60)
+    assert fits_block(night, Block(4, 0, 2880)) and not fits_block(night, Block(4, 0, 1440))
+    # explicit hours win, even with the flag on
+    k5 = next(c for c in d["carers"] if c["id"] == "K005")
+    assert k5["working_hours"] and SettingsFile.from_dict(d).carer("K005").available_any_time
+    b2 = build(rows, fetch_api_data(), SettingsFile.from_dict(d), "new", 0, {}, None)
+    assert {(x.start, x.end) for x in region(b2, "Leeds").problem.carer_by_id["K005"].availability} != {(0, 2880)}
+    # flag off and no hours: not planned, with a warning (not the quiet notice)
+    next(c for c in d["carers"] if c["id"] == "K013")["available_any_time"] = False
+    b3 = build(rows, fetch_api_data(), SettingsFile.from_dict(d), "new", 0, {}, None)
+    assert "K013" in region(b3, "Leeds").not_planned
+    assert any(w["code"] == "no_working_hours" and "K013" in w["message"] for w in b3.warnings)
+    assert not b3.notices
+    # leave still removes the day; the flag survives a round trip
+    s = SettingsFile.from_dict(d)
+    assert SettingsFile.from_json(s.to_json()).carer("K013").available_any_time is False
+
+
+def test_any_time_carer_can_work_a_night_visit(files):
+    """The engine plans a night visit that crosses midnight for a carer with no set hours."""
+    from loidis_rota.solver import solve_day
+
+    d = json.loads(files["settings"])
+    k5 = next(c for c in d["carers"] if c["id"] == "K005")
+    k5["working_hours"] = {}  # the night carer is now available any time
+    rows = parse_bookings(files["bookings"])[0]
+    b = build(rows, fetch_api_data(), SettingsFile.from_dict(d), "new", 0, {}, None)
+    leeds = region(b, "Leeds").problem
+    night = next(v for v in leeds.visits if v.duration == 540 and v.day == 4)
+    assert night.start + night.duration > 1440
+    res = solve_day(leeds, 4, {}, seconds=3)
+    assert night.id in res.assigned and res.assigned[night.id] == ["K005"]

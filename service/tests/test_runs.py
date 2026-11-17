@@ -105,7 +105,7 @@ def result_of(two_runs, mode):
 
 def test_result_shape_new_mode(two_runs):
     _, res = result_of(two_runs, "new")
-    assert set(res) == {"mode", "change_cost_pence", "teams", "comparison", "changes", "change_summary", "fill_check", "time_notes", "warnings"}
+    assert set(res) == {"mode", "change_cost_pence", "teams", "comparison", "changes", "change_summary", "fill_check", "time_notes", "warnings", "notices", "arrival_tolerance_minutes"}
     assert res["mode"] == "new" and res["change_cost_pence"] is None
     assert res["changes"] == [] and res["time_notes"] == [] and res["change_summary"] is None
     check_result_shape(res)
@@ -208,9 +208,9 @@ def check_result_shape(res):
 def test_warnings_for_missing_inputs_and_no_placeholders(two_runs):
     _, res = result_of(two_runs, "improve")
     codes = {w["code"]: w["message"] for w in res["warnings"]}
-    for c in ("no_dbs_date", "no_working_hours", "expired", "no_weekly_max", "agency_defaults", "missing_address", "unallocated"):
+    for c in ("no_dbs_date", "expired", "no_weekly_max", "agency_defaults", "missing_address", "unallocated"):
         assert c in codes, c
-    assert "K010" in codes["no_dbs_date"] and "K013" in codes["no_working_hours"] and "CL-020" in codes["missing_address"]
+    assert "K010" in codes["no_dbs_date"] and "CL-020" in codes["missing_address"]
     assert "no_continuity" not in codes  # the Continuity report was uploaded
     assert "2099" not in json.dumps(res)
 
@@ -234,8 +234,7 @@ def test_rules_are_respected(two_runs):
                 assert v["start"] == v["preferred_start"], "time-critical visits never move"
                 assert v["locked"] and v["lock_reason"] == "time-critical booking type"
         assert carers["K003"]["scheduled_minutes"] == 0  # training expired
-        assert carers["K013"]["scheduled_minutes"] == 0  # no working hours
-        assert any("not planned" in i for i in carers["K013"]["issues"])
+        assert any("any time" in i for i in carers["K013"]["issues"])  # no hours set: available any time
         assert any("rule not checked" in i for i in carers["K010"]["issues"])
         # leave: K002 off on Wednesday, K008 off Monday and Tuesday (approved); not planned on those days
         leeds, dorset = res["teams"]["Leeds"]["routes"], res["teams"]["Dorset"]["routes"]
@@ -278,26 +277,73 @@ def csv_rows(text):
     return list(csv.reader(io.StringIO(text)))
 
 
+def csv_download(client, run_id, name):
+    r = client.get(f"/runs/{run_id}/export/{name}")
+    assert r.status_code == 200 and "attachment" in r.headers["content-disposition"]
+    assert r.content.startswith(b"\xef\xbb\xbf"), "UTF-8 with BOM, so Excel shows names and pound signs"
+    return csv_rows(r.content.decode("utf-8-sig"))
+
+
+CHANGES_COLS = ["Day", "Date", "Give to", "Booked time", "New start", "Client", "Booking type", "Booking ID",
+                "Action", "Currently with", "Required", "Why", "Done"]
+NOTES_COLS = ["Day", "Date", "Booked time", "New start", "Client", "Booking type", "Booking ID",
+              "Currently with", "Why", "Shift (min)", "Note", "Done"]
+ALLOC_COLS = ["Day", "Date", "Carer", "Start", "End", "New start", "Client", "Booking type", "Booking ID",
+              "Double-up with", "Compared with current", "Done"]
+
+
+def _key_date(d):
+    dd, mm, yy = d.split("/")
+    return (yy, mm, dd)
+
+
 def test_exports(client, two_runs):
     new_id, new_res = result_of(two_runs, "new")
     imp_id, imp_res = result_of(two_runs, "improve")
-    r = client.get(f"/runs/{new_id}/export/allocation.csv")
-    assert r.status_code == 200 and "attachment" in r.headers["content-disposition"]
-    rows = csv_rows(r.text)
-    assert rows[0] == ["booking_id", "client_ref", "date", "start", "end", "booking_type", "team", "carer_1", "carer_2", "status"]
-    visits = sum(t["metrics"]["visits"] for t in new_res["teams"].values())
-    assert len(rows) - 1 == visits
-    status = {row[9] for row in rows[1:]}
-    assert status <= {"changed", "unchanged", "unallocated"} and "unallocated" in status
-    assert {row[6] for row in rows[1:]} == {"Leeds", "Dorset"}
-    for row in rows[1:]:
-        assert (row[9] == "unallocated") == (row[7] == "")
-    r = client.get(f"/runs/{imp_id}/export/changes.csv")
-    rows = csv_rows(r.text)
-    assert rows[0] == ["booking_id", "client_ref", "date", "booked_start", "new_start", "from_carers", "to_carers", "kind", "reason"]
-    assert len(rows) - 1 == len(imp_res["changes"]) + len(imp_res["time_notes"])
-    assert {row[7] for row in rows[1:]} <= {"carer", "time_with_change", "time_note", "time_within_tolerance"}
-    # the same run, not finished or unknown
+    # ---- allocation.csv (New rota)
+    rows = csv_download(client, new_id, "allocation.csv")
+    assert rows[0] == ALLOC_COLS
+    body = rows[1:]
+    expected = sum(max(1, len(v["assigned"])) for rep in new_res["teams"].values() for v in rep["visits"])
+    assert len(body) == expected  # one row per carer per booking, plus one per unallocated booking
+    assert all(re.fullmatch(r"\d\d/\d\d/\d{4}", r[1]) and re.fullmatch(r"\d\d:\d\d", r[3]) for r in body)
+    assert {r[0] for r in body} <= {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
+    assert all(r[11] == "" for r in body)  # Done is blank, for ticking
+    # sorted by date, then unallocated first, then carer, then start
+    keys = [(_key_date(r[1]), 0 if r[2] == "UNALLOCATED" else 1, r[2].lower(), r[3]) for r in body]
+    assert keys == sorted(keys)
+    un = [r for r in body if r[2] == "UNALLOCATED"]
+    assert un and all(r[10] and r[9] == "" for r in un)  # the reason is in "Compared with current"
+    assert {r[10].split(" from")[0] for r in body if r[2] != "UNALLOCATED"} <= {"Same", "Changed", "Was unallocated"}
+    assert any(r[9] for r in body)  # a double-up names the other carer
+    # a name in the export is a display name ("Surname, I"), not the full client name
+    assert all(re.fullmatch(r"[A-Za-z' -]+, [A-Z]", r[6]) for r in body)
+    # ---- changes.csv (Improve my rota)
+    rows = csv_download(client, imp_id, "changes.csv")
+    assert rows[0] == CHANGES_COLS
+    body = rows[1:]
+    assert len(body) == len(imp_res["changes"])  # no notes in this file
+    assert {r[8] for r in body} <= {"Allocate", "Reassign", "Reassign + change time", "Change time"}
+    assert {r[10] for r in body} <= {"", "Yes"} and sum(1 for r in body if r[10] == "Yes") == imp_res["change_summary"]["forced_by_rules"]
+    assert all(re.fullmatch(r"\d\d:\d\d\u2013\d\d:\d\d", r[3]) and r[12] == "" and r[11] for r in body)
+    assert all((r[8] == "Allocate") == (r[9] == "Unallocated") for r in body)
+    assert all((r[8] in ("Reassign + change time", "Change time")) == (r[4] != "") for r in body if r[8] != "Allocate")
+    assert all(r[4] for r in body if r[8] in ("Reassign + change time", "Change time"))
+    keys = [(_key_date(r[1]), r[2].lower(), r[3][:5]) for r in body]
+    assert keys == sorted(keys)
+    # ---- notes.csv
+    rows = csv_download(client, imp_id, "notes.csv")
+    assert rows[0] == NOTES_COLS
+    body = rows[1:]
+    assert len(body) == len(imp_res["time_notes"]) > 0
+    tol = imp_res["arrival_tolerance_minutes"]
+    for r in body:
+        assert r[10] in (f"within {tol} min \u2013 no edit needed", "tight gap \u2013 check")
+        assert (int(r[9]) <= tol) == (r[10].startswith("within")) and r[11] == ""
+    keys = [(_key_date(r[1]), r[7].lower(), r[2][:5]) for r in body]
+    assert keys == sorted(keys)
+    # unknown run
+    assert client.get("/runs/nope/export/notes.csv").status_code == 404
     assert client.get("/runs/nope/export/changes.csv").status_code == 404
 
 
