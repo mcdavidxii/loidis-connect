@@ -41,7 +41,11 @@ continuity report (see `data/README.md`).
    - `--region leeds` / `--region dorset` (repeatable; default both)
    - `--suffix _x` added to output names, for sensitivity runs
 4. `evaluate_actual.py [region ...]` scores the actual week with the engine's report
-   code and writes `<region>_actual_report.json`.
+   code and writes `<region>_actual_report.json`. Run it again with `--equal-staffing`
+   to write `<region>_actual_eq_report.json` (visits with more carers than needed keep
+   only the first listed; the choice is arbitrary); `compare.py` shows it as an extra
+   column when present. Partly staffed actual visits count as unfilled but keep their
+   carers' travel and continuity.
 5. Solve each region with the engine, as the `<region>_engine_report.json` that
    `compare.py` expects:
 
@@ -64,5 +68,5 @@ engine\.venv\Scripts\python.exe -I tools\shadow_trial\build_problem.py --window 
 
 then solve with `--seconds 30`.
 
-Other files: `cll.py` (read-only API client), `continuity.py` (parses the continuity
+Other files: `cll.py` (read-only API client; `safe_http.py` makes it refuse redirects so the token is never forwarded; `test_no_redirect.py` checks that offline), `continuity.py` (parses the continuity
 report).

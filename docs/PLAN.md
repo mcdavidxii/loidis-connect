@@ -107,10 +107,13 @@ and client packages.
    qualifications and transport types through the API into the engine's input.
 6. **Export importer.** Turn the visits export into the engine's input; run the engine
    on Loidis's real week.
-   *Progress 2026-11-17:* done for 16 to 22 Nov; the engine filled 1,063 of 1,065
-   visits with less travel and better continuity than the actual week. Method, runs,
+   *Progress 2026-11-17:* done for 16 to 22 Nov; the engine filled 1,061 of 1,065
+   visits (actual 1,064) with less travel (-16%), fewer miles (-20%) and better continuity
+   than the actual week (re-run after review fixes), at the cost of 626 visits moved by up
+   to 30 min; safety rules (skills, gender, do-not-send, safeguarding, DBS/training) were
+   not applied and must be checked. Method, runs,
    findings and caveats in [`SHADOW_TRIAL.md`](SHADOW_TRIAL.md); pipeline in
-   `tools/shadow_trial/README.md`. Two unfilled visits still to diagnose.
+   `tools/shadow_trial/README.md`. Four unfilled visits (Dorset) still to diagnose.
 7. **Decision 2.** Coordinator reviews the result on their own data. *Ready for review
    2026-11-17* (settings agreed in `DECISIONS.md`; review list in
    [`SHADOW_TRIAL.md`](SHADOW_TRIAL.md)). A second week and real working hours should

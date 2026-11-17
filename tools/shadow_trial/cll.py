@@ -1,10 +1,14 @@
 """Read-only CareLineLive client for the shadow trial. GET only; never prints values."""
 import json
+import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from safe_http import build_opener  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 TRIAL = REPO / "data" / "private" / "trial"
@@ -32,6 +36,7 @@ _dom = _env["careline_domain"].rstrip("/")
 if "://" not in _dom:
     _dom = "https://" + (_dom if "." in _dom else _dom + ".carelinelive.app")
 BASE = _dom if _dom.endswith("/api/v2") else _dom + "/api/v2"
+_OPENER = build_opener()  # refuses redirects: the token only goes to the original URL
 calls = {"n": 0}
 
 
@@ -47,7 +52,7 @@ def get(path, params=None, retries=2):
     for attempt in range(retries + 1):
         calls["n"] += 1
         try:
-            with urllib.request.urlopen(req, timeout=120) as r:
+            with _OPENER.open(req, timeout=120) as r:
                 return json.loads(r.read() or b"{}")
         except urllib.error.HTTPError as e:
             if e.code in (429, 500, 502, 503, 504) and attempt < retries:
@@ -55,6 +60,8 @@ def get(path, params=None, retries=2):
                 continue
             raise RuntimeError(f"HTTP {e.code} on {path}") from None
         except Exception as e:
+            if isinstance(e, RuntimeError):  # redirect refused: never retry
+                raise RuntimeError(f"{e} on {path}") from None
             if attempt < retries:
                 time.sleep(3)
                 continue

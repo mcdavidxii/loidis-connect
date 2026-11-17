@@ -97,6 +97,13 @@ def main():
     for l in P["leave_days"]:
         leave.setdefault(l["carer"], set()).add(l["day"])
 
+    # other-region visits per carer: (region, carer) -> {day: minutes}; used so a home carer is not
+    # planned in one region while locked into a visit in another (finding: cross-region carers)
+    other_visits = {}
+    for v in visits_all:
+        for k in v["carers"]:
+            other_visits.setdefault(k, []).append(v)
+
     for region in regions:
         info = {"region": region, "trial_settings": trial_settings}
         r_visits = [v for v in visits_all if v["region"] == region]
@@ -112,27 +119,47 @@ def main():
         # --- visits ---------------------------------------------------------------------
         out_visits, locked_blocks = [], {}
         n_locked_type = n_locked_window = n_locked_guest = 0
+        n_partial_unlocked = n_partial_outside_window = n_partial_guest_blocks = 0
         for v in r_visits:
             lock_reason = None
+            outside = v["start"] < day_start or v["start"] + v["duration"] > day_end
             if v["btype"] in LOCK_TYPES or v["duration"] >= LOCK_MIN_DURATION:
                 lock_reason = "type"
-            elif v["start"] < day_start or v["start"] + v["duration"] > day_end:
+            elif outside:
                 lock_reason = "window"
             elif set(v["carers"]) & set(guest_carers):
                 lock_reason = "guest"
-            locked = list(v["carers"]) if lock_reason and v["carers"] else []
+            # lock only when the actual week fully staffed the visit; a partly staffed visit stays
+            # fillable (locking fewer carers than needed would make it impossible to fill)
+            partial = bool(lock_reason and v["carers"]) and len(v["carers"]) < v["expected"]
+            locked = list(v["carers"]) if lock_reason and v["carers"] and not partial else []
+            pad_for = locked
+            window = 0 if locked else args.window
+            if partial:
+                n_partial_unlocked += 1
+                if outside:
+                    # cannot be placed inside the placeholder day: keep the pad blocks of those who attended
+                    pad_for = list(v["carers"])
+                    window = 0
+                    n_partial_outside_window += 1
+                else:
+                    pad_for = [k for k in v["carers"] if k in guest_carers]
+                    n_partial_guest_blocks += bool(pad_for)
             if locked:
                 n_locked_type += lock_reason == "type"
                 n_locked_window += lock_reason == "window"
                 n_locked_guest += lock_reason == "guest"
-                for k in locked:
-                    locked_blocks.setdefault((k, v["day"]), []).append(
-                        (max(0, v["start"] - args.lock_pad), v["start"] + v["duration"] + args.lock_pad))
+            for k in pad_for:
+                locked_blocks.setdefault((k, v["day"]), []).append(
+                    (max(0, v["start"] - args.lock_pad), v["start"] + v["duration"] + args.lock_pad))
             out_visits.append({
                 "id": v["id"], "client_id": v["client"], "day": v["day"], "start": v["start"],
-                "window": 0 if locked else args.window, "duration": v["duration"], "carers_needed": v["expected"],
+                "window": window, "duration": v["duration"], "carers_needed": v["expected"],
                 "required_skills": [], "locked_carers": locked, "kind": "care",
             })
+        info["visits_partially_staffed_would_lock_left_unlocked"] = n_partial_unlocked
+        info["of_which_outside_day_window_pad_blocks_kept_for_attendees"] = n_partial_outside_window
+        info["of_which_guest_attendee_pad_blocks_kept"] = n_partial_guest_blocks
         info["visits_locked_long_or_type"] = n_locked_type
         info["visits_locked_outside_day_window"] = n_locked_window
         info["visits_locked_guest_carer"] = n_locked_guest
@@ -145,6 +172,7 @@ def main():
         out_carers, absences = [], []
         fallback_home = unknown_mode = far_home = 0
         n_with_day = 0
+        xr_carers = xr_days = xr_minutes = 0
         for k in home_carers + guest_carers:
             c = carers[k]
             is_guest = k in guest_carers
@@ -162,6 +190,18 @@ def main():
             if mode is None:
                 mode = "car"
                 unknown_mode += 1
+            # home carer with visits in another region this week: no default day block on those days,
+            # and the weekly cap is reduced by those minutes
+            other_days, other_min = set(), 0
+            if not is_guest:
+                for ov in other_visits.get(k, []):
+                    if ov["region"] != region:
+                        other_days.add(ov["day"])
+                        other_min += ov["duration"]
+                if other_days:
+                    xr_carers += 1
+                    xr_minutes += other_min
+            cap = max(0, max_minutes - other_min)
             av = []
             for d in range(7):
                 if d in leave.get(k, ()):
@@ -169,7 +209,10 @@ def main():
                     continue
                 blocks = list(locked_blocks.get((k, d), []))
                 if not is_guest:
-                    blocks.append((day_start, day_end))
+                    if d in other_days:
+                        xr_days += 1
+                    else:
+                        blocks.append((day_start, day_end))
                 for s, e in merge(blocks):
                     av.append({"day": d, "start": s, "end": e})
             if not is_guest and any(True for _ in av):
@@ -177,9 +220,12 @@ def main():
             out_carers.append({
                 "id": k, "area": region, "home": {"lat": lat, "lon": lon}, "travel_mode": mode,
                 "skills": [], "gender": c["gender"], "contracted_minutes_week": 0,
-                "max_minutes_week": max_minutes, "dbs_expiry": "2099-12-31", "training_expiry": "2099-12-31",
+                "max_minutes_week": cap, "dbs_expiry": "2099-12-31", "training_expiry": "2099-12-31",
                 "availability": av,
             })
+        info["cross_region_home_carers_with_visits_elsewhere"] = xr_carers
+        info["cross_region_day_blocks_removed"] = xr_days
+        info["cross_region_minutes_reserved_from_weekly_cap"] = xr_minutes
         info["carers_with_fallback_home_location"] = fallback_home
         info["of_which_geocoded_home_over_100km_from_all_their_clients"] = far_home
         info["carers_travel_mode_defaulted_to_car"] = unknown_mode
