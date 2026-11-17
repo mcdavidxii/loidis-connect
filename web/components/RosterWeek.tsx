@@ -140,10 +140,10 @@ export function RosterWeek({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <div style={{ minWidth: 200 + 7 * 112 + 96 }} role="table" aria-label={`Week roster by ${group}, ${ctx.view === "engine" ? "suggested rota" : "your rota"}`}>
-        <div className="grid border-b border-line" style={{ gridTemplateColumns: COLS }} role="row">
-          <div className="px-3 py-2 text-xs font-semibold text-muted" role="columnheader">
+        <div className="sticky top-0 z-20 grid border-b border-line bg-surface" style={{ gridTemplateColumns: COLS }} role="row">
+          <div className="sticky left-0 z-30 bg-surface px-3 py-2 text-xs font-semibold text-muted" role="columnheader">
             {group === "client" ? "Client" : "Carer"}
           </div>
           {DAYS.map((d, i) => {
@@ -174,7 +174,7 @@ export function RosterWeek({
           const labels = new Map(rep.clients.map((c) => [c.id, c.display_name || c.ref]));
           return (
             <div key={team}>
-              <div className="bg-canvas/70 px-3 py-1.5 text-xs font-semibold text-muted" role="row">
+              <div className="sticky top-[66px] z-10 bg-canvas px-3 py-1.5 text-xs font-semibold text-muted" role="row">
                 <span role="rowheader">
                   {team} <span className="font-normal">({rows.length})</span>
                 </span>
@@ -184,7 +184,7 @@ export function RosterWeek({
                 const mins = r.visits.reduce((a, v) => a + v.duration, 0);
                 return (
                   <div key={r.id} className="grid border-b border-line" style={{ gridTemplateColumns: COLS }} role="row">
-                    <div className="flex items-start gap-2 px-3 py-2" role="rowheader">
+                    <div className="sticky left-0 z-10 flex items-start gap-2 bg-surface px-3 py-2" role="rowheader">
                       <Avatar name={r.label} size={28} />
                       <span className="min-w-0 leading-tight">
                         <span className={`block truncate font-semibold ${r.special ? "text-warn" : ""}`}>{r.label}</span>

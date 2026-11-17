@@ -31,6 +31,8 @@ import {
   HeartHandshake,
   Info,
   ListChecks,
+  Maximize2,
+  Minimize2,
   Lock,
   Pencil,
   Play,
@@ -67,6 +69,8 @@ export const IconCarer = UserRound;
 export const IconClient = Users;
 export const IconSearch = Search;
 export const IconPrev = ChevronLeft;
+export const IconExpand = Maximize2;
+export const IconCollapse = Minimize2;
 export const IconNext = ChevronRight;
 export const IconRefresh = RefreshCw;
 export const IconClose = X;

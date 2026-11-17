@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { addDays } from "@/lib/time";
 import type { Change, Report, ReportVisit } from "@/lib/types";
 import { useApp } from "./AppProvider";
-import { IconDoubleUp, IconInfo, IconLock, IconNext, IconPrev, IconRefresh, IconTimeCritical, IconTravelCar, IconWalk } from "./icons";
+import { IconCollapse, IconDoubleUp, IconExpand, IconInfo, IconLock, IconNext, IconPrev, IconRefresh, IconTimeCritical, IconTravelCar, IconWalk } from "./icons";
 import { RosterDay } from "./RosterDay";
 import { RosterWeek } from "./RosterWeek";
 import {
@@ -44,6 +44,13 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
   const [legendOpen, setLegendOpen] = useState(false);
   const [hourPx, setHourPx] = useState(96);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+
+  // Day view starts at about 06:30; week view starts at the left edge.
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollLeft = layout === "day" ? (6.5 - 4) * hourPx : 0;
+  }, [layout, hourPx, group, teamSel]);
 
   const activeTeams = teamSel === "all" ? teams : [teamSel];
   const weekStart = reports[teams[0]].week_start;
@@ -312,6 +319,24 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
         ))}
       </ul>
 
+      <div className="mb-2 flex justify-end">
+        <button
+          type="button"
+          aria-pressed={expanded}
+          onClick={() => setExpanded(!expanded)}
+          className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-brand-strong hover:bg-hover"
+        >
+          {expanded ? <IconCollapse aria-hidden className="h-4 w-4" /> : <IconExpand aria-hidden className="h-4 w-4" />}
+          {expanded ? "Fit to screen" : "Expand"}
+        </button>
+      </div>
+      <div
+        ref={scrollRef}
+        tabIndex={0}
+        role="region"
+        aria-label="Rota grid, scrollable"
+        className={`overflow-auto rounded-xl border border-line bg-surface ${expanded ? "" : "h-[calc(100vh-260px)] min-h-[420px]"}`}
+      >
       {layout === "week" ? (
         <RosterWeek reports={reports} teams={activeTeams} group={group} ctx={ctx} onDay={(d) => { setDay(d); setLayout("day"); }} />
       ) : (
@@ -322,9 +347,10 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
           {activeTeams.map((t) => (
             <RosterDay key={t} report={reports[t]} team={t} group={group} ctx={ctx} day={day} hourPx={hourPx} showTeam={activeTeams.length > 1} />
           ))}
-          <p className="mt-1 text-xs text-muted">Click a visit to select it. Double-click, or press Enter, for details. Escape closes them.</p>
         </div>
       )}
+      </div>
+      {layout === "day" && <p className="mt-2 text-xs text-muted">Click a visit to select it. Double-click, or press Enter, for details. Escape closes them.</p>}
 
       {openV && openReport && (
         <VisitDrawer

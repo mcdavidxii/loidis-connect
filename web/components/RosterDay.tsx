@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment } from "react";
 import { hhmm } from "@/lib/time";
 import { DAYS, type Report, type ReportVisit, type RouteStop } from "@/lib/types";
 import { IconDoubleUp, IconLock, IconTimeCritical, IconTravelCar, IconUnallocated, IconWalk } from "./icons";
@@ -60,15 +60,11 @@ export function RosterDay({
   hourPx: number;
   showTeam: boolean;
 }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const trackW = 20 * hourPx;
   const dayKey = DAYS[day];
   const q = ctx.query.trim().toLowerCase();
   const { view, locks } = ctx;
 
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollLeft = (6.5 - 4) * hourPx;
-  }, [hourPx]);
 
   const visitsById = new Map(report.visits.map((v) => [v.id, v]));
   const names = new Map(report.carers.map((c) => [c.id, c.name]));
@@ -185,7 +181,7 @@ export function RosterDay({
   return (
     <div className="mb-4">
       {showTeam && <p className="mb-1 text-xs font-semibold text-muted">{team}</p>}
-      <div ref={scrollRef} className="max-h-[70vh] overflow-auto rounded-xl border border-line bg-surface">
+      <div className="rounded-xl border border-line bg-surface">
         <div style={{ width: 224 + trackW }} role="table" aria-label={`${group === "carer" ? "Carer" : "Client"} day roster for ${team}, ${view === "engine" ? "suggested rota" : "your rota"}`}>
           <div className="sticky top-0 z-20 flex border-b border-line bg-canvas text-xs text-muted" role="row">
             <Gutter className="z-30 bg-canvas px-3 py-2">
