@@ -34,7 +34,7 @@ published.** Prototype code: [`../engine/`](../engine/).
 | Late shift followed by an early shift | Allowed (Loidis) | — |
 | Meal breaks on long shifts | Must | Not yet (policy to confirm) |
 | Lowest cost of travel: paid travel time + mileage for drivers | Preference, **priority** (Loidis) | Built |
-| Balanced hours: carers reach their contracted share, avoid going over | Preference, **priority** (Loidis) | Built |
+| Balanced hours: carers reach their target share, avoid going over. Loidis (decision 2026-11-16, `DECISIONS.md`) sets the target as an equal share of hours within each team; the weekly maximum is the hard limit | Preference, **priority** (Loidis) | Built |
 | Same carers as recently (continuity) | Preference, tie-breaker | Built |
 
 ## How a run works
@@ -58,6 +58,7 @@ published.** Prototype code: [`../engine/`](../engine/).
 - Continuity penalty for a carer new to the client (small: Loidis puts travel and
   carers' hours first; on the same data this cut travel 8% and filled 2 more visits)
 - Unused contracted time (paid anyway) and time beyond contract
+- Moving a visit off its booked start: `shift_pence_per_min` pence per minute of difference (default 0, so any start inside the visit's window is free). Same units as the travel and hours costs above, so 15 means a 20-minute move costs the same as 300p of travel. A double-up is charged once; sickness-cover pins are not charged
 - A very large penalty for any unfilled visit, so filling visits always comes first
 
 ## Sickness cover

@@ -189,6 +189,7 @@ def build_report(problem: Problem, week: list[DayResult], settings_note: str = "
         for cid in week[v.day].assigned[v.id]:
             continuity_total += 1
             continuity_hits += cid in problem.client_by_id[v.client_id].recent_carers
+    shifts = [abs(week[v.day].starts[v.id] - v.start) for v in filled if v.id in week[v.day].starts]
     total_miles = sum(c["miles"] for c in carers_out)
     metrics = {
         "visits": len(problem.visits),
@@ -200,6 +201,9 @@ def build_report(problem: Problem, week: list[DayResult], settings_note: str = "
         "miles": round(total_miles, 1),
         "mileage_pounds": round(sum(c["mileage_pence"] for c in carers_out) / 100, 2),
         "continuity_rate": round(continuity_hits / max(1, continuity_total), 3),
+        "visits_shifted": sum(1 for x in shifts if x),
+        "mean_abs_shift_minutes": round(sum(shifts) / max(1, len(shifts)), 1),
+        "max_abs_shift_minutes": max(shifts, default=0),
         "clients_short": sum(1 for c in clients_out if c["gap_minutes"] > 0),
         "sleep_ins": sum(1 for v in problem.visits if v.kind == "sleep_in"),
         "sleep_ins_filled": sum(
