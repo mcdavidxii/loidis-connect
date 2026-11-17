@@ -98,14 +98,14 @@ shows the two side by side, with the difference.
 { "booking_id": "B10060", "client_ref": "CL-009", "date": "2026-11-16",
   "booked_start": "08:05", "new_start": null,
   "from_carers": [], "to_carers": ["Carer H"],
-  "kind": "carer", "reason": "fills unallocated booking" }
+  "kind": "carer", "reason": "fills an unallocated booking" }
 ```
 `kind` is `carer` (a different carer, same time) or `time_with_change` (a new start time,
 which then needs `new_start`: a different carer and a new time, or the same carer, with
 `from_carers` equal to `to_carers`, whose start must move to fit other changes to their
 day). `reason` is short plain
-text, for example `saves 18 min travel`, `familiar carer`, `fills unallocated booking`,
-`evens hours`; more than one may be joined with a comma. Carer fields are display names
+text, for example `saves 18 min travel`, `familiar carer`, `fills an unallocated booking`,
+`fairer hours`; more than one may be joined with a comma. Carer fields are display names
 because the coordinator applies the change in CareLineLive by hand.
 
 **`time_notes[]`** (improve mode): same carer, only the start time shifts to fit the
@@ -113,7 +113,7 @@ travel estimate. Shown as "Tight gaps to check", not as changes.
 ```json
 { "booking_id": "B10031", "client_ref": "CL-007", "date": "2026-11-17", "carer": "Carer C",
   "booked_start": "08:50", "new_start": "08:58", "kind": "time_note",
-  "reason": "Same carer; 8 min later to fit the travel estimate. Check the gap." }
+  "reason": "Same carer; 8 min later to fit the travel time. Check the gap." }
 ```
 
 **`warnings[]`**: rules that were not checked because an input is missing, or need
@@ -137,8 +137,8 @@ Columns, in order: `Day, Date, Carer, Start, End, New start, Client, Booking typ
 Double-up with, Compared with current, Done`. One row per carer per booking (a double-up has a
 row for each carer; `Double-up with` names the other), sorted by date, then carer, then start.
 `Start`/`End` are the booked times; `New start` is blank if the plan keeps the booked start.
-`Compared with current` is `Same`, `Changed from <carer(s)>` or `Was unallocated`. Unfilled
-bookings come first on each day with `Carer` = `UNALLOCATED` and the reason in
+`Compared with current` is `No change`, `Changed from <carer(s)>` or `Was unallocated`. Unfilled
+bookings come first on each day with `Carer` = `Unallocated` and the reason in
 `Compared with current`.
 
 ### `GET /runs/{id}/export/changes.csv` (Improve my rota)
@@ -155,7 +155,7 @@ Columns, in order: `Day, Date, Booked time, New start, Client, Booking type, Boo
 Currently with, Why, Shift (min), Note, Done`, sorted by date, carer, booked start. One row per
 entry of `time_notes` (same carer, start moved). `Shift (min)` is the size of the shift (no sign;
 `New start` shows the direction). `Note` is `within N min – no edit needed` (N is
-`arrival_tolerance_minutes`, now also in the result) or `tight gap – check`. In New rota mode
+`arrival_tolerance_minutes`, now also in the result) or `Short gap – check travel`. In New rota mode
 the file has only the header.
 
 ### `DELETE /runs/{id}`
@@ -339,14 +339,14 @@ the web app already sends or reads.
   another region, and their weekly maximum is reduced by those minutes. In the other
   region they are a guest: availability only around their own visits there (plus 90 min
   travel slack), no share of the equal-hours target, and those visits are locked to them
-  (`locked: true`, `lock_reason: "carer's home region is elsewhere"`, window 0). This
+  (`locked: true`, `lock_reason: "kept: carer's home area is elsewhere"`, window 0). This
   applies in both modes. Warning `cross_region_carers` says this and lists the carer IDs.
   A carer with no team and no visits is placed in the busiest region (`carer_no_team`).
 - **Changes forced by rules.** In improve mode, when a current carer is not allowed (do-not-send,
   safeguarding bar, gender preference, missing skill, on leave, expired DBS or training,
   outside working hours, no working hours, over weekly maximum), the change's `reason`
   starts with a plain statement, for example `current carer not allowed: do-not-send` or
-  `current carer on leave`, and the change has `forced_by_rules: true`. Other reasons
+  `current carer not allowed: on leave`, and the change has `forced_by_rules: true`. Other reasons
   may follow. The result has a new top-level `change_summary` (null in new mode):
   `{ total, forced_by_rules, fills_unallocated, for_travel_continuity_hours,
   new_time_needed, time_notes, time_within_tolerance }`. Show forced changes separately from
@@ -441,3 +441,24 @@ the web app already sends or reads.
   the time dimension.
 - **Exports** are laid out as above (UTF-8 with BOM, `dd/mm/yyyy`, `HH:MM`); the old column lists
   are gone and `notes.csv` is new. The result has `arrival_tolerance_minutes`.
+
+### Service notes: wording (coordinator language)
+Every coordinator-visible text is plain language and never says engine, solver, optimise, model,
+penalty, feasible or pence per minute (a test checks the result and the CSVs). Texts:
+- **Change reasons** (joined by commas, at most three): `current carer not allowed: <do-not-send |
+  safeguarding bar | gender preference | missing skill: x | on leave | off sick | DBS expired | training
+  expired | outside working hours | no working hours | over weekly maximum>`, `current carer over weekly
+  maximum`, `fills an unallocated booking`, `saves N min travel`, `familiar carer`, `fairer hours`,
+  `better overall (travel and hours)`, `start moves to fit the other changes to this carer's day`.
+- **Unfilled reasons** (`unfilled_reason`, by `unfilled_cause`): `rules`: "No carer meets the rules for
+  this visit (skills, gender, not allowed or leave)." or "This visit needs N carers but only K meet the
+  rules for it (...)."; `hours`: "No carer is working then." or "Only K carer(s) working then; this visit
+  needs N."; `weekly_max`: "The carers who are working then are at their weekly maximum."; `travel_or_booked`:
+  "Carers are busy or too far away at this time (nearest: ...)." (the nearest carers and what kept them busy).
+- **Kept-as-is reasons** (`lock_reason`): "kept with the carer who already has it (outside everyone's hours)",
+  "kept: carer's home area is elsewhere", "locked by coordinator", "time-critical booking type".
+- **Notes**: reasons "Same carer; N min later to fit the travel time. Check the gap." and "Same carer; N min
+  later, within the N min arrival tolerance. No change needed."; `notes.csv` `Note`: "within N min – no edit
+  needed" or "Short gap – check travel".
+- **allocation.csv**: `Carer` "Unallocated"; `Compared with current` "No change", "Changed from <carer(s)>",
+  "Was unallocated" (or the unfilled reason for an unallocated row). Column headers are unchanged.
