@@ -38,17 +38,17 @@ export type View = "current" | "engine";
 export type Status = "unchanged" | "changed" | "moved" | "locked" | "unallocated";
 
 export const STATUS_LABEL: Record<Status, string> = {
-  unchanged: "Unchanged",
-  changed: "Changed by engine",
-  moved: "Moved (time)",
-  locked: "Locked / time-critical",
+  unchanged: "No change",
+  changed: "Suggested change",
+  moved: "New time",
+  locked: "Kept as is / time-critical",
   unallocated: "Unallocated",
 };
 export const STATUS_SHORT: Record<Status, string> = {
-  unchanged: "Unchanged",
-  changed: "Changed",
-  moved: "Moved",
-  locked: "Locked",
+  unchanged: "No change",
+  changed: "Suggested change",
+  moved: "New time",
+  locked: "Kept as is",
   unallocated: "Unallocated",
 };
 export const STATUS_COLOR: Record<Status, string> = {
@@ -61,10 +61,10 @@ export const STATUS_COLOR: Record<Status, string> = {
 
 export const CLASS_LABEL: Record<string, string> = {
   carer: "Carer change",
-  time_with_change: "Time change with other changes",
-  time_note: "Tight gap, check",
-  time_within_tolerance: "Within arrival tolerance, no edit needed",
-  unchanged: "Unchanged",
+  time_with_change: "New time, with other changes",
+  time_note: "Short gap, check travel",
+  time_within_tolerance: "Small time change, no edit needed",
+  unchanged: "No change",
 };
 
 export const sameCarers = (a: string[], b: string[]) => a.slice().sort().join() === b.slice().sort().join();

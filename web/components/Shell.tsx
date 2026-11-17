@@ -12,8 +12,8 @@ import { inputCls } from "./ui";
 const STEPS: { id: Step; label: string; Icon: IconType }[] = [
   { id: "upload", label: "Upload", Icon: IconUpload },
   { id: "settings", label: "Settings", Icon: IconSettings },
-  { id: "run", label: "Run", Icon: IconPlay },
-  { id: "review", label: "Review", Icon: IconReview },
+  { id: "run", label: "Plan", Icon: IconPlay },
+  { id: "review", label: "Suggestions", Icon: IconReview },
   { id: "export", label: "Export", Icon: IconDownload },
 ];
 
@@ -34,7 +34,7 @@ export function Shell() {
         <div>
           <div className="mb-5 px-2 pt-1">
             <p className="font-semibold">Loidis Connect</p>
-            <p className="text-xs text-muted">Rota engine test</p>
+            <p className="text-xs text-muted">Rota planner</p>
           </div>
           <ol className="space-y-1">
             {STEPS.map(({ id, label, Icon }) => {

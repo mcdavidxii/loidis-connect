@@ -141,7 +141,7 @@ export function RosterWeek({
 
   return (
     <div className="overflow-x-auto">
-      <div style={{ minWidth: 200 + 7 * 112 + 96 }} role="table" aria-label={`Week roster by ${group}, ${ctx.view === "engine" ? "engine plan" : "current rota"}`}>
+      <div style={{ minWidth: 200 + 7 * 112 + 96 }} role="table" aria-label={`Week roster by ${group}, ${ctx.view === "engine" ? "suggested rota" : "your rota"}`}>
         <div className="grid border-b border-line" style={{ gridTemplateColumns: COLS }} role="row">
           <div className="px-3 py-2 text-xs font-semibold text-muted" role="columnheader">
             {group === "client" ? "Client" : "Carer"}

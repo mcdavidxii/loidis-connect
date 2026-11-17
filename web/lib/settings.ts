@@ -94,7 +94,7 @@ export function settingsWarnings(s: SettingsFile, today: string): RunWarning[] {
   if (a.pay_pence_per_hour == null || a.mileage_pence_per_mile == null || a.travel_time_paid == null) {
     out.push({
       code: "agency_defaults",
-      message: "Pay rate, mileage rate or travel-time-paid are not set; engine defaults are used to cost travel.",
+      message: "Pay rate, mileage rate or travel-time-paid are not set; standard values are used to cost travel.",
     });
   }
   return out;

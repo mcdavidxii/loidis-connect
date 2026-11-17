@@ -136,13 +136,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
           break;
         }
         if (s.status === "failed") {
-          setRunError("The run failed. Check the bookings file and settings, then try again.");
+          setRunError("Planning failed. Check the bookings file and settings, then try again.");
           break;
         }
         await new Promise((r) => setTimeout(r, 500));
       }
     } catch (e) {
-      setRunError(e instanceof Error ? e.message : "The run failed.");
+      setRunError(e instanceof Error ? e.message : "Planning failed.");
     } finally {
       setRunning(false);
     }

@@ -196,7 +196,7 @@ export function UploadStep() {
         <DropZone
           id="settings-file"
           title="Settings file"
-          hint="Leave empty on the first run."
+          hint="Leave empty the first time."
           accept=".json,application/json"
           file={app.settingsFileName ? { name: app.settingsFileName } : null}
           onFile={async (f) => setSettingsError(await app.loadSettingsFile(f))}

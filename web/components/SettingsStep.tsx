@@ -5,7 +5,7 @@ import { hasAnyHours, isAnyTime, settingsToJson, settingsWarnings } from "@/lib/
 import { DAYS, DAY_LABELS, type DayKey, type HoursBlock, type SettingsCarer, type SettingsClient } from "@/lib/types";
 import { useApp } from "./AppProvider";
 import { IconAdd, IconDelete, IconDownload, IconUpload, IconWarning } from "./icons";
-import { Badge, Button, Notice, PageHeader, inputCls, tableCls, tdCls, thCls } from "./ui";
+import { Badge, Button, Notice, PageHeader, ScrollBox, inputCls, tableCls, tdCls, thCls } from "./ui";
 
 type Tab = "carers" | "clients" | "agency";
 // Default block when "Add" is pressed on a day: a 12-hour day shift, edited per carer.
@@ -183,7 +183,7 @@ function CarersTab() {
   if (!carer) return <Notice title="No carers yet">Upload a settings file or sync from CareLineLive on the Upload screen.</Notice>;
   return (
     <div>
-      <table className={tableCls}>
+      <ScrollBox count={settings.carers.length} label="Carers"><table className={tableCls}>
         <caption className="sr-only">Carers. Choose a row to edit.</caption>
         <thead>
           <tr>
@@ -228,7 +228,7 @@ function CarersTab() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></ScrollBox>
 
       <div className="mt-6 border-t border-line pt-5"><h2 className="mb-3 text-base">{carer.name}</h2>
         <div className="space-y-5">
@@ -274,7 +274,7 @@ function CarersTab() {
               Available any time
             </label>
             {isAnyTime(carer) ? (
-              <p className="text-sm text-muted">The engine chooses this carer&apos;s hours (00:00–24:00).</p>
+              <p className="text-sm text-muted">Any time — we&apos;ll suggest this carer&apos;s hours.</p>
             ) : (
               <HoursEditor carer={carer} onChange={(working_hours) => patch({ working_hours })} />
             )}
@@ -295,7 +295,7 @@ function ClientsTab() {
   const teamCarers = settings.carers.filter((c) => c.teams.includes(client.team));
   return (
     <div>
-      <table className={tableCls}>
+      <ScrollBox count={settings.clients.length} label="Clients"><table className={tableCls}>
         <caption className="sr-only">Clients. Choose a row to edit.</caption>
         <thead>
           <tr>
@@ -330,7 +330,7 @@ function ClientsTab() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></ScrollBox>
 
       <div className="mt-6 border-t border-line pt-5"><h2 className="mb-3 text-base">{client.ref}</h2>
         <div className="space-y-5">
@@ -395,44 +395,44 @@ function AgencyTab() {
   const set = (p: Partial<typeof a>) => setSettings((s) => ({ ...s, agency: { ...s.agency, ...p } }));
   const rows: { name: string; input: ReactNode; meaning: string }[] = [
     {
-      name: "Visit move window",
+      name: "How far a visit may move",
       meaning: "How far a visit that is not time-critical may move.",
-      input: <NumberInput label="Visit move window" suffix="min either way" value={a.move_window_minutes} onChange={(v) => set({ move_window_minutes: v ?? 30 })} />,
+      input: <NumberInput label="Visit move window" suffix="minutes either way" value={a.move_window_minutes} onChange={(v) => set({ move_window_minutes: v ?? 30 })} />,
     },
     {
-      name: "Move cost",
-      meaning: "Discourages moving visits unless it saves travel.",
-      input: <NumberInput label="Move cost" suffix="pence per min" value={a.move_cost_pence_per_min} onChange={(v) => set({ move_cost_pence_per_min: v ?? 15 })} />,
+      name: "Cost of moving a visit",
+      meaning: "Visits only move when it saves enough travel to be worth it.",
+      input: <NumberInput label="Move cost" suffix="p a minute" value={a.move_cost_pence_per_min} onChange={(v) => set({ move_cost_pence_per_min: v ?? 15 })} />,
     },
     {
-      name: "Continuity weight",
-      meaning: "Cost of sending a carer the client has not seen in 4 weeks.",
-      input: <NumberInput label="Continuity weight" suffix="pounds per visit" value={a.continuity_weight_pence / 100} onChange={(v) => set({ continuity_weight_pence: Math.round((v ?? 10) * 100) })} />,
+      name: "Value of a familiar carer",
+      meaning: "How much it is worth sending a carer the client has seen in the last 4 weeks.",
+      input: <NumberInput label="Continuity weight" suffix="£ per visit" value={a.continuity_weight_pence / 100} onChange={(v) => set({ continuity_weight_pence: Math.round((v ?? 10) * 100) })} />,
     },
     {
-      name: "Hours balance",
-      meaning: "Each carer in a team gets an equal share of the hours.",
-      input: <span>Equal share within each team</span>,
+      name: "Fair hours",
+      meaning: "Hours are shared as evenly as possible within each team.",
+      input: <span>Each carer in a team gets an equal share</span>,
     },
     {
-      name: "Search time",
-      meaning: "Longer can give a slightly better plan. Also set on the Run screen.",
-      input: <NumberInput label="Search time" suffix="seconds per day" value={a.search_seconds_per_day} onChange={(v) => set({ search_seconds_per_day: v ?? 10 })} />,
+      name: "Planning time",
+      meaning: "Longer can give slightly better suggestions. Also set on the Plan screen.",
+      input: <NumberInput label="Search time" suffix="seconds a day" value={a.search_seconds_per_day} onChange={(v) => set({ search_seconds_per_day: v ?? 10 })} />,
     },
     {
-      name: "Arrival tolerance",
-      meaning: "How late a carer may arrive without the booked time needing an edit. Placeholder: confirm with the coordinator / contracts.",
-      input: <NumberInput label="Arrival tolerance (minutes)" suffix="minutes" value={a.arrival_tolerance_minutes} onChange={(v) => set({ arrival_tolerance_minutes: v ?? 15 })} />,
+      name: "Small time changes we ignore",
+      meaning: "A time change this small needs no edit in CareLineLive. Placeholder: confirm with the coordinator / contracts.",
+      input: <NumberInput label="Small time changes we ignore (minutes)" suffix="minutes" value={a.arrival_tolerance_minutes} onChange={(v) => set({ arrival_tolerance_minutes: v ?? 15 })} />,
     },
     {
-      name: "Team regions",
-      meaning: "Which planning region each team belongs to. Set by the service; read-only.",
+      name: "Areas planned together",
+      meaning: "Which teams are planned together. Set for you; read-only.",
       input: a.team_regions ? (
         <ul>
           {Object.entries(a.team_regions).map(([team, region]) => (
             <li key={team}>
               {team} <span aria-hidden>&rarr;</span>
-              <span className="sr-only"> in region </span> {region}
+              <span className="sr-only"> in area </span> {region}
             </li>
           ))}
         </ul>
@@ -441,19 +441,19 @@ function AgencyTab() {
       ),
     },
     {
-      name: "Change cost",
-      meaning: "How much a change must save to be suggested. Chosen on the Run screen.",
-      input: <span>£{(a.change_cost_pence / 100).toFixed(0)} per change</span>,
+      name: "How many changes",
+      meaning: "Chosen on the Plan screen.",
+      input: <span>{({ 300: "More changes", 500: "Fewer changes", 1000: "Balanced (recommended)", 2000: "Only clear wins" } as Record<number, string>)[a.change_cost_pence] ?? "Custom"}</span>,
     },
     {
       name: "Pay rate",
-      meaning: "Used to cost travel. Empty uses the engine default.",
-      input: <NumberInput label="Pay rate" suffix="pence per hour" value={a.pay_pence_per_hour} onChange={(v) => set({ pay_pence_per_hour: v })} allowEmpty />,
+      meaning: "Used to cost travel. Empty uses the standard value.",
+      input: <NumberInput label="Pay rate" suffix="p an hour" value={a.pay_pence_per_hour} onChange={(v) => set({ pay_pence_per_hour: v })} allowEmpty />,
     },
     {
       name: "Mileage rate",
-      meaning: "Used to cost travel. Empty uses the engine default.",
-      input: <NumberInput label="Mileage rate" suffix="pence per mile" value={a.mileage_pence_per_mile} onChange={(v) => set({ mileage_pence_per_mile: v })} allowEmpty />,
+      meaning: "Used to cost travel. Empty uses the standard value.",
+      input: <NumberInput label="Mileage rate" suffix="p a mile" value={a.mileage_pence_per_mile} onChange={(v) => set({ mileage_pence_per_mile: v })} allowEmpty />,
     },
     {
       name: "Travel time paid",
@@ -465,7 +465,7 @@ function AgencyTab() {
           value={a.travel_time_paid == null ? "" : a.travel_time_paid ? "yes" : "no"}
           onChange={(e) => set({ travel_time_paid: e.target.value === "" ? null : e.target.value === "yes" })}
         >
-          <option value="">Engine default</option>
+          <option value="">Standard</option>
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
@@ -551,14 +551,14 @@ export function SettingsStep() {
 
       {settings.carers.some((c) => c.active && isAnyTime(c)) && (
         <p className="mb-4 text-sm text-muted">
-          {settings.carers.filter((c) => c.active && isAnyTime(c)).length} carer(s) are available any time; the engine chooses their hours.
+          {settings.carers.filter((c) => c.active && isAnyTime(c)).length} carer(s) are available any time; we&apos;ll suggest their hours.
         </p>
       )}
       {warnings.length > 0 && (
         <details className="mb-5 rounded-xl bg-warn-soft px-4 py-3 text-sm">
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">
             <IconWarning aria-hidden className="h-4 w-4 text-warn" />
-            {warnings.length} thing(s) to check before running
+            {warnings.length} thing(s) to check before planning
           </summary>
           <ul className="mt-2 list-disc space-y-0.5 pl-6 text-muted">
             {warnings.map((w) => (

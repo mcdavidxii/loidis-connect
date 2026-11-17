@@ -30,7 +30,7 @@ async function proxy(req: Request, base: string, path: string[]): Promise<Respon
     out.set("cache-control", "no-store");
     return new Response(upstream.body, { status: upstream.status, headers: out });
   } catch {
-    return Response.json({ error: "The engine service could not be reached." }, { status: 502 });
+    return Response.json({ error: "The planning service could not be reached." }, { status: 502 });
   }
 }
 

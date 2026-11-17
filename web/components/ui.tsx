@@ -1,6 +1,6 @@
 "use client";
 
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { IconError, IconInfo, IconOk, IconWarning } from "./icons";
 
 type Variant = "primary" | "secondary" | "ghost";
@@ -250,5 +250,39 @@ export function RadioRow({
         {text && <span className="block text-xs text-muted">{text}</span>}
       </span>
     </label>
+  );
+}
+
+// A long list scrolls inside its panel (about 400px) with a sticky header, and can be expanded.
+// The scroll area is focusable so the keyboard can scroll it.
+export function ScrollBox({
+  count,
+  threshold = 8,
+  label,
+  children,
+}: {
+  count: number;
+  threshold?: number;
+  label: string;
+  children: ReactNode;
+}) {
+  const [all, setAll] = useState(false);
+  const long = count > threshold;
+  return (
+    <div>
+      <div
+        className={`scrollbox ${long && !all ? "max-h-[400px] overflow-auto" : ""}`}
+        {...(long && !all ? { tabIndex: 0, role: "region", "aria-label": `${label}, scrollable` } : {})}
+      >
+        {children}
+      </div>
+      {long && (
+        <div className="mt-2 flex justify-end">
+          <button type="button" aria-expanded={all} onClick={() => setAll(!all)} className="rounded-lg px-2 py-1 text-xs font-semibold text-brand-strong hover:bg-hover">
+            {all ? "Show less" : `Show all ${count}`}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

@@ -107,3 +107,11 @@ svg.lucide {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-panel);
 }
+
+/* Long lists scroll inside their panel with a sticky header. */
+.scrollbox th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-surface);
+}

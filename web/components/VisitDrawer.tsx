@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { hhmm } from "@/lib/time";
 import { DAYS, type Change, type Report, type ReportVisit } from "@/lib/types";
 import { IconChanged, IconClose, IconLock, IconMoved, IconUnchanged } from "./icons";
+import { plainLock, plainReason } from "@/lib/warnings";
 import { CLASS_LABEL, sameCarers } from "./rosterShared";
 import { Button } from "./ui";
 
@@ -45,11 +46,11 @@ export function VisitDrawer({
 
   // Rule warnings: what the report tells us about this visit.
   const warnings: string[] = [];
-  if (v.lock_reason) warnings.push(`Locked: ${v.lock_reason}`);
+  if (v.lock_reason) warnings.push(`Kept as is: ${plainLock(v.lock_reason)}`);
   if (v.assigned.length === 0 && v.unfilled_reason) warnings.push(v.unfilled_reason);
   if (idx > 0) {
     const gap = stops[idx].start - stops[idx - 1].end;
-    if (gap < stops[idx].travel_before) warnings.push(`Tight gap: ${gap} min between visits, ${stops[idx].travel_before} min travel`);
+    if (gap < stops[idx].travel_before) warnings.push(`Short gap: ${gap} min between visits, ${stops[idx].travel_before} min travel`);
   }
   v.assigned.forEach((id) => {
     const c = report.carers.find((x) => x.id === id);
@@ -85,9 +86,9 @@ export function VisitDrawer({
         {row("Booking type", v.booking_type)}
         {row("Date", date)}
         {row("Booked", `${hhmm(v.preferred_start)} to ${hhmm(v.preferred_start + v.duration)}`)}
-        {row("Engine plan", v.start == null ? "Not planned" : `${hhmm(planned)} to ${hhmm(planned + v.duration)}${shift !== 0 ? ` (${shift > 0 ? "+" : ""}${shift} min)` : " (no shift)"}`)}
-        {row("Current rota", list(v.current_assigned))}
-        {row("Engine plan carers", list(v.assigned))}
+        {row("Suggested rota", v.start == null ? "Not planned" : `${hhmm(planned)} to ${hhmm(planned + v.duration)}${shift !== 0 ? ` (${shift > 0 ? "+" : ""}${shift} min)` : " (same time)"}`)}
+        {row("Your rota", list(v.current_assigned))}
+        {row("Suggested carers", list(v.assigned))}
         {row(
           "Change",
           <span className="flex items-center gap-1.5">
@@ -101,11 +102,11 @@ export function VisitDrawer({
             {cls ? (CLASS_LABEL[cls] ?? cls) : "Unallocated"}
           </span>,
         )}
-        {change && row("Reason", change.reason)}
+        {change && row("Why", plainReason(change.reason))}
         {row("Travel before", before == null ? "-" : `${before} min`)}
         {row("Travel after", after == null ? "-" : `${after} min`)}
         {row(
-          "Rule warnings",
+          "Warnings",
           warnings.length ? (
             <ul className="list-disc pl-4">
               {warnings.map((w) => (
@@ -121,26 +122,26 @@ export function VisitDrawer({
         {lockedTo ? (
           <Button onClick={() => onLock(lockedTo)}>
             <IconLock aria-hidden className="h-4 w-4 text-muted" />
-            Unlock ({names.get(lockedTo) ?? lockedTo})
+            Stop keeping with {names.get(lockedTo) ?? lockedTo}
           </Button>
         ) : (
           <>
             {v.assigned[0] && (
               <Button onClick={() => onLock(v.assigned[0])}>
                 <IconLock aria-hidden className="h-4 w-4 text-muted" />
-                Lock to this carer
+                Keep with this carer
               </Button>
             )}
             {v.current_assigned[0] && (
               <Button onClick={() => onLock(v.current_assigned[0])}>
                 <IconLock aria-hidden className="h-4 w-4 text-muted" />
-                Lock to current carer
+                Keep with current carer
               </Button>
             )}
           </>
         )}
       </div>
-      <p className="mt-2 text-xs text-muted">Locks apply the next time you run.</p>
+      <p className="mt-2 text-xs text-muted">This applies the next time you make suggestions.</p>
     </aside>
   );
 }

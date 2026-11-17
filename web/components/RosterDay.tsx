@@ -186,7 +186,7 @@ export function RosterDay({
     <div className="mb-4">
       {showTeam && <p className="mb-1 text-xs font-semibold text-muted">{team}</p>}
       <div ref={scrollRef} className="max-h-[70vh] overflow-auto rounded-xl border border-line bg-surface">
-        <div style={{ width: 224 + trackW }} role="table" aria-label={`${group === "carer" ? "Carer" : "Client"} day roster for ${team}, ${view === "engine" ? "engine plan" : "current rota"}`}>
+        <div style={{ width: 224 + trackW }} role="table" aria-label={`${group === "carer" ? "Carer" : "Client"} day roster for ${team}, ${view === "engine" ? "suggested rota" : "your rota"}`}>
           <div className="sticky top-0 z-20 flex border-b border-line bg-canvas text-xs text-muted" role="row">
             <Gutter className="z-30 bg-canvas px-3 py-2">
               <span role="columnheader">{group === "carer" ? "Carer" : "Client"}</span>
@@ -247,7 +247,7 @@ export function RosterDay({
                       if (prev && s.travel != null && s.travel > 0) {
                         const gap = s.start - prev.end;
                         const fits = gap >= s.travel;
-                        const text = `Travel ${s.travel} min, gap ${gap} min: ${fits ? "fits" : "tight gap"}`;
+                        const text = `Travel ${s.travel} min, gap ${gap} min: ${fits ? "fits" : "short gap"}`;
                         chip = (
                           <span
                             role="img"

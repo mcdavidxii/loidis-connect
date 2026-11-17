@@ -131,8 +131,8 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
           value={view}
           onChange={setView}
           options={[
-            { id: "current", label: "Current rota" },
-            { id: "engine", label: "Engine plan" },
+            { id: "current", label: "Your rota" },
+            { id: "engine", label: "Suggested rota" },
           ]}
         />
         <div className="ml-auto flex items-center gap-1">
@@ -185,7 +185,7 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
           onChange={setStatusFilter}
           options={[
             { id: "all", label: "All", count: counts.all },
-            { id: "changed", label: "Changed", count: counts.changed },
+            { id: "changed", label: "Suggested changes", count: counts.changed },
             { id: "unallocated", label: "Unallocated", count: counts.unallocated },
           ]}
         />
@@ -224,20 +224,20 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
         <div role="group" aria-label="Highlight" className="flex items-center gap-2 text-sm">
           <span className="text-xs text-muted">Highlight</span>
           <label className="sr-only" htmlFor="hl-changed">
-            Changed by engine
+            Suggested changes
           </label>
           <select id="hl-changed" className={inputCls} value={hlChanged ? "on" : "off"} onChange={(e) => setHlChanged(e.target.value === "on")}>
-            <option value="off">Changed by engine: off</option>
-            <option value="on">Changed by engine: on</option>
+            <option value="off">Suggested changes: off</option>
+            <option value="on">Suggested changes: on</option>
           </select>
           <label className="sr-only" htmlFor="hl-moved">
-            Moved by at least
+            New time by at least
           </label>
           <select id="hl-moved" className={inputCls} value={hlMoved} onChange={(e) => setHlMoved(Number(e.target.value))}>
-            <option value={0}>Moved by at least: off</option>
+            <option value={0}>New time by at least: off</option>
             {[5, 10, 15, 30].map((m) => (
               <option key={m} value={m}>
-                Moved by at least {m} min
+                New time by at least {m} min
               </option>
             ))}
           </select>
@@ -276,13 +276,13 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
                     <span className="inline-flex items-center rounded-md bg-bad-soft px-1 text-bad ring-1 ring-bad">
                       <IconWalk aria-hidden className="h-3 w-3" />
                     </span>
-                    Tight gap (car or walking icon by carer)
+                    Short gap (car or walking icon by carer)
                   </li>
                 </ul>
                 <p className="mb-1 font-semibold">Icons</p>
                 <ul className="space-y-1">
                   <li className="flex items-center gap-2"><IconDoubleUp aria-hidden className="h-3 w-3" /> Double-up (number of carers)</li>
-                  <li className="flex items-center gap-2"><IconLock aria-hidden className="h-3 w-3" /> Locked</li>
+                  <li className="flex items-center gap-2"><IconLock aria-hidden className="h-3 w-3" /> Kept as is</li>
                   <li className="flex items-center gap-2"><IconTimeCritical aria-hidden className="h-3 w-3" /> Time-critical</li>
                 </ul>
               </div>

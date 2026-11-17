@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Loidis Connect - Rota engine test",
-  description: "Test screens for the Loidis Connect rota engine",
+  title: "Loidis Connect - Rota planner",
+  description: "Rota planner for Loidis Care Services",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

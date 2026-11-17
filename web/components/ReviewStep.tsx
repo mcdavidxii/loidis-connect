@@ -2,6 +2,7 @@
 
 import { addDays, niceDate } from "@/lib/time";
 import type { Change, FillCheck, ReportMetrics, RunResult, TimeNote } from "@/lib/types";
+import { plainReason, plainWarning } from "@/lib/warnings";
 import { useApp } from "./AppProvider";
 import {
   IconArrowDown,
@@ -21,7 +22,7 @@ import {
   IconWarning,
 } from "./icons";
 import { Roster } from "./Roster";
-import { Badge, Button, Notice, PageHeader, Section, StatPanel, tableCls, tdCls, thCls } from "./ui";
+import { Badge, Button, Notice, PageHeader, ScrollBox, Section, StatPanel, tableCls, tdCls, thCls } from "./ui";
 
 type Good = "down" | "up" | "none";
 
@@ -46,15 +47,9 @@ function Delta({ engine, current, good, unit = "", dp = 0 }: { engine: number; c
   );
 }
 
-const WARNING_HELP: Record<string, string> = {
-  locked_outside_hours: "These bookings are at times no allowed carer works, so they stay with their current carer. Check those carers can do them.",
-  current_rota_not_feasible:
-    "Your current rota has bookings our rules or travel estimates would not keep, so the engine can show fewer filled bookings than your rota. That is not necessarily worse.",
-};
-
 const CAUSE_TEXT: Record<string, string> = {
-  rules: "too few carers allowed (skills, gender, do-not-send, leave, DBS or training)",
-  hours: "carers not working then",
+  rules: "a carer rule (skills, gender, not allowed, leave)",
+  hours: "no carer working then",
   weekly_max: "carers at their weekly maximum",
   travel_or_booked: "carers busy or too far away",
 };
@@ -70,13 +65,13 @@ function FillCheckText({ fc }: { fc: FillCheck }) {
   ).filter(([, n]) => n > 0);
   return (
     <details className="text-sm">
-      <summary className="cursor-pointer text-muted">Why fewer or more bookings are filled</summary>
+      <summary className="cursor-pointer text-muted">Why some bookings can&apos;t be filled</summary>
       <div className="mt-2 space-y-1 text-muted">
         <p>
-          Current rota: {fc.current_rota_fully_staffed} filled, of which {fc.current_rota_feasible} work under our rules and travel estimates.
+          Your rota fills {fc.current_rota_fully_staffed} visits, but only {fc.current_rota_feasible} of them leave enough time to travel between visits and follow the carer rules.
         </p>
         <p>
-          Unfilled: {fc.unfilled}
+          {fc.unfilled} booking{fc.unfilled === 1 ? "" : "s"} can&apos;t be filled
           {parts.length > 0 && ": "}
           {parts.map(([k, n], i) => (
             <span key={k}>
@@ -84,7 +79,7 @@ function FillCheckText({ fc }: { fc: FillCheck }) {
               {n} {CAUSE_TEXT[k]}
             </span>
           ))}
-          {fc.unfilled_but_filled_in_current_rota > 0 && `. ${fc.unfilled_but_filled_in_current_rota} of these are filled in the current rota`}.
+          {fc.unfilled_but_filled_in_current_rota > 0 && `. ${fc.unfilled_but_filled_in_current_rota} of these are filled on your rota`}.
         </p>
       </div>
     </details>
@@ -99,28 +94,28 @@ function Overview({ result }: { result: RunResult }) {
   const ic = "h-5 w-5";
   return (
     <section aria-label="Overview" className="mb-6">
-      <h2 className="mb-3 text-base">{result.mode === "new" ? "Engine plan against the current rota" : "After changes against the current rota"}</h2>
+      <h2 className="mb-3 text-base">{"Suggested rota compared with your rota"}</h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatPanel icon={<IconStatBookings aria-hidden className={ic} />} label="Bookings filled" value={`${e.filled} of ${e.visits}`} sub={`Current ${c.filled}`}>
+        <StatPanel icon={<IconStatBookings aria-hidden className={ic} />} label="Bookings filled" value={`${e.filled} of ${e.visits}`} sub={`Your rota ${c.filled}`}>
           <Delta engine={e.filled} current={c.filled} good="up" />
         </StatPanel>
-        <StatPanel icon={<IconStatUnallocated aria-hidden className={ic} />} label="Unallocated" value={e.unfilled} sub={`Current ${c.unfilled}`}>
+        <StatPanel icon={<IconStatUnallocated aria-hidden className={ic} />} label="Unallocated" value={e.unfilled} sub={`Your rota ${c.unfilled}`}>
           <Delta engine={e.unfilled} current={c.unfilled} good="down" />
         </StatPanel>
-        <StatPanel icon={<IconStatTravel aria-hidden className={ic} />} label="Travel time" value={`${e.travel_hours} h`} sub={`Current ${c.travel_hours} h`}>
+        <StatPanel icon={<IconStatTravel aria-hidden className={ic} />} label="Travel time" value={`${e.travel_hours} h`} sub={`Your rota ${c.travel_hours} h`}>
           <Delta engine={e.travel_hours} current={c.travel_hours} good="down" unit=" h" dp={1} />
         </StatPanel>
-        <StatPanel icon={<IconStatMiles aria-hidden className={ic} />} label="Miles" value={e.miles} sub={`Current ${c.miles}`}>
+        <StatPanel icon={<IconStatMiles aria-hidden className={ic} />} label="Miles" value={e.miles} sub={`Your rota ${c.miles}`}>
           <Delta engine={e.miles} current={c.miles} good="down" dp={1} />
         </StatPanel>
-        <StatPanel icon={<IconStatContinuity aria-hidden className={ic} />} label="Continuity" value={pct(e)} sub={`Current ${pct(c)}`}>
+        <StatPanel icon={<IconStatContinuity aria-hidden className={ic} />} label="Visits by a familiar carer" value={pct(e)} sub={`Your rota ${pct(c)}`}>
           <Delta engine={Math.round(e.continuity_rate * 100)} current={Math.round(c.continuity_rate * 100)} good="up" unit=" pts" />
         </StatPanel>
-        <StatPanel icon={<IconStatHours aria-hidden className={ic} />} label="Care hours per carer" value={range(e)} sub={`Current ${range(c)}, median ${e.hours_median} h`} />
-        <StatPanel icon={<IconStatSpread aria-hidden className={ic} />} label="Spread of hours" value={`${e.hours_stdev} h`} sub={`Current ${c.hours_stdev} h`}>
+        <StatPanel icon={<IconStatHours aria-hidden className={ic} />} label="Hours per carer" value={range(e)} sub={`Your rota ${range(c)}, middle ${e.hours_median} h`} />
+        <StatPanel icon={<IconStatSpread aria-hidden className={ic} />} label="Hours balance between carers" value={`${e.hours_stdev} h`} sub={`Your rota ${c.hours_stdev} h (lower is more even)`}>
           <Delta engine={e.hours_stdev} current={c.hours_stdev} good="down" unit=" h" dp={1} />
         </StatPanel>
-        <StatPanel icon={<IconStatMoved aria-hidden className={ic} />} label="Visits moved" value={e.visits_moved} sub="Different carer or time" />
+        <StatPanel icon={<IconStatMoved aria-hidden className={ic} />} label="Visits changed" value={e.visits_moved} sub="Different carer or time" />
       </div>
       {result.fill_check && (
         <div className="panel mt-4 px-5 py-3">
@@ -151,7 +146,7 @@ function Unallocated({ result }: { result: RunResult }) {
       {rows.length === 0 ? (
         <p className="text-sm text-muted">Every booking has a carer.</p>
       ) : (
-        <table className={tableCls}>
+        <ScrollBox count={rows.length} label="Unallocated bookings"><table className={tableCls}>
           <caption className="sr-only">Unallocated bookings</caption>
           <thead>
             <tr>
@@ -197,7 +192,7 @@ function Unallocated({ result }: { result: RunResult }) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></ScrollBox>
       )}
     </Section>
   );
@@ -206,7 +201,7 @@ function Unallocated({ result }: { result: RunResult }) {
 function NoteTable({ notes, nm }: { notes: TimeNote[]; nm: Map<string, string> }) {
   if (notes.length === 0) return <p className="text-sm text-muted">None.</p>;
   return (
-    <table className={tableCls}>
+    <ScrollBox count={notes.length} label="Notes"><table className={tableCls}>
       <thead>
         <tr>
           <th scope="col" className={thCls}>Booking</th>
@@ -227,18 +222,18 @@ function NoteTable({ notes, nm }: { notes: TimeNote[]; nm: Map<string, string> }
             <td className={tdCls}>{n.carer}</td>
             <td className={tdCls}>{n.booked_start}</td>
             <td className={tdCls}>{n.new_start}</td>
-            <td className={`${tdCls} text-muted`}>{n.reason}</td>
+            <td className={`${tdCls} text-muted`}>{plainReason(n.reason)}</td>
           </tr>
         ))}
       </tbody>
-    </table>
+    </table></ScrollBox>
   );
 }
 
 function ChangeTable({ rows, currentCarer, nm }: { rows: Change[]; currentCarer: (bookingId: string) => string | undefined; nm: Map<string, string> }) {
   const { locks, toggleLock } = useApp();
   return (
-    <table className={tableCls}>
+    <ScrollBox count={rows.length} label="Suggested changes"><table className={tableCls}>
       <caption className="sr-only">Changes</caption>
       <thead>
         <tr>
@@ -273,12 +268,12 @@ function ChangeTable({ rows, currentCarer, nm }: { rows: Change[]; currentCarer:
                 </span>
               </td>
               <td className={`${tdCls} whitespace-nowrap`}>{newTime ? `Change to ${newTime}` : "Keep booked time"}</td>
-              <td className={tdCls}>{c.reason}</td>
+              <td className={tdCls}>{plainReason(c.reason)}</td>
               <td className={`${tdCls} text-right`}>
                 {cur && (
                   <Button variant="ghost" onClick={() => toggleLock(c.booking_id, cur)}>
                     <IconLock aria-hidden className="h-4 w-4 text-muted" />
-                    {locked ? "Unlock" : "Keep current"}
+                    {locked ? "Stop keeping" : "Keep as is"}
                   </Button>
                 )}
               </td>
@@ -286,7 +281,7 @@ function ChangeTable({ rows, currentCarer, nm }: { rows: Change[]; currentCarer:
           );
         })}
       </tbody>
-    </table>
+    </table></ScrollBox>
   );
 }
 
@@ -309,22 +304,22 @@ function Changes({ result }: { result: RunResult }) {
   return (
     <>
       <Section
-        title={`Changes to make in CareLineLive (${result.changes.length})`}
-        info={`Change cost £${((result.change_cost_pence ?? 0) / 100).toFixed(0)}: a change must save at least this much to be suggested.`}
+        title={`Suggested changes to make in CareLineLive (${result.changes.length})`}
+        info={`A change is only suggested if it saves enough to be worth making by hand (about £${((result.change_cost_pence ?? 0) / 100).toFixed(0)}, or roughly ${Math.round((result.change_cost_pence ?? 0) / 21)} minutes of paid time).`}
       >
         {s && (
           <p className="mb-3 text-sm text-muted">
-            {s.forced_by_rules} required by the rules, {s.fills_unallocated} fill an unallocated booking, {s.for_travel_continuity_hours} for travel, continuity or hours.{" "}
+            {s.forced_by_rules} needed because the current carer is not allowed, {s.fills_unallocated} fill an unallocated booking, {s.for_travel_continuity_hours} for less travel, a familiar carer or fairer hours.{" "}
             {s.new_time_needed} need a new time.
           </p>
         )}
-        {result.changes.length === 0 && <p className="text-sm text-muted">No changes are worth making at this change cost.</p>}
+        {result.changes.length === 0 && <p className="text-sm text-muted">No changes are worth making at this setting.</p>}
         {forced.length > 0 && (
           <div className="mb-5">
             <h3 className="mb-1 flex items-center gap-2 text-sm">
-              Required: the current carer is not allowed ({forced.length})
+              Needed: the current carer is not allowed ({forced.length})
               <Badge tone="warn" icon={<IconWarning aria-hidden className="h-3 w-3" />}>
-                Must change
+                Needed
               </Badge>
             </h3>
             <ChangeTable rows={forced} currentCarer={currentCarer} nm={nm} />
@@ -338,13 +333,13 @@ function Changes({ result }: { result: RunResult }) {
         )}
       </Section>
       <details className="panel mb-4 p-4 text-sm">
-        <summary className="cursor-pointer font-semibold">Tight gaps to check ({tight.length})</summary>
-        <p className="my-2 text-xs text-muted">Same carer; the start moves by more than the arrival tolerance to fit travel. Check the gap is realistic.</p>
+        <summary className="cursor-pointer font-semibold">Short gaps to check ({tight.length})</summary>
+        <p className="my-2 text-xs text-muted">Same carer; the start moves a little to leave time to travel. Check the gap is realistic.</p>
         <NoteTable notes={tight} nm={nm} />
       </details>
       <details className="panel mb-6 p-4 text-sm">
         <summary className="cursor-pointer font-semibold">Small time shifts, no edit needed ({small.length})</summary>
-        <p className="my-2 text-xs text-muted">Within {tol} min of the booked time (arrival tolerance, a placeholder until confirmed).</p>
+        <p className="my-2 text-xs text-muted">Within {tol} min of the booked time, so nothing needs editing (this limit is a placeholder until confirmed).</p>
         <NoteTable notes={small} nm={nm} />
       </details>
     </>
@@ -357,8 +352,8 @@ export function ReviewStep() {
   if (!result) {
     return (
       <div className="w-full">
-        <PageHeader title="Review" />
-        <Notice title="No result yet">Run the engine first.</Notice>
+        <PageHeader title="Suggestions" />
+        <Notice title="No result yet">Make suggestions first.</Notice>
       </div>
     );
   }
@@ -366,11 +361,11 @@ export function ReviewStep() {
   return (
     <div className="w-full">
       <PageHeader
-        title="Review"
-        subtitle={result.mode === "new" ? "New rota: the engine's full allocation against your current rota." : "Improve my rota: suggested changes to your current rota."}
+        title="Suggestions"
+        subtitle={result.mode === "new" ? "The whole week planned from scratch, compared with your rota." : "Suggested changes to your rota."}
         actions={
           <>
-            <Button onClick={() => app.setStep("run")}>Adjust and re-run{lockCount > 0 ? ` (${lockCount} locked)` : ""}</Button>
+            <Button onClick={() => app.setStep("run")}>Adjust and plan again{lockCount > 0 ? ` (${lockCount} locked)` : ""}</Button>
             <Button variant="primary" onClick={() => app.setStep("export")}>
               Continue to export
             </Button>
@@ -382,13 +377,12 @@ export function ReviewStep() {
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">
             <IconWarning aria-hidden className="h-4 w-4 text-warn" />
             {result.warnings.length} warning{result.warnings.length > 1 ? "s" : ""}
-            <span className="font-normal text-muted">Some rules were not checked or need attention</span>
+            <span className="font-normal text-muted">Some checks could not be made, or need a look</span>
           </summary>
           <ul className="mt-2 list-disc space-y-1 pl-6">
             {result.warnings.map((w) => (
               <li key={w.code}>
-                {w.message}
-                {WARNING_HELP[w.code] && <span className="block text-muted">{WARNING_HELP[w.code]}</span>}
+                {plainWarning(w)}
               </li>
             ))}
           </ul>

@@ -579,7 +579,7 @@ export function runMock(p: MockParams): RunResult {
           within_tolerance: Math.abs(actual - v.start) <= ctx.tolerance,
           reason:
             Math.abs(actual - v.start) <= ctx.tolerance
-              ? `Same carer; ${actual - v.start} min later, within the ${ctx.tolerance} min arrival tolerance. No edit needed.`
+              ? `Same carer; ${actual - v.start} min later, within the ${ctx.tolerance} min limit for small time changes. No edit needed.`
               : `Same carer; ${actual - v.start} min later to fit the travel estimate. Check the gap.`,
         });
       }

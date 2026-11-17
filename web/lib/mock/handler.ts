@@ -161,7 +161,7 @@ export async function handleMock(req: Request, path: string[]): Promise<Response
     try {
       stored.result = runMock({ mode, changeCostPence: Number.isFinite(cost) ? cost : 1000, settings: await readSettings(form), locks });
     } catch {
-      stored.error = "The mock engine failed.";
+      stored.error = "Something went wrong while making suggestions.";
     }
     runs.set(id, stored);
     return json({ run_id: id }, 201);
@@ -169,7 +169,7 @@ export async function handleMock(req: Request, path: string[]): Promise<Response
 
   if (a === "runs" && b) {
     const run = runs.get(b);
-    if (!run) return json({ error: "Run not found (it may have been deleted)." }, 404);
+    if (!run) return json({ error: "Plan not found (it may have been deleted)." }, 404);
 
     if (!c && method === "DELETE") {
       runs.delete(b);

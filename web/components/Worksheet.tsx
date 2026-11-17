@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { plainReason } from "@/lib/warnings";
 import { hhmm, niceDate } from "@/lib/time";
 import { buildWorksheet, type AllocRow, type ChangeRow, type NoteRow, type UnallocatedRow } from "@/lib/worksheet";
 import { DAYS, DAY_LABELS, type RunResult } from "@/lib/types";
@@ -221,7 +222,7 @@ function ChangeSections({ rows, done, onToggle }: { rows: ChangeRow[]; done: Set
                         <Badge tone="warn">Required</Badge>
                       </span>
                     )}
-                    <span className="text-xs text-muted">{r.why}</span>
+                    <span className="text-xs text-muted">{plainReason(r.why)}</span>
                   </td>
                 </tr>
               ))}
@@ -312,8 +313,8 @@ function NotesBlock({ rows }: { rows: NoteRow[] }) {
                 <CopyId id={r.bookingId} />
               </td>
               <td className={tdCls}>
-                <Badge tone={r.kind === "time_note" ? "warn" : "neutral"}>{r.kind === "time_note" ? "Tight gap, check" : "Within tolerance"}</Badge>{" "}
-                <span className="text-xs text-muted">{r.note}</span>
+                <Badge tone={r.kind === "time_note" ? "warn" : "neutral"}>{r.kind === "time_note" ? "Short gap, check travel" : "Small time change"}</Badge>{" "}
+                <span className="text-xs text-muted">{plainReason(r.note)}</span>
               </td>
             </tr>
           ))}
