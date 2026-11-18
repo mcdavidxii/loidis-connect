@@ -56,6 +56,7 @@ class Booking:
     carer_names: list[str]
     teams: list[str]
     cancelled: bool
+    generated: bool = False  # made from a client schedule: no CareLineLive booking exists yet
 
     @property
     def team(self) -> str:
@@ -140,10 +141,11 @@ def split_names(cell: str) -> list[str]:
     return [x.strip() for x in re.split(r"[;,]", cell or "") if x.strip()]
 
 
-def parse_bookings(data: bytes) -> tuple[list[Booking], BookingsInfo]:
+def parse_bookings(data: bytes, allow_many_weeks: bool = False) -> tuple[list[Booking], BookingsInfo]:
     """Parse and validate. Returns every usable row (cancelled ones flagged) and the checks.
 
-    Problems are recorded in the info; call `require_valid` to raise on them."""
+    Problems are recorded in the info; call `require_valid` to raise on them. A file normally
+    holds one week; `allow_many_weeks` (learning client schedules) lets it hold several."""
     info = BookingsInfo()
     try:
         text = data.decode("utf-8-sig")
@@ -247,7 +249,9 @@ def parse_bookings(data: bytes) -> tuple[list[Booking], BookingsInfo]:
     info.double_ups = sum(1 for b in live if b.expected >= 2)
     info.unallocated = sum(1 for b in live if not b.carer_names)
     weeks = {monday_of(b.day) for b in live}
-    if len(weeks) > 1:
+    if len(weeks) > 1 and allow_many_weeks:
+        info.week_start = min(weeks)
+    elif len(weeks) > 1:
         info.problems.append(
             f"The bookings cover {len(weeks)} different weeks; upload one week (Monday to Sunday)."
         )
@@ -258,8 +262,8 @@ def parse_bookings(data: bytes) -> tuple[list[Booking], BookingsInfo]:
     return out, info
 
 
-def require_valid(data: bytes) -> tuple[list[Booking], BookingsInfo]:
-    bookings, info = parse_bookings(data)
+def require_valid(data: bytes, allow_many_weeks: bool = False) -> tuple[list[Booking], BookingsInfo]:
+    bookings, info = parse_bookings(data, allow_many_weeks)
     if info.problems:
         raise ServiceError(" ".join(info.problems), 422)
     return bookings, info

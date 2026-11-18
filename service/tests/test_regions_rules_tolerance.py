@@ -53,22 +53,22 @@ def test_cross_region_carer_is_home_plus_guest(files):
     s = SettingsFile.from_json(files["settings"])
     k1 = fake_data.booking_name(C["K001"])
     dorset = pick(files, False, "18/11/2026", 2)
-    # K001 (Leeds) is put on two Dorset visits on Wednesday, in the current rota
+    # K001 (Leeds) is put on two Weymouth visits on Wednesday, in the current rota
     base = parse_bookings(files["bookings"])[0]
     k1_leeds = [b for b in base if b.carer_names and k1 in b.carer_names and b.teams[0] == "Leeds"]
     assert len(k1_leeds) > len(dorset)
     rows = edit_bookings(files, {bid: k1 for bid in dorset})
     for mode in ("new", "improve"):
         b = build(rows, fetch_api_data(), s, mode, 1000, {}, None)
-        leeds, dors = region(b, "Leeds"), region(b, "Dorset")
+        leeds, dors = region(b, "Leeds"), region(b, "Weymouth")
         home = leeds.problem.carer_by_id["K001"]
         guest = dors.problem.carer_by_id["K001"]
         minutes = sum(v.duration for v in dors.problem.visits if v.id in dorset)
-        # home (Leeds): no default hours on Wednesday, weekly maximum reduced by the Dorset minutes
+        # home (Leeds): no default hours on Wednesday, weekly maximum reduced by the Weymouth minutes
         assert not [x for x in home.availability if x.day == 2]
         assert any(x.day == 0 for x in home.availability)
         assert home.max_minutes_week == 35 * 60 - minutes
-        # guest (Dorset): only blocks around their own visits, no share of hours, visits locked to them
+        # guest (Weymouth): only blocks around their own visits, no share of hours, visits locked to them
         assert guest.contracted_minutes_week == 0
         assert {x.day for x in guest.availability} == {2}
         assert guest.max_minutes_week == 35 * 60
@@ -89,7 +89,7 @@ def test_carer_with_no_visits_is_planned_only_in_their_team_region(files):
     s = SettingsFile.from_dict(d)
     rows = parse_bookings(files["bookings"])[0]
     b = build(rows, fetch_api_data(), s, "new", 0, {}, None)
-    assert "K013" in region(b, "Dorset").problem.carer_by_id
+    assert "K013" in region(b, "Weymouth").problem.carer_by_id
     assert "K013" not in region(b, "Leeds").problem.carer_by_id
     assert not any(w["code"] == "cross_region_carers" and "K013" in w["message"] for w in b.warnings)
 

@@ -66,7 +66,7 @@ export function ExportStep() {
         />
       </div>
       <p className="mb-3 hidden text-sm print:block">
-        Loidis Connect worksheet, week of {weekStart ? niceDate(weekStart) : ""} ({result.mode === "new" ? "Whole week planned" : "Improve my rota"})
+        Loidis Connect worksheet, week of {weekStart ? niceDate(weekStart) : ""} ({result.draft ? "Draft from client schedules" : result.mode === "new" ? "Whole week planned" : "Improve my rota"})
       </p>
 
       <Section title={result.mode === "new" ? "Whole-week worksheet" : "Changes worksheet"} className="print:mb-0">

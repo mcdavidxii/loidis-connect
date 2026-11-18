@@ -20,8 +20,10 @@ from . import config
 from .bookings import require_valid
 from .build import build
 from .cll import fetch_api_data
+from .draftcheck import apply_draft, parse_draft
 from .errors import ServiceError
 from .result import build_result
+from .schedules import parse_client_list, scheduled_bookings
 from .settings_file import SettingsFile
 from .worker import solve_region
 
@@ -145,12 +147,36 @@ class RunStore:
             inp = run.inputs
             assert inp is not None
             self._set(run, 0.02, "Reading the bookings and settings")
-            bookings, _info = require_valid(inp["bookings"])
             settings = SettingsFile.from_json(inp["settings"]) if inp.get("settings") else None
+            draft_check = None
+            sched_info = None
+            if inp.get("source") == "schedules":
+                if settings is None:
+                    raise ServiceError("A draft from client schedules needs the settings file (it holds the schedules).", 422)
+                rows = parse_client_list(inp["client_list"]) if inp.get("client_list") else []
+                suspended = {r["ref"] for r in rows if r["suspended"]}
+                bookings, sched_info = scheduled_bookings(
+                    settings, inp["week_start"], suspended, {r["ref"]: r["name"] for r in rows if r["name"]})
+                if not bookings:
+                    raise ServiceError("No confirmed client schedule has a visit in that week.", 422)
+            else:
+                bookings, _info = require_valid(inp["bookings"])
+                if inp.get("draft"):
+                    draft_check = apply_draft(bookings, parse_draft(inp["draft"]))
             self._set(run, 0.08, "Reading carers and clients from CareLineLive")
             api = fetch_api_data()
+            if sched_info is not None:
+                team_of = {c.id: c.team for c in api.clients}
+                ref_of = {c.id: c.ref for c in api.clients}
+                for b in bookings:
+                    if not b.teams and team_of.get(b.client_id):
+                        b.teams = [team_of[b.client_id]]
+                    b.client_ref = b.client_ref or ref_of.get(b.client_id, "")
+                sched_info["suspended_ids"] |= {
+                    c.id for c in api.clients if c.ref and c.ref in {r["ref"] for r in rows if r["suspended"]}}
             self._set(run, 0.14, "Building travel times and rules")
-            b = build(bookings, api, settings, inp["mode"], inp["change_cost_pence"], inp["locks"], inp.get("continuity"))
+            b = build(bookings, api, settings, inp["mode"], inp["change_cost_pence"], inp["locks"], inp.get("continuity"),
+                      sched_info)
             cost = int(inp["change_cost_pence"])
             inp.clear()  # the uploaded files are no longer needed
 
@@ -159,6 +185,7 @@ class RunStore:
                 return  # cancelled
             self._set(run, 0.96, "Checking the result")
             result = build_result(b, weeks, cost)
+            result["draft_check"] = draft_check
             if run.cancel.is_set():
                 return
             run.result = result

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { areaLabel } from "@/lib/areas";
 import { addDays, hhmm } from "@/lib/time";
 import { DAYS, type Report, type ReportVisit } from "@/lib/types";
 import { IconDoubleUp, IconLock, IconTimeCritical } from "./icons";
@@ -30,7 +31,7 @@ function VisitCard({ v, team, who, ctx }: { v: ReportVisit; team: string; who: s
   const start = startIn(v, ctx.view);
   const dim = ctx.highlightOn && !ctx.isHighlighted(v);
   const typeLabel = TYPES.find((t) => t.key === k)?.label ?? "";
-  const userLocked = Boolean(ctx.locks[v.booking_id]);
+  const userLocked = Boolean(ctx.locks[v.booking_id ?? ""]);
   const aria = `${who}, ${v.booking_type}, ${hhmm(start)} to ${hhmm(start + v.duration)}, ${STATUS_LABEL[st]}${v.carers_needed > 1 ? `, double-up of ${v.carers_needed}` : ""}. Open details`;
   return (
     <button
@@ -176,7 +177,7 @@ export function RosterWeek({
             <div key={team}>
               <div className="sticky top-[66px] z-10 bg-canvas px-3 py-1.5 text-xs font-semibold text-muted" role="row">
                 <span role="rowheader">
-                  {team} <span className="font-normal">({rows.length})</span>
+                  {areaLabel(team)} <span className="font-normal">({rows.length})</span>
                 </span>
               </div>
               {rows.length === 0 && <p className="px-3 py-3 text-sm text-muted">Nothing to show.</p>}

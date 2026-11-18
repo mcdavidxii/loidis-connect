@@ -2,9 +2,10 @@
 
 Configured by one environment variable, off by default:
 
-  LOIDIS_OSRM_URLS="Leeds=http://127.0.0.1:5002,Dorset=http://127.0.0.1:5001"
+  LOIDIS_OSRM_URLS="Leeds=http://127.0.0.1:5002,Weymouth=http://127.0.0.1:5001"
 
-(region name = the planning region names of the settings file; the host must be this machine).
+(region name = the planning region names of the settings file; "Dorset" is an old name for
+Weymouth and still works; the host must be this machine).
 For a run and a region the service asks OSRM once for a table of driving time and distance
 between every carer home and client location (GET /table/v1/driving/...), keeps it in memory for
 the run only, and gives it to the engine as a MatrixTravel. Walking and bus carers keep the
@@ -25,6 +26,7 @@ from urllib.parse import urlparse
 from loidis_rota.models import Location
 from loidis_rota.travel import MatrixTravel, TravelProvider
 
+from .config import REGION_ALIASES
 from .safe_http import build_opener
 
 log = logging.getLogger("loidis_service")
@@ -44,7 +46,8 @@ def configured_urls() -> dict[str, str]:
         name, url = part.split("=", 1)
         u = urlparse(url.strip())
         if u.scheme in ("http", "https") and u.hostname in ("127.0.0.1", "localhost", "::1"):
-            out[name.strip().lower()] = url.strip().rstrip("/")
+            key = name.strip().lower()
+            out[REGION_ALIASES.get(key, key).lower()] = url.strip().rstrip("/")
     return out
 
 

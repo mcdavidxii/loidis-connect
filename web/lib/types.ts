@@ -53,7 +53,10 @@ export interface AgencySettings {
   search_seconds_per_day: number;
   change_cost_pence: number;
   arrival_tolerance_minutes: number;
-  team_regions?: Record<string, string>; // set by the service; shown read-only
+  // Planning area -> the teams planned in it, for example {"Weymouth": ["Weymouth", "Dorchester"]}.
+  // Set by the service; shown read-only. Older files map team -> area (a string); the web app
+  // converts those when it reads the file.
+  team_regions?: Record<string, string[]>;
   pay_pence_per_hour: number | null;
   mileage_pence_per_mile: number | null;
   travel_time_paid: boolean | null;
@@ -64,13 +67,62 @@ export interface CarerNameMatch {
   carer_id: string;
 }
 
+// ---------- Client schedules (learned from past bookings, kept in the settings file) ----------
+
+export interface ScheduleVisit {
+  id: string;
+  days: DayKey[];
+  start: string; // "HH:MM"
+  duration_min: number;
+  booking_type: string;
+  carers_needed: number;
+  repeat: "weekly" | "fortnightly";
+  fortnight_anchor: string | null; // a Monday (YYYY-MM-DD) of a week the visit happens, for "fortnightly"
+}
+
+export interface ClientSchedule {
+  client_ref: string;
+  confirmed: boolean;
+  learned_from: string[]; // week starts (Mondays)
+  updated_at: string | null;
+  visits: ScheduleVisit[];
+}
+
 export interface SettingsFile {
-  version: 1;
+  version: 2; // 2 added client_schedules; version 1 files are still read
   saved_at: string | null;
   agency: AgencySettings;
   carers: SettingsCarer[];
   clients: SettingsClient[];
   carer_name_matches: CarerNameMatch[];
+  client_schedules: Record<string, ClientSchedule>; // by client id
+}
+
+export interface OneOffVisit {
+  client_id: string;
+  client_ref: string;
+  display_name?: string;
+  date: string; // YYYY-MM-DD
+  start: string;
+  duration_min: number;
+  booking_type: string;
+}
+
+export interface ScheduleFlag {
+  client_id: string;
+  client_ref: string;
+  display_name?: string;
+  kind: "changed" | "suspended" | "no_bookings_in_period";
+  detail: string; // a ready-made sentence (dates already dd/mm/yyyy): shown as it is
+}
+
+export interface LearnResult {
+  weeks: string[]; // Mondays covered
+  // display_name is for the screen only: it is not part of the stored schedule (strip it when saving).
+  schedules: Record<string, ClientSchedule & { display_name?: string }>;
+  one_offs: OneOffVisit[];
+  flags: ScheduleFlag[];
+  counts?: Record<string, number>;
 }
 
 // ---------- Report (engine report shape, simplified) ----------
@@ -117,7 +169,7 @@ export interface ReportClient {
 
 export interface ReportVisit {
   id: string;
-  booking_id: string;
+  booking_id: string | null; // null in a draft: CareLineLive has not generated the booking yet
   client_id: string;
   day: number; // 0 = Monday
   preferred_start: number; // minutes after midnight
@@ -218,8 +270,37 @@ export interface RunWarning {
   message: string;
 }
 
+// One line of the "Changes since the draft" check.
+export interface DraftCheckItem {
+  client: string; // display name, or the reference when no name is known
+  client_ref: string; // blank for "removed" rows
+  date: string;
+  start: string;
+  end: string;
+  booking_type: string;
+  summary: string;
+  draft_start?: string; // only on "retimed" rows
+}
+
+export interface DraftCheck {
+  matched: number;
+  added: DraftCheckItem[];
+  removed: DraftCheckItem[];
+  retimed: DraftCheckItem[];
+  tolerance_minutes: number;
+  summary: string;
+}
+
+export interface RunNotice {
+  code: string;
+  message: string;
+}
+
 export interface RunResult {
   mode: "new" | "improve";
+  draft: boolean; // planned from client schedules, so there are no booking IDs yet
+  draft_check?: DraftCheck | null;
+  notices?: RunNotice[];
   change_cost_pence: number | null;
   teams: Record<string, Report>;
   comparison: Comparison;

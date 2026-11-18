@@ -4,9 +4,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { summariseBookings, type BookingsInfo } from "@/lib/csv";
 import { deleteRun, getHealth, getRun, startRun } from "@/lib/api";
 import { emptySettings, validateSettings } from "@/lib/settings";
-import type { RunResult, RunState, SettingsFile, SyncResult } from "@/lib/types";
+import type { LearnResult, RunResult, RunState, SettingsFile, SyncResult } from "@/lib/types";
+import { nextMondays } from "@/lib/schedules";
 
-export type Step = "upload" | "settings" | "run" | "review" | "export";
+export type Step = "upload" | "settings" | "schedules" | "run" | "review" | "export";
+export type PlanSource = "bookings" | "schedules";
 
 interface AppState {
   step: Step;
@@ -25,6 +27,17 @@ interface AppState {
   setSettings: (s: SettingsFile | ((prev: SettingsFile) => SettingsFile)) => void;
   sync: SyncResult | null;
   setSync: (s: SyncResult | null) => void;
+
+  clientList: File | null; // CareLineLive client CSV (Schedules screen), sent with every run
+  setClientList: (f: File | null) => void;
+  draftFile: File | null; // allocation.csv exported from an earlier draft
+  setDraftFile: (f: File | null) => void;
+  source: PlanSource;
+  setSource: (s: PlanSource) => void;
+  weekStart: string;
+  setWeekStart: (s: string) => void;
+  learned: LearnResult | null; // the last "Learn schedules" result (one-offs and flags)
+  setLearned: (l: LearnResult | null) => void;
 
   mode: "new" | "improve";
   setMode: (m: "new" | "improve") => void;
@@ -58,7 +71,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [settingsFileName, setSettingsFileName] = useState<string | null>(null);
   const [settings, setSettings] = useState<SettingsFile>(emptySettings);
   const [sync, setSync] = useState<SyncResult | null>(null);
-  const [mode, setMode] = useState<"new" | "improve">("improve");
+  const [mode, setModeState] = useState<"new" | "improve">("improve");
+  const [clientList, setClientList] = useState<File | null>(null);
+  const [draftFile, setDraftFileState] = useState<File | null>(null);
+  const [source, setSourceState] = useState<PlanSource>("bookings");
+  const [weekStart, setWeekStart] = useState<string>(() => nextMondays(1)[0]);
+  const [learned, setLearned] = useState<LearnResult | null>(null);
   const [locks, setLocks] = useState<Record<string, string>>({});
   const [runState, setRunState] = useState<RunState | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
@@ -100,6 +118,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // A draft file means "Improve my rota"; a plan from schedules is always the whole week.
+  const setDraftFile = useCallback((f: File | null) => {
+    setDraftFileState(f);
+    if (f) setModeState("improve");
+  }, []);
+  const setSource = useCallback((s: PlanSource) => {
+    setSourceState(s);
+    if (s === "schedules") setModeState("new");
+  }, []);
+  const setMode = useCallback((m: "new" | "improve") => setModeState(draftFile && m === "new" ? "improve" : m), [draftFile]);
+
   const toggleLock = useCallback((bookingId: string, carerId: string) => {
     setLocks((prev) => {
       const next = { ...prev };
@@ -110,7 +139,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const start = useCallback(async () => {
-    if (!bookings) return;
+    if (source === "bookings" && !bookings) return;
     setRunError(null);
     setRunning(true);
     setResult(null);
@@ -118,10 +147,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       if (runIdRef.current) deleteRun(runIdRef.current);
       const id = await startRun({
-        bookings,
+        source,
+        bookings: bookings ?? undefined,
+        weekStart,
+        clientList: clientList ?? undefined,
+        draft: source === "bookings" ? (draftFile ?? undefined) : undefined,
         settings,
         continuity: continuity ?? undefined,
-        mode,
+        mode: source === "schedules" ? "new" : draftFile ? "improve" : mode,
         changeCostPence: settings.agency.change_cost_pence,
         locks,
       });
@@ -146,17 +179,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } finally {
       setRunning(false);
     }
-  }, [bookings, settings, continuity, mode, locks]);
+  }, [bookings, settings, continuity, mode, locks, source, weekStart, draftFile, clientList]);
 
   const value = useMemo<AppState>(
     () => ({
       step, setStep, mock,
       bookings, bookingsInfo, setBookings, continuity, setContinuity, settingsFileName, loadSettingsFile,
       settings, setSettings, sync, setSync,
+      clientList, setClientList, draftFile, setDraftFile, source, setSource, weekStart, setWeekStart, learned, setLearned,
       mode, setMode, locks, toggleLock,
       runState, runError, running, start, result, runId, query, setQuery,
     }),
-    [step, mock, bookings, bookingsInfo, setBookings, continuity, settingsFileName, loadSettingsFile, settings, sync, mode, locks, toggleLock, runState, runError, running, start, result, runId, query],
+    [step, mock, bookings, bookingsInfo, setBookings, continuity, settingsFileName, loadSettingsFile, settings, sync, mode, setMode, draftFile, setDraftFile, clientList, source, setSource, weekStart, learned, locks, toggleLock, runState, runError, running, start, result, runId, query],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

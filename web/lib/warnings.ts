@@ -1,7 +1,7 @@
 // Plain-language wording for the warnings the service sends. The service's own message is
 // only used for a code we do not know.
 
-import type { RunWarning } from "./types";
+import type { RunNotice, RunWarning } from "./types";
 
 const count = (m: string) => {
   const x = /\d+/.exec(m);
@@ -45,7 +45,7 @@ export function plainWarning(w: RunWarning): string {
     case "cross_region_carers":
       return some(n, "1 carer works in more than one area, so their weekly hours are shared between areas.", "{n} carers work in more than one area, so their weekly hours are shared between areas.");
     case "carer_no_team":
-      return some(n, "1 carer has no team and was added to the busiest area.", "{n} carers have no team and were added to the busiest area.");
+      return some(n, "1 carer has no team in CareLineLive, so they were left out of the rota.", "{n} carers have no team in CareLineLive, so they were left out of the rota.");
     case "hours_padded":
       return `${n ?? "Some"} working-hours block${n === 1 ? " was" : "s were"} stretched by up to 90 minutes so a carer can reach a time-critical visit at the edge of their shift.`;
     case "lock_ignored":
@@ -58,8 +58,35 @@ export function plainWarning(w: RunWarning): string {
       return "The small time changes we ignore are not set, so 15 minutes is used. Please confirm this.";
     case "available_any_time":
       return some(n, "1 carer is available any time; we will suggest their hours.", "{n} carers are available any time; we will suggest their hours.");
+    case "schedule_missing":
+      return some(
+        n,
+        "1 client has no schedule yet, so they are not in this draft. Add their schedule on the Schedules screen.",
+        "{n} clients have no schedule yet, so they are not in this draft. Add their schedules on the Schedules screen.",
+      );
+    case "schedule_unconfirmed":
+      return some(
+        n,
+        "1 client schedule is not confirmed yet, so that client is left out of this draft. Confirm it on the Schedules screen.",
+        "{n} client schedules are not confirmed yet, so those clients are left out of this draft. Confirm them on the Schedules screen.",
+      );
     default:
       return w.message;
+  }
+}
+
+// Plain wording for the quiet notices the service sends alongside the result.
+export function plainNotice(x: RunNotice): string {
+  const n = count(x.message);
+  switch (x.code) {
+    case "available_any_time":
+      return some(n, "1 carer is available any time (no working hours set), so we suggest their hours.", "{n} carers are available any time (no working hours set), so we suggest their hours.");
+    case "draft_from_schedules":
+      return "Draft from client schedules. The bookings for this week are not generated in CareLineLive yet.";
+    case "clients_suspended":
+      return some(n, "1 client is suspended in CareLineLive, so they are left out.", "{n} clients are suspended in CareLineLive, so they are left out.");
+    default:
+      return x.message;
   }
 }
 

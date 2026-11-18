@@ -21,7 +21,7 @@ calls: list[str] = []
 
 
 def off_map(lon, lat):
-    """The fake map covers Dorset and Leeds only: this corner (near Southampton) is outside it."""
+    """The fake map covers Dorset (Weymouth) and Leeds only: this corner (near Southampton) is outside it."""
     return lon > -1.9 and lat < 52
 
 
@@ -65,7 +65,7 @@ def osrm(monkeypatch):
     calls.clear()
     Osrm.mode = "ok"
     url = f"http://127.0.0.1:{srv.server_port}"
-    monkeypatch.setenv("LOIDIS_OSRM_URLS", f"Leeds={url},Dorset={url}")
+    monkeypatch.setenv("LOIDIS_OSRM_URLS", f"Leeds={url},Weymouth={url}")
     yield url
     srv.shutdown()
 
@@ -78,7 +78,7 @@ def test_off_by_default_and_loopback_only(monkeypatch):
     assert routing.configured_urls() == {}
     assert routing.road_provider("Leeds", [A, B]) == (None, routing.RoutingInfo("Leeds"))
     monkeypatch.setenv("LOIDIS_OSRM_URLS", "Leeds=http://example.com:5002,Dorset=http://127.0.0.1:5001/")
-    assert routing.configured_urls() == {"dorset": "http://127.0.0.1:5001"}  # a remote host is refused
+    assert routing.configured_urls() == {"weymouth": "http://127.0.0.1:5001"}  # "Dorset" is an alias of Weymouth  # a remote host is refused
 
 
 def test_table_gives_road_figures_for_cars_only(osrm):
@@ -152,7 +152,7 @@ def test_run_warns_when_routing_is_down_or_partial(files, monkeypatch, osrm):
     monkeypatch.setenv("LOIDIS_OSRM_URLS", "Leeds=http://127.0.0.1:9,Dorset=http://127.0.0.1:9")
     b = _build(files, "new")
     w = next(w for w in b.warnings if w["code"] == "routing_unavailable")
-    assert "Leeds" in w["message"] and "Dorset" in w["message"]
+    assert "Leeds" in w["message"] and "Weymouth" in w["message"]
     assert "estimated" in next(n for n in b.notices if n["code"] == "travel_source")["message"]
     # a carer whose home is outside the map (but within 100 km of their clients): partial
     from loidis_service.cll import normalise

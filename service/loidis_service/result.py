@@ -157,7 +157,7 @@ def _region_report(
             cause, reason = unfilled_cause(rb, v["id"], sched, details)
         visits.append(
             {
-                "id": v["id"], "booking_id": meta.booking.booking_id, "client_id": v["client_id"],
+                "id": v["id"], "booking_id": None if meta.booking.generated else meta.booking.booking_id, "client_id": v["client_id"],
                 "day": v["day"], "preferred_start": v["preferred_start"], "window": v["window"],
                 "duration": v["duration"], "carers_needed": v["carers_needed"], "kind": v["kind"],
                 "booking_type": meta.booking.booking_type, "assigned": assigned, "start": v["start"],
@@ -467,6 +467,8 @@ def build_result(
         "arrival_tolerance_minutes": int(getattr(build.regions[0].problem.settings, "arrival_tolerance_minutes", 0) or 0),
         "warnings": warnings,
         "notices": list(build.notices),
+        "draft": build.draft,
+        "draft_check": None,
     }
 
 
@@ -479,6 +481,7 @@ NOTES_COLUMNS = ["Day", "Date", "Booked time", "New start", "Client", "Booking t
                  "Currently with", "Why", "Shift (min)", "Note", "Done"]
 ALLOCATION_COLUMNS = ["Day", "Date", "Carer", "Start", "End", "New start", "Client", "Booking type",
                       "Booking ID", "Double-up with", "Compared with current", "Done"]
+NOT_GENERATED = "not generated yet"  # Booking ID cell of a draft made from client schedules
 _DAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
@@ -562,7 +565,7 @@ def allocation_csv(result: dict) -> str:
             booked, planned = v["preferred_start"], v["start"]
             cur = [names.get(k, k) for k in v["current_assigned"]]
             base = [_day(iso), _uk(iso)]
-            tail = [clients.get(v["client_id"], ""), v["booking_type"], v["booking_id"]]
+            tail = [clients.get(v["client_id"], ""), v["booking_type"], v["booking_id"] or NOT_GENERATED]
             if not v["assigned"]:
                 rows.append((iso, 0, "", booked, base + ["Unallocated", clock(booked), clock(booked + v["duration"]), ""]
                              + tail + ["", v["unfilled_reason"] or "No carer found", ""]))

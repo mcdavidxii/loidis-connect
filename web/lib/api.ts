@@ -1,7 +1,7 @@
 // Browser-side client for the engine API. Requests go to /api/engine/..., which is the
 // mock or a proxy to the real service (see app/api/engine/[...path]/route.ts).
 
-import type { RunState, SettingsFile, SyncResult } from "./types";
+import type { LearnResult, RunState, SettingsFile, SyncResult } from "./types";
 import { settingsToJson } from "./settings";
 
 const BASE = "/api/engine";
@@ -24,7 +24,7 @@ export async function getHealth(): Promise<{ ok: boolean; mock: boolean; fake_ap
   return res.json();
 }
 
-export async function fetchSample(name: "bookings.csv" | "settings.json"): Promise<File> {
+export async function fetchSample(name: string): Promise<File> {
   const res = await fetch(`${BASE}/sample/${name}`, { cache: "no-store" });
   if (!res.ok) return fail(res);
   const blob = await res.blob();
@@ -40,8 +40,24 @@ export async function syncFromCareLineLive(files: { bookings?: File; settings?: 
   return res.json();
 }
 
+// Learns each client's weekly pattern from several past weeks of bookings.
+export async function learnSchedules(input: { bookings: File[]; clientList?: File; settings?: SettingsFile }): Promise<LearnResult> {
+  const form = new FormData();
+  input.bookings.forEach((f) => form.append("bookings", f));
+  if (input.clientList) form.set("client_list", input.clientList);
+  if (input.settings) form.set("settings", new File([settingsToJson(input.settings)], "settings.json", { type: "application/json" }));
+  const res = await fetch(`${BASE}/schedules/learn`, { method: "POST", body: form });
+  if (!res.ok) return fail(res);
+  const body = await res.json();
+  return { weeks: body.weeks ?? [], schedules: body.schedules ?? {}, one_offs: body.one_offs ?? [], flags: body.flags ?? [], counts: body.counts };
+}
+
 export interface StartRunInput {
-  bookings: File;
+  source: "bookings" | "schedules";
+  bookings?: File; // source "bookings"
+  weekStart?: string; // source "schedules": a Monday
+  draft?: File; // source "bookings": an allocation.csv exported from a draft run
+  clientList?: File; // the CareLineLive client CSV, if uploaded (both sources)
   settings: SettingsFile;
   continuity?: File;
   mode: "new" | "improve";
@@ -51,7 +67,13 @@ export interface StartRunInput {
 
 export async function startRun(input: StartRunInput): Promise<string> {
   const form = new FormData();
-  form.set("bookings", input.bookings);
+  form.set("source", input.source);
+  if (input.clientList) form.set("client_list", input.clientList);
+  if (input.source === "schedules") form.set("week_start", input.weekStart ?? "");
+  else {
+    if (input.bookings) form.set("bookings", input.bookings);
+    if (input.draft) form.set("draft", input.draft);
+  }
   form.set("settings", new File([settingsToJson(input.settings)], "settings.json", { type: "application/json" }));
   if (input.continuity) form.set("continuity", input.continuity);
   form.set("mode", input.mode);

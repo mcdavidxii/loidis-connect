@@ -21,7 +21,7 @@ export function Button({
   return <button type="button" className={`${base} ${styles[variant]} ${className}`} {...props} />;
 }
 
-export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
+export function PageHeader({ title, subtitle, actions }: { title: ReactNode; subtitle?: string; actions?: ReactNode }) {
   return (
     <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div>
@@ -231,20 +231,22 @@ export function RadioRow({
   onChange,
   title,
   text,
+  disabled,
 }: {
   name: string;
   checked: boolean;
   onChange: () => void;
   title: string;
   text?: string;
+  disabled?: boolean;
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-4 py-3 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+      className={`flex ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"} items-start gap-2.5 rounded-xl border px-4 py-3 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
         checked ? "border-brand bg-brand-soft" : "border-line bg-surface hover:bg-hover"
       }`}
     >
-      <input type="radio" name={name} checked={checked} onChange={onChange} className="mt-1 accent-[#0f7b6c]" />
+      <input type="radio" name={name} checked={checked} disabled={disabled} onChange={onChange} className="mt-1 accent-[#0f7b6c]" />
       <span>
         <span className="block font-semibold">{title}</span>
         {text && <span className="block text-xs text-muted">{text}</span>}

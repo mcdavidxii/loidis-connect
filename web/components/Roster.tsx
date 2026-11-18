@@ -363,9 +363,9 @@ export function Roster({ reports, changes }: { reports: Record<string, Report>; 
             return c?.display_name || c?.ref || "";
           })()}
           date={addDays(weekStart, openV.day)}
-          change={changes.find((c) => c.booking_id === openV.booking_id)}
-          lockedTo={locks[openV.booking_id]}
-          onLock={(carerId) => toggleLock(openV.booking_id, carerId)}
+          change={changes.find((c) => openV.booking_id != null && c.booking_id === openV.booking_id)}
+          lockedTo={openV.booking_id ? locks[openV.booking_id] : undefined}
+          onLock={(carerId) => openV.booking_id && toggleLock(openV.booking_id, carerId)}
           onClose={() => {
             setOpen(null);
             returnFocus.current?.focus();

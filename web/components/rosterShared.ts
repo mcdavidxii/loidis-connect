@@ -85,7 +85,7 @@ export function statusOf(v: ReportVisit, view: View, locks: Record<string, strin
     if (changed) return "changed";
     if (v.start != null && v.start !== v.preferred_start) return "moved";
   }
-  if (v.locked || locks[v.booking_id]) return "locked";
+  if (v.locked || locks[v.booking_id ?? ""]) return "locked";
   return "unchanged";
 }
 

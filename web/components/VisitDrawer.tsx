@@ -75,7 +75,7 @@ export function VisitDrawer({
         <div>
           <h3 className="text-base">{clientName || clientRef}</h3>
           <p className="text-xs text-muted">
-            {clientRef} · {v.booking_id}
+            {clientRef} · {v.booking_id ?? "booking not generated yet"}
           </p>
         </div>
         <button ref={closeRef} type="button" aria-label="Close details" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-hover">
@@ -119,7 +119,7 @@ export function VisitDrawer({
         )}
       </dl>
       <div className="mt-4 flex flex-wrap gap-2">
-        {lockedTo ? (
+        {v.booking_id == null ? null : lockedTo ? (
           <Button onClick={() => onLock(lockedTo)}>
             <IconLock aria-hidden className="h-4 w-4 text-muted" />
             Stop keeping with {names.get(lockedTo) ?? lockedTo}
@@ -141,7 +141,7 @@ export function VisitDrawer({
           </>
         )}
       </div>
-      <p className="mt-2 text-xs text-muted">This applies the next time you make suggestions.</p>
+      {v.booking_id != null && <p className="mt-2 text-xs text-muted">This applies the next time you make suggestions.</p>}
     </aside>
   );
 }

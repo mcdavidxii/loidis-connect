@@ -105,7 +105,7 @@ def result_of(two_runs, mode):
 
 def test_result_shape_new_mode(two_runs):
     _, res = result_of(two_runs, "new")
-    assert set(res) == {"mode", "change_cost_pence", "teams", "comparison", "changes", "change_summary", "fill_check", "time_notes", "warnings", "notices", "arrival_tolerance_minutes"}
+    assert set(res) == {"mode", "change_cost_pence", "teams", "comparison", "changes", "change_summary", "fill_check", "time_notes", "warnings", "notices", "arrival_tolerance_minutes", "draft", "draft_check"}
     assert res["mode"] == "new" and res["change_cost_pence"] is None
     assert res["changes"] == [] and res["time_notes"] == [] and res["change_summary"] is None
     check_result_shape(res)
@@ -170,7 +170,7 @@ def test_new_time_needed_matches_new_start(two_runs):
 
 
 def check_result_shape(res):
-    assert list(res["teams"]) == ["Leeds", "Dorset"]
+    assert list(res["teams"]) == ["Leeds", "Weymouth"]
     assert set(res["comparison"]) == {"engine", "current"}
     for side in res["comparison"].values():
         assert METRICS <= set(side)
@@ -237,7 +237,7 @@ def test_rules_are_respected(two_runs):
         assert any("any time" in i for i in carers["K013"]["issues"])  # no hours set: available any time
         assert any("rule not checked" in i for i in carers["K010"]["issues"])
         # leave: K002 off on Wednesday, K008 off Monday and Tuesday (approved); not planned on those days
-        leeds, dorset = res["teams"]["Leeds"]["routes"], res["teams"]["Dorset"]["routes"]
+        leeds, dorset = res["teams"]["Leeds"]["routes"], res["teams"]["Weymouth"]["routes"]
         assert "wed" not in leeds.get("K002", {})
         assert not ({"mon", "tue"} & set(dorset.get("K008", {})))
 

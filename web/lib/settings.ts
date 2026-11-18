@@ -1,5 +1,6 @@
-import type { AgencySettings, RunWarning, SettingsCarer, SettingsFile, SyncResult } from "./types";
+import type { AgencySettings, ClientSchedule, RunWarning, SettingsCarer, SettingsFile, SyncResult } from "./types";
 import { DAYS } from "./types";
+import { normaliseRegions } from "./areas";
 
 export const DEFAULT_AGENCY: AgencySettings = {
   move_window_minutes: 30,
@@ -16,12 +17,13 @@ export const DEFAULT_AGENCY: AgencySettings = {
 
 export function emptySettings(): SettingsFile {
   return {
-    version: 1,
+    version: 2,
     saved_at: null,
     agency: { ...DEFAULT_AGENCY },
     carers: [],
     clients: [],
     carer_name_matches: [],
+    client_schedules: {},
   };
 }
 
@@ -100,16 +102,41 @@ export function settingsWarnings(s: SettingsFile, today: string): RunWarning[] {
   return out;
 }
 
+function readSchedules(raw: unknown): SettingsFile["client_schedules"] {
+  const out: SettingsFile["client_schedules"] = {};
+  if (!raw || typeof raw !== "object") return out;
+  for (const [id, v] of Object.entries(raw as Record<string, Partial<ClientSchedule>>)) {
+    if (!v || typeof v !== "object") continue;
+    out[id] = {
+      client_ref: v.client_ref ?? "",
+      confirmed: Boolean(v.confirmed),
+      learned_from: v.learned_from ?? [],
+      updated_at: v.updated_at ?? null,
+      visits: (v.visits ?? []).map((x) => ({
+        id: x.id,
+        days: x.days ?? [],
+        start: x.start,
+        duration_min: x.duration_min,
+        booking_type: x.booking_type,
+        carers_needed: x.carers_needed ?? 1,
+        repeat: x.repeat === "fortnightly" ? "fortnightly" : "weekly",
+        fortnight_anchor: x.fortnight_anchor ?? null,
+      })),
+    };
+  }
+  return out;
+}
+
 export function validateSettings(raw: unknown): { settings?: SettingsFile; error?: string } {
   if (!raw || typeof raw !== "object") return { error: "Not a settings file." };
-  const o = raw as Partial<SettingsFile>;
-  if (o.version !== 1) return { error: "Unsupported settings file version (expected version 1)." };
+  const o = raw as Partial<Omit<SettingsFile, "version">> & { version?: number };
+  if (o.version !== 1 && o.version !== 2) return { error: "Unsupported settings file version (expected version 1 or 2)." };
   if (!Array.isArray(o.carers) || !Array.isArray(o.clients)) return { error: "The file is missing the carers or clients list." };
   return {
     settings: {
-      version: 1,
+      version: 2,
       saved_at: o.saved_at ?? null,
-      agency: { ...DEFAULT_AGENCY, ...(o.agency ?? {}) },
+      agency: { ...DEFAULT_AGENCY, ...(o.agency ?? {}), ...(o.agency?.team_regions ? { team_regions: normaliseRegions(o.agency.team_regions) } : {}) },
       carers: o.carers.map((c) => {
         const merged = { ...blankCarer(c.id, c.name, c.teams ?? []), ...c };
         return { ...merged, available_any_time: c.available_any_time ?? true };
@@ -123,6 +150,7 @@ export function validateSettings(raw: unknown): { settings?: SettingsFile; error
         time_critical_booking_types: c.time_critical_booking_types ?? [],
       })),
       carer_name_matches: o.carer_name_matches ?? [],
+      client_schedules: readSchedules(o.client_schedules),
     },
   };
 }

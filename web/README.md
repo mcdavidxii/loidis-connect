@@ -1,7 +1,7 @@
 # Loidis Connect: rota engine test UI
 
 First version of the screens for the rota engine test (see `../docs/MVP.md`). Screens:
-Upload, Settings, Run, Review, Export. It is a Next.js app (App Router, TypeScript,
+Upload, Settings, Schedules, Plan, Suggestions, Export. It is a Next.js app (App Router, TypeScript,
 Tailwind CSS, lucide-react). There is no database: nothing is stored on the server.
 
 By default it runs against a **built-in mock** of the engine API with made-up data
@@ -25,6 +25,22 @@ npm run build      # production build
 npm run start      # serve the production build
 npm run lint
 ```
+
+## Client schedules, drafts and the final check
+
+- **Schedules** (between Settings and Plan): drop several past Bookings CSVs (and optionally the
+  CareLineLive client list) and press "Learn schedules". Each client's weekly pattern appears
+  in a grid; confirm it, or add, change and remove visits in the edit drawer. Flags (new client,
+  schedule changed, suspended, no bookings) come from the service as plain sentences. Schedules
+  are saved in the settings file (version 2, `client_schedules`); download it to keep them.
+  Names shown here are never saved in the file.
+- **Plan** starts with "What do you want to plan?": this week's bookings, or a future week
+  from confirmed schedules. The second makes a **draft** (whole week only; no booking IDs, so
+  "not generated yet" is shown). The client list, if uploaded, is sent with every run.
+- **Final check**: when CareLineLive has generated the week, upload its bookings together
+  with the draft's allocation.csv on the Upload screen. The mode becomes Improve my rota and
+  Suggestions opens with "Changes since the draft" (matched, added, removed, new time).
+- The mock implements all of this with made-up data (the Schedules screen has "Use sample files").
 
 ## The `ENGINE_API_URL` switch
 

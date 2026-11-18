@@ -36,10 +36,11 @@ interface Ctx {
   inactive: Set<string>;
   continuityPence: number;
   tolerance: number;
+  draft: boolean; // planned from client schedules: there are no real bookings yet
 }
 
 // Applies an uploaded settings file (when there is one) on top of the made-up agency.
-function buildCtx(settings: SettingsFile | null): Ctx {
+function buildCtx(settings: SettingsFile | null, opts?: { visits: FakeVisit[]; weekStart: string }): Ctx {
   const a = getAgency();
   const inactive = new Set<string>();
   const carers = a.carers.map((c) => {
@@ -68,7 +69,7 @@ function buildCtx(settings: SettingsFile | null): Ctx {
     };
   });
   const clientById = new Map(clients.map((c) => [c.id, c]));
-  const visits = a.visits.map((v) => {
+  const visits = (opts?.visits ?? a.visits).map((v) => {
     const c = clientById.get(v.clientId)!;
     return {
       ...v,
@@ -77,7 +78,8 @@ function buildCtx(settings: SettingsFile | null): Ctx {
     };
   });
   return {
-    weekStart: a.weekStart,
+    weekStart: opts?.weekStart ?? a.weekStart,
+    draft: Boolean(opts),
     carers,
     clients,
     visits,
@@ -402,6 +404,9 @@ function explainUnfilled(ctx: Ctx, assign: Assign, v: FakeVisit): { reason: stri
 }
 
 const FAKE_SURNAMES = ["Alder", "Birch", "Cedar", "Dogwood", "Elm", "Fir", "Gorse", "Hazel", "Ivy", "Juniper", "Kale", "Larch", "Maple", "Nettle", "Oak"];
+export function clientDisplayName(c: FakeClient): string {
+  return displayName(c);
+}
 function displayName(c: FakeClient): string {
   const n = Number(c.id.slice(1)) - 1;
   return `${FAKE_SURNAMES[n % FAKE_SURNAMES.length]}, ${String.fromCharCode(65 + (n % 26))}`;
@@ -445,7 +450,7 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
     const un = assigned.length ? null : explainUnfilled(ctx, sol.assign, v);
     return {
       id: v.id,
-      booking_id: v.bookingId,
+      booking_id: ctx.draft ? null : v.bookingId,
       client_id: v.clientId,
       day: v.day,
       preferred_start: v.start,
@@ -456,12 +461,12 @@ function reportFor(ctx: Ctx, team: string, sol: Solution, cur: Solution, locks: 
       booking_type: v.bookingType,
       assigned,
       start: assigned.length ? (sol.start.get(v.id) ?? v.start) : null,
-      current_assigned: cur.assign.get(v.id) ?? [],
-      moved: movedOf(v),
+      current_assigned: ctx.draft ? assigned : (cur.assign.get(v.id) ?? []),
+      moved: ctx.draft ? false : movedOf(v),
       locked: v.timeCritical || Boolean(locks[v.bookingId]),
       lock_reason: locks[v.bookingId] ? "locked by coordinator" : v.timeCritical ? "time-critical booking type" : null,
       unfilled_cause: un?.cause ?? null,
-      change_class: classOf(ctx, v, sol, cur, assigned),
+      change_class: ctx.draft ? (assigned.length ? "unchanged" : null) : classOf(ctx, v, sol, cur, assigned),
       unfilled_reason: un?.reason ?? null,
       unfilled_detail: un?.detail ?? [],
     };
@@ -516,11 +521,14 @@ export interface MockParams {
   changeCostPence: number;
   settings: SettingsFile | null;
   locks: Record<string, string>;
+  draft?: { visits: FakeVisit[]; weekStart: string }; // plan from client schedules
+  extraWarnings?: RunWarning[];
+  notices?: { code: string; message: string }[];
 }
 
 export function runMock(p: MockParams): RunResult {
-  const ctx = buildCtx(p.settings);
-  const currentAssign = allocate(ctx, "current", {});
+  const ctx = buildCtx(p.settings, p.draft);
+  const currentAssign: Assign = ctx.draft ? new Map() : allocate(ctx, "current", {});
   const cur = finalise(ctx, currentAssign, 0);
 
   let finalAssign: Assign;
@@ -595,6 +603,7 @@ export function runMock(p: MockParams): RunResult {
             "No settings file was uploaded. The mock used its built-in made-up carers and rules; DBS, training and other rules are not checked from your data.",
         },
       ];
+  warnings.push(...(p.extraWarnings ?? []));
   const fcheck = fillCheck(ctx, sol, cur);
   if (fcheck.current_rota_feasible < fcheck.current_rota_fully_staffed) {
     warnings.push({
@@ -609,6 +618,8 @@ export function runMock(p: MockParams): RunResult {
 
   return {
     mode: p.mode,
+    draft: ctx.draft,
+    notices: p.notices ?? [],
     change_cost_pence: p.mode === "improve" ? p.changeCostPence : null,
     teams: teamReports,
     comparison,

@@ -1,14 +1,15 @@
 "use client";
 
 import { addDays, niceDate } from "@/lib/time";
-import type { Change, FillCheck, ReportMetrics, RunResult, TimeNote } from "@/lib/types";
-import { plainReason, plainWarning } from "@/lib/warnings";
+import type { Change, DraftCheck, FillCheck, ReportMetrics, RunResult, TimeNote } from "@/lib/types";
+import { plainNotice, plainReason, plainWarning } from "@/lib/warnings";
 import { useApp } from "./AppProvider";
 import {
   IconArrowDown,
   IconArrowRight,
   IconArrowUp,
   IconEqual,
+  IconInfo,
   IconLock,
   IconStatBookings,
   IconStatContinuity,
@@ -161,7 +162,7 @@ function Unallocated({ result }: { result: RunResult }) {
           <tbody>
             {rows.map(({ v, ref, date }) => (
               <tr key={v.id}>
-                <td className={tdCls}>{v.booking_id}</td>
+                <td className={tdCls}>{v.booking_id ?? <span className="text-xs text-muted">not generated yet</span>}</td>
                 <td className={tdCls}>{nm.get(ref) ?? ref}</td>
                 <td className={`${tdCls} whitespace-nowrap`}>
                   {niceDate(date)} {hhmm(v.preferred_start)}
@@ -346,6 +347,60 @@ function Changes({ result }: { result: RunResult }) {
   );
 }
 
+function DraftCheckPanel({ check }: { check: DraftCheck }) {
+  const tables: { key: "added" | "removed" | "retimed"; title: string; help: string; items: DraftCheck["added"] }[] = [
+    { key: "added", title: "Added", help: "In the real bookings, not in the draft", items: check.added },
+    { key: "removed", title: "Removed", help: "In the draft, not in the real bookings", items: check.removed },
+    { key: "retimed", title: "New time", help: "In both, at a different time", items: check.retimed },
+  ];
+  return (
+    <Section title="Changes since the draft">
+      <p className="mb-4 text-sm text-muted">
+        <span className="font-semibold text-ink">{check.matched}</span> visits are the same as in the draft.{" "}
+        {check.added.length} added, {check.removed.length} removed, {check.retimed.length} with a new time (more than {check.tolerance_minutes} min different).
+      </p>
+      <div className="grid gap-4 xl:grid-cols-3">
+        {tables.map((t) => (
+          <div key={t.key} className="min-w-0">
+            <h3 className="text-sm">
+              {t.title} ({t.items.length})
+            </h3>
+            <p className="mb-1 text-xs text-muted">{t.help}</p>
+            {t.items.length === 0 ? (
+              <p className="text-sm text-muted">None.</p>
+            ) : (
+              <div className="max-h-[300px] overflow-auto rounded-lg border border-line" tabIndex={0} role="region" aria-label={`${t.title}, scrollable`}>
+                <table className={tableCls}>
+                  <thead>
+                    <tr className="sticky top-0 bg-surface">
+                      <th scope="col" className={thCls}>Client</th>
+                      <th scope="col" className={thCls}>When</th>
+                      <th scope="col" className={thCls}>{t.key === "retimed" ? "Draft, now" : "Type"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {t.items.map((it, i) => {
+                      return (
+                        <tr key={i} title={it.summary}>
+                          <td className={tdCls}>{it.client || it.client_ref}</td>
+                          <td className={`${tdCls} whitespace-nowrap`}>
+                            {niceDate(it.date)} {t.key === "retimed" ? "" : it.start}
+                          </td>
+                          <td className={tdCls}>{t.key === "retimed" ? `${it.draft_start ?? "?"} to ${it.start}` : it.booking_type}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
 export function ReviewStep() {
   const app = useApp();
   const result = app.result;
@@ -361,7 +416,7 @@ export function ReviewStep() {
   return (
     <div className="w-full">
       <PageHeader
-        title="Suggestions"
+        title={result.draft ? <span className="flex items-center gap-2">Suggestions <Badge tone="info">Draft</Badge></span> : "Suggestions"}
         subtitle={result.mode === "new" ? "The whole week planned from scratch, compared with your rota." : "Suggested changes to your rota."}
         actions={
           <>
@@ -372,6 +427,24 @@ export function ReviewStep() {
           </>
         }
       />
+      {result.draft && (
+        <div className="mb-6">
+          <Notice tone="info" title="This is a draft">
+            It is planned from client schedules, not real bookings, so there are no booking IDs yet. When CareLineLive generates the week, upload its bookings with this draft on the Upload screen to see what changed.
+          </Notice>
+        </div>
+      )}
+      {result.draft_check && <DraftCheckPanel check={result.draft_check} />}
+      {(result.notices ?? []).length > 0 && (
+        <ul className="mb-6 space-y-1 text-sm text-muted">
+          {(result.notices ?? []).map((x) => (
+            <li key={x.code} className="flex items-start gap-1.5">
+              <IconInfo aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
+              {plainNotice(x)}
+            </li>
+          ))}
+        </ul>
+      )}
       {result.warnings.length > 0 && (
         <details className="mb-6 rounded-xl bg-warn-soft px-4 py-3 text-sm">
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">

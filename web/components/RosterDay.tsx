@@ -1,5 +1,6 @@
 "use client";
 
+import { areaLabel } from "@/lib/areas";
 import { Fragment } from "react";
 import { hhmm } from "@/lib/time";
 import { DAYS, type Report, type ReportVisit, type RouteStop } from "@/lib/types";
@@ -94,7 +95,7 @@ export function RosterDay({
   const renderBlock = (v: ReportVisit, start: number, label: string, top = 3) => {
     const st = statusOf(v, view, locks);
     const k = typeKey(v.booking_type);
-    const userLocked = Boolean(locks[v.booking_id]);
+    const userLocked = Boolean(locks[v.booking_id ?? ""]);
     const dim = ctx.highlightOn && !ctx.isHighlighted(v);
     const lockIcon = isCritical(v) ? (
       <IconTimeCritical aria-hidden className="h-3 w-3 shrink-0" />
@@ -180,7 +181,7 @@ export function RosterDay({
 
   return (
     <div className="mb-4">
-      {showTeam && <p className="mb-1 text-xs font-semibold text-muted">{team}</p>}
+      {showTeam && <p className="mb-1 text-xs font-semibold text-muted">{areaLabel(team)}</p>}
       <div className="rounded-xl border border-line bg-surface">
         <div style={{ width: 224 + trackW }} role="table" aria-label={`${group === "carer" ? "Carer" : "Client"} day roster for ${team}, ${view === "engine" ? "suggested rota" : "your rota"}`}>
           <div className="sticky top-0 z-20 flex border-b border-line bg-canvas text-xs text-muted" role="row">
@@ -225,7 +226,7 @@ export function RosterDay({
                     <Avatar name={c.name} size={28} />
                     <span className="min-w-0 flex-1 leading-tight">
                       <span className="block truncate font-semibold">{c.name}</span>
-                      <span className="block truncate text-xs text-muted">{team}</span>
+                      <span className="block truncate text-xs text-muted">{areaLabel(team)}</span>
                     </span>
                     <span className="rounded-full bg-hover px-2 py-0.5 text-xs font-semibold" title="Booked care hours this day">
                       {hoursText(mins)}

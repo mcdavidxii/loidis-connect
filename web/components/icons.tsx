@@ -12,6 +12,7 @@ import {
   ArrowRight,
   ArrowUp,
   CalendarRange,
+  CalendarDays,
   Car,
   BarChart3,
   Check,
@@ -97,6 +98,7 @@ export const IconSparkles = Sparkles;
 export const IconListChecks = ListChecks;
 export const IconSettings = Settings;
 export const IconReview = CalendarRange;
+export const IconSchedule = CalendarDays;
 export const IconArrowUp = ArrowUp;
 export const IconArrowDown = ArrowDown;
 export const IconArrowRight = ArrowRight;

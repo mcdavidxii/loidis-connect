@@ -95,7 +95,7 @@ export function buildWorksheet(result: RunResult): Worksheet {
   for (const rep of reports) {
     rep.carers.forEach((c) => carerName.set(c.id, c.name));
     rep.clients.forEach((c) => clientName.set(c.ref, c.display_name || c.ref));
-    rep.visits.forEach((v) => byBooking.set(v.booking_id, { v, rep }));
+    rep.visits.forEach((v) => v.booking_id && byBooking.set(v.booking_id, { v, rep }));
   }
   const names = (ids: string[]) => ids.map((id) => carerName.get(id) ?? id);
   const dayInfo = (date: string) => {
@@ -152,10 +152,12 @@ export function buildWorksheet(result: RunResult): Worksheet {
     const refName = new Map(rep.clients.map((c) => [c.id, c.display_name || c.ref]));
     for (const v of rep.visits) {
       const date = addDays(rep.week_start, v.day);
-      const base = { dayIdx: v.day, day: DAY_LABELS[DAYS[v.day]], date, client: refName.get(v.client_id) ?? v.client_id, bookingType: v.booking_type, bookingId: v.booking_id };
+      // A draft has no booking IDs yet: the id is empty and the screens say "not generated yet".
+      const bookingId = v.booking_id ?? "";
+      const base = { dayIdx: v.day, day: DAY_LABELS[DAYS[v.day]], date, client: refName.get(v.client_id) ?? v.client_id, bookingType: v.booking_type, bookingId };
       if (v.assigned.length === 0) {
-        unallocated.push({ key: `${v.booking_id}|un`, dayIdx: v.day, day: base.day, date, time: hhmm(v.preferred_start), client: base.client, bookingType: v.booking_type, bookingId: v.booking_id, reason: v.unfilled_reason ?? "" });
-        allocation.push({ ...base, key: `${v.booking_id}|UNALLOCATED`, carer: "UNALLOCATED", start: v.preferred_start, end: v.preferred_start + v.duration, newStart: null, doubleUpWith: "", compared: v.unfilled_reason ?? "", changed: v.current_assigned.length > 0, unallocated: true });
+        unallocated.push({ key: `${v.id}|un`, dayIdx: v.day, day: base.day, date, time: hhmm(v.preferred_start), client: base.client, bookingType: v.booking_type, bookingId, reason: v.unfilled_reason ?? "" });
+        allocation.push({ ...base, key: `${v.id}|UNALLOCATED`, carer: "UNALLOCATED", start: v.preferred_start, end: v.preferred_start + v.duration, newStart: null, doubleUpWith: "", compared: v.unfilled_reason ?? "", changed: v.current_assigned.length > 0, unallocated: true });
         continue;
       }
       const start = v.start ?? v.preferred_start;
@@ -163,7 +165,7 @@ export function buildWorksheet(result: RunResult): Worksheet {
       for (const id of v.assigned) {
         allocation.push({
           ...base,
-          key: `${v.booking_id}|${id}`,
+          key: `${v.id}|${id}`,
           carer: carerName.get(id) ?? id,
           start: v.preferred_start,
           end: v.preferred_start + v.duration,
@@ -206,6 +208,6 @@ export function notesCsvRows(w: Worksheet): (string | number)[][] {
 export function allocationCsvRows(w: Worksheet): (string | number)[][] {
   return [
     ALLOCATION_HEADER,
-    ...w.allocation.map((r) => [r.day, dmy(r.date), r.carer, hhmm(r.start), hhmm(r.end), r.newStart ?? "", r.client, r.bookingType, r.bookingId, r.doubleUpWith, r.compared, ""]),
+    ...w.allocation.map((r) => [r.day, dmy(r.date), r.carer, hhmm(r.start), hhmm(r.end), r.newStart ?? "", r.client, r.bookingType, r.bookingId || "not generated yet", r.doubleUpWith, r.compared, ""]),
   ];
 }

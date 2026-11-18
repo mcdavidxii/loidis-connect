@@ -1,9 +1,10 @@
 "use client";
 
 import { useApp, type Step } from "./AppProvider";
-import { IconCarer, IconCheck, IconDownload, IconPlay, IconReview, IconSearch, IconSettings, IconUpload, type IconType } from "./icons";
+import { IconCarer, IconCheck, IconDownload, IconSchedule, IconPlay, IconReview, IconSearch, IconSettings, IconUpload, type IconType } from "./icons";
 import { UploadStep } from "./UploadStep";
 import { SettingsStep } from "./SettingsStep";
+import { SchedulesStep } from "./SchedulesStep";
 import { RunStep } from "./RunStep";
 import { ReviewStep } from "./ReviewStep";
 import { ExportStep } from "./ExportStep";
@@ -12,6 +13,7 @@ import { inputCls } from "./ui";
 const STEPS: { id: Step; label: string; Icon: IconType }[] = [
   { id: "upload", label: "Upload", Icon: IconUpload },
   { id: "settings", label: "Settings", Icon: IconSettings },
+  { id: "schedules", label: "Schedules", Icon: IconSchedule },
   { id: "run", label: "Plan", Icon: IconPlay },
   { id: "review", label: "Suggestions", Icon: IconReview },
   { id: "export", label: "Export", Icon: IconDownload },
@@ -22,6 +24,7 @@ export function Shell() {
   const done: Record<Step, boolean> = {
     upload: Boolean(app.bookings) && (app.bookingsInfo?.problems.length ?? 0) === 0,
     settings: app.settings.carers.length > 0,
+    schedules: Object.values(app.settings.client_schedules).some((s) => s.confirmed),
     run: Boolean(app.result),
     review: Boolean(app.result),
     export: false,
@@ -94,6 +97,7 @@ export function Shell() {
         <main className="mx-auto min-w-0 max-w-[1280px] print:max-w-none print:p-0">
           {app.step === "upload" && <UploadStep />}
           {app.step === "settings" && <SettingsStep />}
+          {app.step === "schedules" && <SchedulesStep />}
           {app.step === "run" && <RunStep />}
           {app.step === "review" && <ReviewStep />}
           {app.step === "export" && <ExportStep />}

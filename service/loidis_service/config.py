@@ -5,9 +5,11 @@ import os
 
 RUN_TTL_MINUTES = float(os.environ.get("RUN_TTL_MINUTES", "60"))
 MAX_UPLOAD_MB = float(os.environ.get("MAX_UPLOAD_MB", "25"))
-# Which CareLineLive team belongs to which planning region. Overridden by agency.team_regions
-# in the settings file.
-DEFAULT_TEAM_REGIONS = {"Leeds": "Leeds", "Dorchester": "Dorset", "Weymouth": "Dorset"}
+# Which CareLineLive teams make up each planning region ({region: [teams]}). Overridden by
+# agency.team_regions in the settings file. Dorchester is planned as part of Weymouth.
+DEFAULT_TEAM_REGIONS = {"Leeds": ["Leeds"], "Weymouth": ["Weymouth", "Dorchester"]}
+# Old names for a region (lower case): older settings files and routing settings say "Dorset".
+REGION_ALIASES = {"dorset": "Weymouth"}
 
 
 def fake_api() -> bool:

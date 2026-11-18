@@ -1,9 +1,10 @@
 // A fully made-up agency for the mock engine. No real data anywhere.
-// Two teams (Leeds, Dorset), 8 carers, 15 clients, about 120 visits over one week.
+// Two teams (Leeds, Weymouth), 8 carers, 15 clients, about 120 visits over one week.
 
 import type { DayKey, HoursBlock, SettingsFile } from "../types";
 import { DAYS } from "../types";
 import { DEFAULT_AGENCY } from "../settings";
+import { DEFAULT_TEAM_REGIONS } from "../areas";
 import { hhmm } from "../time";
 
 export const WEEK_START = "2026-11-16"; // a Monday
@@ -69,17 +70,17 @@ function days(list: DayKey[], blocks: HoursBlock[]): Partial<Record<DayKey, Hour
 const WEEKDAYS: DayKey[] = ["mon", "tue", "wed", "thu", "fri"];
 
 const LEEDS = { lat: 53.8, lon: -1.55 };
-const DORSET = { lat: 50.71, lon: -2.44 };
+const WEYMOUTH = { lat: 50.71, lon: -2.44 };
 
 export const CARERS: FakeCarer[] = [
   { id: "K001", name: "Carer A", team: "Leeds", gender: "female", skills: ["medication", "hoist"], home: { lat: 53.81, lon: -1.57 }, hours: days(WEEKDAYS, wk("07:00", "14:00")), weeklyMaxHours: 35, dbsExpiry: "2027-06-30", trainingExpiry: "2027-03-31" },
   { id: "K002", name: "Carer B", team: "Leeds", gender: "female", skills: ["medication"], home: { lat: 53.79, lon: -1.52 }, hours: days(["mon", "tue", "wed", "thu", "fri", "sat"], wk("14:00", "22:30")), weeklyMaxHours: 30, dbsExpiry: "2027-01-31", trainingExpiry: "2027-05-31" },
   { id: "K003", name: "Carer C", team: "Leeds", gender: "female", skills: ["medication", "hoist"], home: { lat: 53.82, lon: -1.54 }, hours: { ...days(["mon", "tue", "thu", "sat", "sun"], wk("07:00", "13:30")), ...days(["tue", "thu", "sat", "sun"], [{ start: "07:00", end: "13:30" }, { start: "16:00", end: "22:00" }]) }, weeklyMaxHours: 28, dbsExpiry: "2028-02-28", trainingExpiry: "2027-09-30" },
   { id: "K004", name: "Carer D", team: "Leeds", gender: "male", skills: ["medication"], home: { lat: 53.78, lon: -1.58 }, hours: days(["tue", "wed", "thu", "fri", "sat", "sun"], wk("07:00", "22:00")), weeklyMaxHours: 40, dbsExpiry: "2027-08-31", trainingExpiry: "2027-02-28" },
-  { id: "K005", name: "Carer E", team: "Dorset", gender: "female", skills: ["medication", "hoist"], home: { lat: 50.72, lon: -2.46 }, hours: days(["mon", "tue", "wed", "thu", "fri", "sat", "sun"], wk("07:00", "13:00")), weeklyMaxHours: 37, dbsExpiry: "2027-11-30", trainingExpiry: "2027-04-30" },
-  { id: "K006", name: "Carer F", team: "Dorset", gender: "male", skills: ["medication", "hoist"], home: { lat: 50.7, lon: -2.42 }, hours: days(["mon", "tue", "wed", "thu", "fri"], wk("08:00", "22:30")), weeklyMaxHours: 30, dbsExpiry: "2027-02-28", trainingExpiry: "2027-07-31" },
-  { id: "K007", name: "Carer G", team: "Dorset", gender: "female", skills: ["medication", "hoist"], home: { lat: 50.73, lon: -2.43 }, hours: days(["thu", "fri", "sat", "sun"], wk("07:00", "22:00")), weeklyMaxHours: 32, dbsExpiry: "2027-09-30", trainingExpiry: "2027-10-31" },
-  { id: "K008", name: "Carer H", team: "Dorset", gender: "female", skills: ["medication"], home: { lat: 50.69, lon: -2.45 }, hours: days(["mon", "tue", "wed", "fri", "sat"], wk("08:00", "20:00")), weeklyMaxHours: 25, dbsExpiry: null, trainingExpiry: "2027-06-30" },
+  { id: "K005", name: "Carer E", team: "Weymouth", gender: "female", skills: ["medication", "hoist"], home: { lat: 50.72, lon: -2.46 }, hours: days(["mon", "tue", "wed", "thu", "fri", "sat", "sun"], wk("07:00", "13:00")), weeklyMaxHours: 37, dbsExpiry: "2027-11-30", trainingExpiry: "2027-04-30" },
+  { id: "K006", name: "Carer F", team: "Weymouth", gender: "male", skills: ["medication", "hoist"], home: { lat: 50.7, lon: -2.42 }, hours: days(["mon", "tue", "wed", "thu", "fri"], wk("08:00", "22:30")), weeklyMaxHours: 30, dbsExpiry: "2027-02-28", trainingExpiry: "2027-07-31" },
+  { id: "K007", name: "Carer G", team: "Weymouth", gender: "female", skills: ["medication", "hoist"], home: { lat: 50.73, lon: -2.43 }, hours: days(["thu", "fri", "sat", "sun"], wk("07:00", "22:00")), weeklyMaxHours: 32, dbsExpiry: "2027-09-30", trainingExpiry: "2027-10-31" },
+  { id: "K008", name: "Carer H", team: "Weymouth", gender: "female", skills: ["medication"], home: { lat: 50.69, lon: -2.45 }, hours: days(["mon", "tue", "wed", "fri", "sat"], wk("08:00", "20:00")), weeklyMaxHours: 25, dbsExpiry: null, trainingExpiry: "2027-06-30" },
 ];
 
 const SLOT_TIMES: Record<string, [number, number, number]> = {
@@ -99,14 +100,14 @@ const CLIENT_PLAN: { team: string; slots: string[]; days: number[] }[] = [
   { team: "Leeds", slots: ["Bed Visit"], days: [0, 1, 2, 3, 4] },
   { team: "Leeds", slots: ["Tea Visit"], days: [0, 1, 2, 3, 4] },
   { team: "Leeds", slots: ["Morning Visit", "Bed Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
-  { team: "Dorset", slots: ["Morning Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
-  { team: "Dorset", slots: ["Medication Call"], days: [0, 1, 2, 3, 4, 5, 6] },
-  { team: "Dorset", slots: ["Lunch Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
-  { team: "Dorset", slots: ["Tea Visit"], days: [0, 1, 2, 3, 4] },
-  { team: "Dorset", slots: ["Morning Visit"], days: [0, 1, 2, 3, 4] },
-  { team: "Dorset", slots: ["Bed Visit"], days: [0, 1, 2, 3, 4] },
-  { team: "Dorset", slots: ["Morning Visit", "Bed Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
-  { team: "Dorset", slots: ["Lunch Visit", "Tea Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
+  { team: "Weymouth", slots: ["Morning Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
+  { team: "Weymouth", slots: ["Medication Call"], days: [0, 1, 2, 3, 4, 5, 6] },
+  { team: "Weymouth", slots: ["Lunch Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
+  { team: "Weymouth", slots: ["Tea Visit"], days: [0, 1, 2, 3, 4] },
+  { team: "Weymouth", slots: ["Morning Visit"], days: [0, 1, 2, 3, 4] },
+  { team: "Weymouth", slots: ["Bed Visit"], days: [0, 1, 2, 3, 4] },
+  { team: "Weymouth", slots: ["Morning Visit", "Bed Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
+  { team: "Weymouth", slots: ["Lunch Visit", "Tea Visit"], days: [0, 1, 2, 3, 4, 5, 6] },
 ];
 
 export interface FakeAgency {
@@ -124,7 +125,7 @@ export function getAgency(): FakeAgency {
   const r = rng(20261116);
   const carers = CARERS;
   const clients: FakeClient[] = CLIENT_PLAN.map((p, i) => {
-    const centre = p.team === "Leeds" ? LEEDS : DORSET;
+    const centre = p.team === "Leeds" ? LEEDS : WEYMOUTH;
     const teamCarers = carers.filter((c) => c.team === p.team);
     const n = String(i + 1).padStart(2, "0");
     const usual = [teamCarers[i % 4].id, teamCarers[(i + 1) % 4].id];
@@ -153,12 +154,16 @@ export function getAgency(): FakeAgency {
 
   const visits: FakeVisit[] = [];
   let n = 0;
+  // A client's visit is at the same time every day it happens, as in a real care plan.
+  const slotStart = new Map<string, number>();
   CLIENT_PLAN.forEach((p, i) => {
     const client = clients[i];
     p.days.forEach((day) => {
       p.slots.forEach((slot) => {
         const [lo, hi, dur] = SLOT_TIMES[slot];
-        const start = Math.round((lo + r() * (hi - lo)) / 5) * 5;
+        const key = `${i}|${slot}`;
+        if (!slotStart.has(key)) slotStart.set(key, Math.round((lo + r() * (hi - lo)) / 5) * 5);
+        const start = slotStart.get(key)!;
         n++;
         visits.push({
           id: `V${String(n).padStart(3, "0")}`,
@@ -189,9 +194,10 @@ export function isoDate(weekStart: string, day: number): string {
 export function exampleSettings(): SettingsFile {
   const a = getAgency();
   return {
-    version: 1,
+    version: 2,
     saved_at: null,
-    agency: { ...DEFAULT_AGENCY },
+    agency: { ...DEFAULT_AGENCY, team_regions: DEFAULT_TEAM_REGIONS },
+    client_schedules: {},
     carers: a.carers.map((c) => ({
       id: c.id,
       name: c.name,

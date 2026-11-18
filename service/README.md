@@ -53,7 +53,7 @@ known columns; counts and column names only in messages), then in the background
 1. reads carers, clients, addresses, teams, transport types and leave from CareLineLive
    (or the fake API), matches the carer names in the bookings to CareLineLive carers
    (the settings file's saved matches first);
-2. builds one engine problem per planning region (Leeds; Dorset = Dorchester + Weymouth,
+2. builds one engine problem per planning region (Leeds; Weymouth, which includes the Dorchester team,
    set by `agency.team_regions` in the settings file) with the settings applied: working
    hours per weekday including nights, weekly maximum, skills, DBS and training expiry,
    active, client rules (gender preference, do-not-send, safeguarding bar, required skills,
@@ -134,19 +134,22 @@ cd service
 .venv/Scripts/python -m pytest        # about 1.5 minutes: two full runs take about 25 s each
 ```
 
-They cover CSV validation, the settings round trip, carer matching, full runs in both
+They cover CSV validation, the settings round trip, carer matching, client schedule learning, draft runs and the
+check against the real week, the team rules, full runs in both
 modes (result shape, rules, reasons), both exports, locks, DELETE/expiry/shutdown, no
 redirect following, and that logs and errors contain no names.
 
 ## Road routing (optional)
 
 Off by default. To use real road travel for car trips, run the local OSRM servers (`tools/routing/README.md`:
-`build.ps1` once, then `servers.ps1 start`: Dorset on 127.0.0.1:5001, Leeds on 127.0.0.1:5002) and start the
+`build.ps1` once, then `servers.ps1 start`: Weymouth (Dorset) on 127.0.0.1:5001, Leeds on 127.0.0.1:5002) and start the
 service with
 
 ```
-LOIDIS_OSRM_URLS="Leeds=http://127.0.0.1:5002,Dorset=http://127.0.0.1:5001"
+LOIDIS_OSRM_URLS="Leeds=http://127.0.0.1:5002,Weymouth=http://127.0.0.1:5001"
 ```
+
+(`Dorset` still works as another name for `Weymouth`, so an older setting does not need changing.)
 
 (region names as in the settings file's `agency.team_regions`; only `localhost`/`127.0.0.1` URLs are accepted).
 For each run and region the service asks OSRM once (`GET /table/v1/driving/...`, `annotations=duration,distance`,
@@ -155,6 +158,25 @@ the table in memory for the run only (deleted with it), and uses it for the plan
 rota. Walking and bus carers keep the estimate; so does any place more than 1 km from a mapped road (warning
 `routing_partial`) and everything if OSRM is unreachable (warning `routing_unavailable`). The result has a
 `travel_source` notice saying which was used. Only counts are logged. Tests use a fake OSRM server.
+
+## Client schedules and drafts
+
+CareLineLive has no API or export for client schedule entries, so the service learns them from past bookings and the
+coordinator confirms them; they live in the settings file (`client_schedules`, settings version 2).
+
+- `POST /schedules/learn` takes one or more bookings CSVs (any number of weeks), optionally the CareLineLive client list
+  CSV and the settings file, and returns learned schedules (`confirmed: false`), one-off visits and flags (schedule
+  changed after the first week, suspended, no bookings). Weekly if a visit is in at least half the weeks; fortnightly
+  (with an anchor Monday) if it is only in alternating weeks across at least 3 weeks supplied.
+- `POST /runs` with `source=schedules` and a Monday `week_start` makes a **draft** from the confirmed schedules before
+  the week's bookings exist (new rota only; unconfirmed schedules, clients with no schedule and suspended clients are
+  left out with a warning or notice). Visits have no booking id (`not generated yet` in the export).
+- `POST /runs` with `source=bookings` and a `draft` file (the draft's `allocation.csv`) is the **final check**: the real
+  bookings are matched to the draft, the run starts from the draft plan (improve mode) and the result's `draft_check`
+  lists what was added, removed or retimed.
+
+Carers with no team (in CareLineLive or the settings file) are left out of planning with the warning `carer_no_team`.
+Details and field lists are in `docs/ENGINE_API.md`.
 
 ## Search time
 
@@ -172,6 +194,7 @@ heavily broken this way (93 of 201 feasible), so it is a poor baseline for fill 
 
 ## Limits to know
 
+- A carer with no team is not planned (`carer_no_team`).
 - A carer with visits in more than one region is planned in their home region (most visits) with
   reduced hours there, and is a locked guest elsewhere (warning `cross_region_carers`).
 - The current rota may break the engine's rules (an expired DBS, a do-not-send): the

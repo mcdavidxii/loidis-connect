@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { hasAnyHours, isAnyTime, settingsToJson, settingsWarnings } from "@/lib/settings";
 import { DAYS, DAY_LABELS, type DayKey, type HoursBlock, type SettingsCarer, type SettingsClient } from "@/lib/types";
+import { areaLabel } from "@/lib/areas";
 import { useApp } from "./AppProvider";
 import { IconAdd, IconDelete, IconDownload, IconUpload, IconWarning } from "./icons";
 import { Badge, Button, Notice, PageHeader, ScrollBox, inputCls, tableCls, tdCls, thCls } from "./ui";
@@ -209,7 +210,7 @@ function CarersTab() {
                   {c.name}
                 </button>
               </th>
-              <td className={tdCls}>{c.teams.join(", ")}</td>
+              <td className={tdCls}>{c.teams.map(areaLabel).join(", ")}</td>
               <td className={tdCls}>{isAnyTime(c) ? "Any time" : `${DAYS.filter((d) => (c.working_hours[d]?.length ?? 0) > 0).length} days`}</td>
               <td className={tdCls}>{c.weekly_max_hours ?? "-"}</td>
               <td className={tdCls}>{c.dbs_expiry ?? "-"}</td>
@@ -321,7 +322,7 @@ function ClientsTab() {
                   {c.ref}
                 </button>
               </th>
-              <td className={tdCls}>{c.team}</td>
+              <td className={tdCls}>{areaLabel(c.team)}</td>
               <td className={tdCls}>{c.gender_preference ?? "-"}</td>
               <td className={tdCls}>{c.do_not_send.length || "-"}</td>
               <td className={tdCls}>{c.safeguarding_bar.length || "-"}</td>
@@ -429,11 +430,8 @@ function AgencyTab() {
       meaning: "Which teams are planned together. Set for you; read-only.",
       input: a.team_regions ? (
         <ul>
-          {Object.entries(a.team_regions).map(([team, region]) => (
-            <li key={team}>
-              {team} <span aria-hidden>&rarr;</span>
-              <span className="sr-only"> in area </span> {region}
-            </li>
+          {Object.keys(a.team_regions).map((area) => (
+            <li key={area}>{areaLabel(area)}</li>
           ))}
         </ul>
       ) : (

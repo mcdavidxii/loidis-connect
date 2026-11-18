@@ -34,10 +34,14 @@ running on made-up CareLineLive data (`ENGINE_FAKE_API=1`).
 
 | Field | Type | Notes |
 |---|---|---|
-| `bookings` | file, CSV | Required. One week, from CareLineLive Reports > Bookings (the optimised CSV, 27 columns, see [Bookings CSV](#bookings-csv)). Needs a booking ID on every row. The allocated carers are the current rota. |
+| `source` | `bookings` or `schedules` | Optional, default `bookings`. `schedules` makes a **draft** for a week CareLineLive has not generated yet, from the settings file's `client_schedules` (see [Client schedules](#client-schedules)). |
+| `week_start` | `YYYY-MM-DD` | Required with `source=schedules`; must be a Monday (else `400`). |
+| `bookings` | file, CSV | Required with `source=bookings`. One week, from CareLineLive Reports > Bookings (the optimised CSV, 27 columns, see [Bookings CSV](#bookings-csv)). Needs a booking ID on every row. The allocated carers are the current rota. Not used with `source=schedules`. |
+| `client_list` | file, CSV | Optional, with `source=schedules`: the CareLineLive client CSV (`ClientReferenceCode`, `ClientName`, `ClientDefaultTeam`, `LastCompletedBooking`, `LastScheduleUpdate`, `ClientSuspended`, `SuspensionReason`). Suspended clients are left out of the draft (notice `clients_suspended`); `ClientName` gives the draft its client display names. |
+| `draft` | file, CSV | Optional, with `source=bookings`: the `allocation.csv` exported from a draft run. Each real booking is matched to a draft row, matched rows become the current rota, and the run is forced to `mode: "improve"`. Adds `draft_check` to the result (see [Final check against the real week](#final-check-against-the-real-week)). |
 | `settings` | file, JSON | Optional. The [settings file](#settings-file). |
 | `continuity` | file, xlsx | Optional. Continuity report for the 4 weeks before. |
-| `mode` | `new` or `improve` | Required. |
+| `mode` | `new` or `improve` | Required with `source=bookings` (forced to `improve` when `draft` is given). With `source=schedules` only `new` makes sense: `improve` is refused with `422` ("Improve my rota needs the bookings that are already in CareLineLive. A draft from client schedules can only make a new rota."); if omitted it is `new`. |
 | `change_cost_pence` | int | Improve mode: how much a change must save, in pence. The web app offers 300, 500, 1000 (default) and 2000. A carer's paid time is about 21p a minute. Ignored in `new` mode. |
 | `locks` | JSON object | Optional. `{ "<booking_id>": "<carer id>" }`. Those bookings keep that carer. Time-critical bookings (see settings) never move in either mode. |
 
@@ -64,7 +68,9 @@ planning regions searched at the same time); the mock fakes about 3 seconds.
   "comparison": { "engine": { "<metrics>": "..." }, "current": { "<metrics>": "..." } },
   "changes": [ ],
   "time_notes": [ ],
-  "warnings": [ { "code": "no_dbs_date", "message": "..." } ]
+  "warnings": [ { "code": "no_dbs_date", "message": "..." } ],
+  "draft": false,
+  "draft_check": null
 }
 ```
 
@@ -122,8 +128,93 @@ attention (`no_settings`, `no_working_hours`, `no_dbs_date`, `no_training_date`,
 IDs, client reference codes and counts, never names. The service also raises
 `no_continuity`, `continuity_unreadable`, `missing_address`, `carer_no_location`,
 `transport_defaulted`, `clients_not_in_settings`, `unmapped_team`, `cross_region_carers`,
-`carer_no_team`, `hours_padded` and `lock_ignored` (see [Service notes](#service-notes)). The trial's placeholders (DBS and training 2099, empty
+`carer_no_team`, `hours_padded`, `lock_ignored`, `schedule_unconfirmed` and `schedule_missing` (see [Service notes](#service-notes)). The trial's placeholders (DBS and training 2099, empty
 rules) must not be used to fill gaps.
+
+### Client schedules
+
+CareLineLive has no API or export for client schedule entries. The service **learns** them from past
+bookings, the coordinator **confirms** them, and they live in the settings file
+([`client_schedules`](#settings-file)). With them a week can be drafted before CareLineLive has generated it.
+
+#### `POST /schedules/learn`
+`multipart/form-data`: `bookings` (one or more optimised bookings CSVs, repeat the field; any number of weeks, a
+file may hold several weeks; each is validated as for `POST /runs` and a bad one is refused with `422` naming the
+file number), optional `client_list` (CSV as above), optional `settings` (used to find a client's id from its
+reference code). Nothing is stored. Cancelled bookings are ignored. Per client, bookings are grouped by
+(weekday, start rounded to 5 min, duration, booking type, carers needed):
+
+- present only in alternating weeks (every week it appears a whole number of fortnights apart, across at least 2
+  weeks, with at least 3 weeks supplied and a supplied week of the other parity without it): **fortnightly**,
+  `fortnight_anchor` = the first week it appears;
+- else in at least half of the weeks supplied: **weekly**;
+- otherwise a **one-off**: listed in `one_offs`, not added to the schedule.
+
+Groups with the same start, duration, type, carers needed and repeat are merged into one visit with several `days`.
+Returns:
+```json
+{
+  "weeks": ["2026-10-26", "2026-11-02"],
+  "schedules": { "<client id>": {
+      "client_ref": "CL-001", "confirmed": false, "learned_from": ["2026-10-26", "2026-11-02"],
+      "updated_at": "2026-11-17T10:00:00Z", "display_name": "Smith, J",
+      "visits": [ { "id": "v1", "days": ["mon", "tue"], "start": "08:00", "duration_min": 45,
+                    "booking_type": "Morning Visit", "carers_needed": 1,
+                    "repeat": "weekly", "fortnight_anchor": null } ] } },
+  "one_offs": [ { "client_id": "...", "client_ref": "CL-009", "display_name": "Smith, J", "date": "2026-11-06",
+                  "start": "14:00", "duration_min": 30, "booking_type": "Tea Visit" } ],
+  "flags": [ { "client_id": "...", "client_ref": "CL-006", "display_name": "Smith, J",
+               "kind": "changed | suspended | no_bookings_in_period", "detail": "..." } ],
+  "counts": { "weeks": 4, "bookings": 87, "clients": 9, "schedules": 8, "visits": 9, "weekly": 8,
+              "fortnightly": 1, "one_offs": 1, "flags": 13 }
+}
+```
+`schedules` is keyed by CareLineLive client id (the bookings' `ClientId`); `display_name` is **not** part of the
+settings file's schedule entry (the web app should drop it when saving). Clients with only one-offs have no
+schedule. Flags (need `client_list`; clients are matched by `ClientReferenceCode`): `changed` when `LastScheduleUpdate`
+is after the first learned week ("Schedule changed in CareLineLive on dd/mm/yyyy – check their visits");
+`suspended` when `ClientSuspended` is yes; `no_bookings_in_period` for a listed client with no bookings in the
+weeks supplied (not suspended). `confirmed` is always `false`: the coordinator confirms in the app. Display names
+are personal data for the coordinator only; logs hold counts only.
+
+#### Draft run (`POST /runs` with `source=schedules`)
+Visits are generated for `week_start` from the settings file's `client_schedules`: a visit happens on its
+`days`; a fortnightly one only in weeks where `(week_start - fortnight_anchor)` is a whole number of fortnights.
+Only **confirmed** schedules are used. Generated visits have `booking_id: null` and a synthetic `id`
+(`DRAFT-<client id>-<visit id>-<day>`). The result has `draft: true` and the notice `draft_from_schedules` ("Draft from
+client schedules – bookings for this week are not generated in CareLineLive yet."). Warnings: `schedule_unconfirmed`
+("N client schedule(s) are not confirmed yet, so those clients are left out of this draft."), `schedule_missing` ("N
+clients have no schedule yet, so they are not in this draft": clients synced from CareLineLive with no schedule entry;
+suspended clients are not counted). Suspended clients (from `client_list`) are left out with the notice
+`clients_suspended`. There is no current rota (`current_assigned` is empty; nobody is counted as familiar unless a
+Continuity report is uploaded). Refused: no settings file (`422`), no confirmed visit in that week (`422`), `improve`
+(`422`), a `week_start` that is not a Monday (`400`).
+
+#### Final check against the real week
+`POST /runs` with `source=bookings` and a `draft` file (the `allocation.csv` of the draft run). A real booking matches
+a draft row with the same client, date and booking type and a start within 15 minutes (nearest first); the client
+column of the export is the display name, or the client reference where no name was known, and a booking matches on
+either. Matched rows give the booking its `current_carers` (the carers named in the draft), so Improve my rota starts
+from the draft plan. A second pass pairs what is left on the same client, date and type with a start more than 15
+minutes away. Result:
+```json
+"draft_check": {
+  "matched": 80,
+  "added":   [ { "client": "Smith, J", "client_ref": "CL-001", "date": "2026-11-28", "start": "10:00", "end": "10:45",
+                 "booking_type": "Morning Visit", "summary": "In the real week but not in the draft: ..." } ],
+  "removed": [ { "client": "Smith, J", "client_ref": "", "date": "2026-11-27", "start": "17:00", "end": "17:30",
+                 "booking_type": "Tea Visit", "summary": "In the draft but not in the real week: ..." } ],
+  "retimed": [ { "client": "Smith, J", "client_ref": "CL-005", "date": "2026-11-23", "start": "09:45", "end": "10:15",
+                 "draft_start": "09:00", "booking_type": "Morning Visit",
+                 "summary": "...the draft had 09:00, the real booking starts at 09:45 (45 min later)." } ],
+  "tolerance_minutes": 15,
+  "summary": "80 of 83 bookings in the real week match the draft; 1 not in the draft, 1 in the draft but not in the real week, 1 at a different time."
+}
+```
+`added`: real bookings not in the draft; `removed`: draft rows with no real booking (`client_ref` is blank: the
+export has no reference); `retimed`: same client, date and type but starting more than the tolerance away (`start` is the
+real start). `matched` counts the exact matches only. `draft_check` is `null` in every other run. A bad draft file is
+refused with `422` (column names and counts only).
 
 ### Exports (layout of 2026-11-17, replaces the first draft)
 The coordinator copies the export into CareLineLive by hand, day by day, carer by carer, so
@@ -217,7 +308,7 @@ It holds personal data. Versioned so that a later release can read old files.
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "saved_at": "2026-11-17T09:30:00Z",
   "agency": {
     "move_window_minutes": 30,
@@ -229,7 +320,7 @@ It holds personal data. Versioned so that a later release can read old files.
     "pay_pence_per_hour": null,
     "mileage_pence_per_mile": null,
     "travel_time_paid": null,
-    "team_regions": { "Leeds": "Leeds", "Dorchester": "Dorset", "Weymouth": "Dorset" }
+    "team_regions": { "Leeds": ["Leeds"], "Weymouth": ["Weymouth", "Dorchester"] }
   },
   "carers": [
     {
@@ -255,15 +346,28 @@ It holds personal data. Versioned so that a later release can read old files.
       "time_critical_booking_types": ["Medication Call"]
     }
   ],
-  "carer_name_matches": [ { "booking_name": "Carer H (Dorset)", "carer_id": "K008" } ]
+  "carer_name_matches": [ { "booking_name": "Carer H (Dorset)", "carer_id": "K008" } ],
+  "client_schedules": {
+    "C01": {
+      "client_ref": "CL-001", "confirmed": true, "learned_from": ["2026-10-26", "2026-11-02"],
+      "updated_at": "2026-11-17T10:00:00Z",
+      "visits": [
+        { "id": "v1", "days": ["mon", "tue", "wed"], "start": "08:00", "duration_min": 45,
+          "booking_type": "Morning Visit", "carers_needed": 1, "repeat": "weekly", "fortnight_anchor": null },
+        { "id": "v2", "days": ["thu"], "start": "16:30", "duration_min": 30, "booking_type": "Tea Visit",
+          "carers_needed": 1, "repeat": "fortnightly", "fortnight_anchor": "2026-10-26" }
+      ]
+    }
+  }
 }
 ```
 
 | Field | Rules |
 |---|---|
-| `version` | Integer, currently `1`. A service must reject a version it does not know, with a plain message. |
+| `version` | Integer, currently `2` (2 added `client_schedules`). The service reads `1` and `2`; a version-1 file loads with no schedules, and the service writes `2`. It rejects any other version with a plain message. |
 | `agency.*` | The agency settings table in `MVP.md`. `null` for the pay, mileage and travel-time fields means "engine default" (and raises the `agency_defaults` warning). `change_cost_pence` is overridden by the `change_cost_pence` form field of `POST /runs`. |
-| `agency.team_regions` | **Added by the service.** Which planning region each CareLineLive team belongs to; teams in the same region are planned together and each region is one entry in `result.teams`. Optional; the default is the mapping shown (Leeds; Dorset = Dorchester + Weymouth). A client's team comes from the `Team` column of the bookings; a carer's regions come from `carers[].teams` (else CareLineLive, else the regions of the visits they are on now). |
+| `agency.team_regions` | **Added by the service.** `{ region: [CareLineLive teams] }`. Teams in the same region are planned together and each region is one entry in `result.teams` (region names are shown to the coordinator). Optional; the default is the mapping shown: **Leeds**, and **Weymouth** which includes the Dorchester team (the agency has three teams: Leeds, Weymouth and Dorchester). The old shape `{ team: region }` is still read, and a region called "Dorset" is read as "Weymouth", with no warning. A client's team comes from the `Team` column of the bookings; a carer's regions come from `carers[].teams` (else CareLineLive); a carer with no team in either is not planned (see Service notes). |
+| `client_schedules` | **Added by the service.** `{ client id: { client_ref, confirmed, learned_from[week starts], updated_at, visits[] } }` (see [Client schedules](#client-schedules)). A visit is `{ id, days[mon..sun], start "HH:MM", duration_min, booking_type, carers_needed, repeat "weekly" or "fortnightly", fortnight_anchor }`. `fortnight_anchor` is a Monday, required when fortnightly: the visit happens in weeks where `(week_start - anchor)` is a whole number of fortnights. Only `confirmed: true` entries are planned. Optional; a missing map is empty. A bad entry (day, time, duration, repeat, a non-Monday anchor) is refused with a count, never the value. It is top-level, so the web app must keep it when it reads and writes the file. |
 | `carers[].working_hours` | Keys `mon`..`sun`; each a list of blocks with `HH:MM` `start` and `end`. An `end` earlier than or equal to `start` means the block ends the next day (a night). **A carer with no blocks at all is available any time** (see `available_any_time`); a carer with some blocks is only available in them (a missing day or empty list on such a carer means not working that day). |
 | `carers[].available_any_time` | **Added by the service.** Boolean, default `true` (also when the key is missing, and for carers new to the file). With no working-hours blocks: `true` = available 00:00 to 24:00 every day they are not on leave, and the engine chooses their hours; `false` = not planned. Explicit blocks always win. |
 | `carers[].weekly_max_hours` | Number or `null` (rule not checked, warning raised). |
@@ -341,7 +445,7 @@ the web app already sends or reads.
   travel slack), no share of the equal-hours target, and those visits are locked to them
   (`locked: true`, `lock_reason: "kept: carer's home area is elsewhere"`, window 0). This
   applies in both modes. Warning `cross_region_carers` says this and lists the carer IDs.
-  A carer with no team and no visits is placed in the busiest region (`carer_no_team`).
+  (From 2026-11-17 a carer with no team is not planned at all: see the last service notes.)
 - **Changes forced by rules.** In improve mode, when a current carer is not allowed (do-not-send,
   safeguarding bar, gender preference, missing skill, on leave, expired DBS or training,
   outside working hours, no working hours, over weekly maximum), the change's `reason`
@@ -479,3 +583,24 @@ penalty, feasible or pence per minute (a test checks the result and the CSVs). T
 - `missing_address` now says travel to those clients can't be estimated (a position near the team's
   other clients is used, and they are never routed). Carers with no usable home keep the nearby-position
   fallback, are never routed, and are listed in `carer_no_location`.
+
+### Service notes: areas, carers without a team, client schedules (2026-11-17)
+- **Carers with no team are not eligible.** A carer with no team in CareLineLive and none in the settings file is
+  left out of planning entirely (not in any region, no hours, no visits), with the warning `carer_no_team`: "N carers
+  have no team in CareLineLive, so they were left out of the rota." (singular: "1 carer has no team ..."), then the
+  count of their current bookings and their carer ids. Visits they are on in the current rota are **not kept with
+  them**: they have no current carer in the comparison (the current rota counts them as unallocated) and the plan
+  gives them to other carers where it can; the engine is not told to keep them unallocated. An inactive carer with no
+  team and no visits does not raise the warning. The earlier behaviour (placing them in the busiest region) is gone.
+- **Areas.** Three CareLineLive teams: Leeds, Weymouth, Dorchester. Dorchester is planned as part of Weymouth, so the
+  regions (and `result.teams` keys) are **"Leeds"** and **"Weymouth"** (previously "Dorset"). `LOIDIS_OSRM_URLS` keys are
+  region names; `Dorset` is still accepted as an alias of `Weymouth` (`Leeds=...,Dorset=...` and `Leeds=...,Weymouth=...`
+  both work).
+- **Settings file version 2** adds `client_schedules`. The service writes version 2 with `client_schedules`; version 1
+  files still load.
+- **Client schedules** are described above. They hold personal data (client ids and references with their visit times)
+  and live only in the coordinator's settings file; the service stores nothing. The learn endpoint accepts several weeks
+  per file and per request; `POST /runs` with a bookings file still takes one week only.
+- **Draft runs are new-rota only.** Generated bookings have no booking id, so `changes.csv` and `notes.csv` do not apply;
+  `allocation.csv` has `not generated yet` in the Booking ID column. In a draft the client column of the export is the
+  display name from the uploaded `client_list` if there was one, else the client reference.

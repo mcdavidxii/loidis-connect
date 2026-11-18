@@ -213,7 +213,7 @@ def agency() -> tuple[list[FCarer], list[FClient], list[FVisit]]:
     used: dict[tuple[str, int], int] = {}
     for v in visits:
         cl = next(c for c in clients if c.id == v.client)
-        region = "Leeds" if cl.team == "Leeds" else "Dorset"
+        region = "Leeds" if cl.team == "Leeds" else "Weymouth"
         pool = []
         for c in carers:
             if (c.team == "Leeds") != (region == "Leeds") or c.id == "K013":
@@ -354,6 +354,79 @@ def bookings_csv(current_rota: bool = True) -> str:
             "IsCancelled": "Yes", "Team": c.team,
         }
         w.writerow([row.get(col, "") for col in KNOWN_COLUMNS])
+    return buf.getvalue()
+
+
+# --------------------------------------------------------------------------- schedule weeks
+# Four past weeks of made-up bookings for learning client schedules, and a made-up client list.
+SCHEDULE_WEEKS = [date(2026, 10, 26), date(2026, 11, 2), date(2026, 11, 9), date(2026, 11, 16)]
+# (client, weekdays, start (minutes, varies by a minute or two), duration, type, carers, weeks it is in)
+_PATTERN = [
+    ("C01", [0, 1, 2, 3, 4], 8 * 60, 45, "Morning Visit", 1, "all"),      # weekly
+    ("C02", [1], 12 * 60 + 30, 30, "Lunch Visit", 1, "all"),               # weekly, one day
+    ("C02", [0, 2], 20 * 60 + 30, 30, "Bed Visit", 1, "all"),              # weekly, two days merged
+    ("C03", [3], 16 * 60 + 30, 30, "Tea Visit", 1, (0, 2)),                # fortnightly, anchor week 0
+    ("C04", [0, 1, 2, 3, 4, 5, 6], 8 * 60 + 15, 45, "Morning Visit", 2, "all"),  # weekly double-up
+    ("C05", [0], 9 * 60, 30, "Morning Visit", 1, "all"),                   # weekly (a cancelled extra is ignored)
+    ("C06", [2], 11 * 60, 30, "Lunch Visit", 1, "all"),                    # schedule changed in CareLineLive
+    ("C07", [1], 15 * 60, 30, "Tea Visit", 1, "all"),                      # suspended
+    ("C10", [0, 2, 4], 17 * 60, 30, "Tea Visit", 1, "all"),                # weekly, Dorchester team
+    ("C09", [4], 14 * 60, 30, "Tea Visit", 1, (1,)),                       # a one-off (week 1 only)
+]
+
+
+def schedule_rows(week_index: int) -> list[dict]:
+    """The made-up bookings of one of the SCHEDULE_WEEKS as dicts (cancelled ones flagged)."""
+    cl = {c.id: c for c in agency()[1]}
+    out = []
+    for n, (cid, days, start, dur, btype, need, weeks) in enumerate(_PATTERN):
+        if weeks != "all" and week_index not in weeks:
+            continue
+        for d in days:
+            out.append({"client": cid, "date": SCHEDULE_WEEKS[week_index] + timedelta(days=d),
+                        "start": start + (week_index * 7 + d) % 3 - 1,  # 07:59-08:01: rounds to 5 minutes
+                        "duration": dur, "type": btype, "need": need, "cancelled": False, "n": n})
+    out.append({"client": "C05", "date": SCHEDULE_WEEKS[week_index] + timedelta(days=1), "start": 9 * 60,
+                "duration": 30, "type": "Morning Visit", "need": 1, "cancelled": True, "n": 99})
+    return out
+
+
+def rows_csv(rows: list[dict]) -> str:
+    """Bookings CSV (the real 27-column layout) from schedule_rows-style dicts; no carers."""
+    cl = {c.id: c for c in agency()[1]}
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\r\n")
+    w.writerow(KNOWN_COLUMNS)
+    for i, r in enumerate(rows):
+        c = cl[r["client"]]
+        row = {
+            "BookingId": r.get("booking_id") or f"S{r['date']:%y%m%d}{r['client']}{i}",
+            "ClientId": api_client_id(c.id), "Date": r["date"].strftime("%d/%m/%Y"),
+            "Start": _hms(r["start"]), "Finish": _hms(r["start"] + r["duration"]),
+            "Duration": f"{r['duration'] // 60}:{r['duration'] % 60:02d}", "BookingType": r["type"],
+            "ClientName": c.name, "ClientReferenceCode": c.ref, "ExpectedCarers": r["need"],
+            "AllocatedCarers": 0, "Carers": "", "IsCancelled": "Yes" if r["cancelled"] else "No",
+            "Team": c.team,
+        }
+        w.writerow([row.get(col, "") for col in KNOWN_COLUMNS])
+    return buf.getvalue()
+
+
+def schedule_week_csv(week_index: int) -> str:
+    return rows_csv(schedule_rows(week_index))
+
+
+def client_list_csv() -> str:
+    """Made-up CareLineLive client list: CL-006 changed its schedule after the first week, CL-007 is
+    suspended, CL-008 had no bookings in the period."""
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\r\n")
+    w.writerow(["ClientReferenceCode", "ClientName", "ClientDefaultTeam", "LastCompletedBooking",
+                "LastScheduleUpdate", "ClientSuspended", "SuspensionReason"])
+    for c in agency()[1]:
+        update = {"CL-006": "12/11/2026"}.get(c.ref, "01/09/2026")
+        w.writerow([c.ref, c.name, c.team, "15/11/2026", update, "Yes" if c.ref == "CL-007" else "No",
+                    "Made-up reason" if c.ref == "CL-007" else ""])
     return buf.getvalue()
 
 

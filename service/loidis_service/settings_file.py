@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import date
 
-from .config import DEFAULT_TEAM_REGIONS
+from .config import DEFAULT_TEAM_REGIONS, REGION_ALIASES
 from .errors import ServiceError
 
 DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
@@ -27,11 +27,34 @@ DEFAULT_AGENCY = {
     "mileage_pence_per_mile": None,
     "travel_time_paid": None,
     # added by the service (docs/ENGINE_API.md): which planning region each team belongs to
-    "team_regions": dict(DEFAULT_TEAM_REGIONS),
+    "team_regions": {r: list(t) for r, t in DEFAULT_TEAM_REGIONS.items()},
     # added by the service: a start time that moves by no more than this is a note, not a change.
     # 15 is a placeholder to confirm with the coordinator.
     "arrival_tolerance_minutes": 15,
 }
+
+
+SETTINGS_VERSION = 2  # 2 added client_schedules; version 1 files load with none
+
+
+def normalise_team_regions(raw: object) -> dict[str, list[str]]:
+    """{region: [CareLineLive teams]}. Reads the current shape ({region: [teams]}) and the old one
+    ({team: region}); a region called "Dorset" (old files) becomes "Weymouth", with no warning."""
+    out: dict[str, list[str]] = {}
+
+    def add(region: str, team: str) -> None:
+        region = REGION_ALIASES.get(region.strip().lower(), region.strip())
+        if region and team.strip() and team.strip() not in out.setdefault(region, []):
+            out[region].append(team.strip())
+
+    if isinstance(raw, dict):
+        for k, v in raw.items():
+            if isinstance(v, (list, tuple)):
+                for t in v:
+                    add(str(k), str(t))
+            elif isinstance(v, str):
+                add(v, str(k))
+    return {r: t for r, t in out.items() if t} or {r: list(t) for r, t in DEFAULT_TEAM_REGIONS.items()}
 
 
 def norm_name(s: str) -> str:
@@ -89,12 +112,104 @@ class ClientSettings:
 
 
 @dataclass
+class ScheduleVisit:
+    id: str
+    days: list[str]
+    start: str  # HH:MM
+    duration_min: int
+    booking_type: str
+    carers_needed: int = 1
+    repeat: str = "weekly"  # weekly | fortnightly
+    fortnight_anchor: date | None = None  # a Monday; fortnightly visits happen in weeks a whole number of fortnights from it
+
+    def happens_in(self, week_start: date) -> bool:
+        if self.repeat != "fortnightly" or self.fortnight_anchor is None:
+            return True
+        return (week_start - self.fortnight_anchor).days % 14 == 0
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id, "days": list(self.days), "start": self.start, "duration_min": self.duration_min,
+            "booking_type": self.booking_type, "carers_needed": self.carers_needed, "repeat": self.repeat,
+            "fortnight_anchor": self.fortnight_anchor.isoformat() if self.fortnight_anchor else None,
+        }
+
+
+@dataclass
+class ClientSchedule:
+    client_ref: str = ""
+    confirmed: bool = False
+    learned_from: list[str] = field(default_factory=list)  # week starts (Mondays) the schedule was learned from
+    updated_at: str | None = None
+    visits: list[ScheduleVisit] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        return {
+            "client_ref": self.client_ref, "confirmed": self.confirmed, "learned_from": list(self.learned_from),
+            "updated_at": self.updated_at, "visits": [v.to_dict() for v in self.visits],
+        }
+
+
+def parse_client_schedules(raw: object) -> dict[str, ClientSchedule]:
+    """Read `client_schedules`. Bad entries are counted, never echoed."""
+    if raw in (None, {}):
+        return {}
+    if not isinstance(raw, dict):
+        raise ServiceError("client_schedules in the settings file must be an object keyed by client id.", 422)
+    out: dict[str, ClientSchedule] = {}
+    bad = 0
+    for cid, e in raw.items():
+        if not isinstance(e, dict) or not isinstance(e.get("visits", []), list):
+            bad += 1
+            continue
+        visits: list[ScheduleVisit] = []
+        for i, v in enumerate(e.get("visits") or []):
+            try:
+                days = [str(d).lower() for d in v["days"]]
+                if not days or any(d not in DAYS for d in days):
+                    raise ValueError
+                start = str(v["start"])
+                if hhmm_to_min(start) >= 1440:
+                    raise ValueError
+                dur = v["duration_min"]
+                need = v.get("carers_needed", 1)
+                if isinstance(dur, bool) or not isinstance(dur, (int, float)) or not 1 <= dur <= 1440:
+                    raise ValueError
+                if isinstance(need, bool) or not isinstance(need, (int, float)) or need < 1:
+                    raise ValueError
+                repeat = v.get("repeat") or "weekly"
+                if repeat not in ("weekly", "fortnightly"):
+                    raise ValueError
+                anchor = None
+                if repeat == "fortnightly":
+                    anchor = date.fromisoformat(str(v["fortnight_anchor"]))
+                    if anchor.weekday() != 0:
+                        raise ValueError
+                visits.append(ScheduleVisit(
+                    id=str(v.get("id") or f"v{i + 1}"), days=list(dict.fromkeys(days)), start=start,
+                    duration_min=int(dur), booking_type=str(v.get("booking_type") or ""),
+                    carers_needed=int(need), repeat=repeat, fortnight_anchor=anchor))
+            except (KeyError, TypeError, ValueError):
+                bad += 1
+        out[str(cid)] = ClientSchedule(
+            client_ref=str(e.get("client_ref") or ""), confirmed=e.get("confirmed") is True,
+            learned_from=[str(x) for x in e.get("learned_from") or []],
+            updated_at=e.get("updated_at") if isinstance(e.get("updated_at"), str) else None, visits=visits)
+    if bad:
+        raise ServiceError(
+            f"{bad} client schedule(s) or visit(s) in the settings file are not valid (days, start, "
+            "duration_min, carers_needed, repeat or a Monday fortnight_anchor).", 422)
+    return out
+
+
+@dataclass
 class SettingsFile:
     saved_at: str | None = None
     agency: dict = field(default_factory=lambda: json.loads(json.dumps(DEFAULT_AGENCY)))
     carers: list[CarerSettings] = field(default_factory=list)
     clients: list[ClientSettings] = field(default_factory=list)
     carer_name_matches: list[dict] = field(default_factory=list)
+    client_schedules: dict[str, ClientSchedule] = field(default_factory=dict)
     tolerance_defaulted: bool = True  # the file did not set agency.arrival_tolerance_minutes
 
     # --- lookups -------------------------------------------------------------------
@@ -109,8 +224,8 @@ class SettingsFile:
 
     @property
     def team_regions(self) -> dict[str, str]:
-        tr = self.agency.get("team_regions")
-        return dict(tr) if isinstance(tr, dict) and tr else dict(DEFAULT_TEAM_REGIONS)
+        """{CareLineLive team: planning region}, in region order (from agency.team_regions)."""
+        return {t: r for r, teams in normalise_team_regions(self.agency.get("team_regions")).items() for t in teams}
 
     # --- (de)serialisation ---------------------------------------------------------
     def to_dict(self) -> dict:
@@ -132,12 +247,13 @@ class SettingsFile:
             }
 
         return {
-            "version": 1,
+            "version": SETTINGS_VERSION,
             "saved_at": self.saved_at,
             "agency": self.agency,
             "carers": [carer(c) for c in self.carers],
             "clients": [client(c) for c in self.clients],
             "carer_name_matches": self.carer_name_matches,
+            "client_schedules": {cid: sc.to_dict() for cid, sc in self.client_schedules.items()},
         }
 
     def to_json(self) -> str:
@@ -155,8 +271,8 @@ class SettingsFile:
     def from_dict(raw: object) -> "SettingsFile":
         if not isinstance(raw, dict):
             raise ServiceError("The settings file is not a settings file.", 422)
-        if raw.get("version") != 1:
-            raise ServiceError("Unsupported settings file version (expected version 1).", 422)
+        if raw.get("version") not in (1, 2):
+            raise ServiceError("Unsupported settings file version (expected version 1 or 2).", 422)
         if not isinstance(raw.get("carers", []), list) or not isinstance(raw.get("clients", []), list):
             raise ServiceError("The settings file needs a carers list and a clients list.", 422)
 
@@ -166,6 +282,7 @@ class SettingsFile:
             agency.update(raw["agency"])
             tolerance_defaulted = raw["agency"].get("arrival_tolerance_minutes") is None
             agency["arrival_tolerance_minutes"] = agency.get("arrival_tolerance_minutes") if not tolerance_defaulted else 15
+        agency["team_regions"] = normalise_team_regions(agency.get("team_regions"))
         sec = agency.get("search_seconds_per_day")
         if not isinstance(sec, (int, float)) or isinstance(sec, bool) or not 1 <= sec <= 120:
             raise ServiceError("agency.search_seconds_per_day must be between 1 and 120.", 422)
@@ -240,6 +357,7 @@ class SettingsFile:
         return SettingsFile(
             saved_at=raw.get("saved_at"), agency=agency, carers=carers, clients=clients,
             carer_name_matches=matches, tolerance_defaulted=tolerance_defaulted,
+            client_schedules=parse_client_schedules(raw.get("client_schedules")),
         )
 
 

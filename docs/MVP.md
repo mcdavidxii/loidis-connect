@@ -69,6 +69,20 @@ Both modes read the same inputs and show the same overview against the current r
 
 ## The weekly loop
 
+**Early draft, then final check (client schedules).** CareLineLive has no API or export for client schedule entries, so
+the app learns each client's regular visits from past bookings (**Learn schedules**: one or more past weeks of bookings
+CSVs and the client list). The coordinator confirms or corrects them (the app flags clients whose schedule changed in
+CareLineLive, suspended clients, and one-off visits), and they are kept in the settings file. Then:
+
+- **Draft:** before CareLineLive has generated the week, run a **new rota** from the confirmed schedules for a chosen Monday.
+  It is labelled as a draft, has no booking IDs, and says which clients are missing a schedule or unconfirmed. Export it to
+  start arranging cover early.
+- **Final check:** when CareLineLive has generated the bookings, upload them with the draft's allocation file. The run starts
+  from the draft plan (improve mode) and reports which bookings were **added**, **removed** or **retimed** compared with the draft.
+  Apply the changes list as usual.
+
+Schedules can drift from reality, so the draft is a head start, not the rota; the change flags and the final check are how drift is caught.
+
 1. The coordinator generates next week's bookings in CareLineLive, as today.
 2. **Upload:** the week's optimised bookings CSV (it carries booking and client IDs) and
    the settings file kept from last week (none on the first run). The app pulls carers,
@@ -161,7 +175,7 @@ explanation of each:
 | Arrival tolerance (Improve my rota only) | 15 min (placeholder: to confirm with the coordinator and Loidis's contracts; not a regulatory or contractual standard) | A visit that keeps its carer and moves by no more than this is a note, not a change to apply |
 | Pay rate, mileage rate, travel time paid | Engine defaults until the coordinator confirms | Used to cost travel |
 
-Teams are planned separately (Leeds; Dorset = Dorchester and Weymouth), as in the trial.
+Teams are planned separately: **Leeds** and **Weymouth**, where Weymouth also covers the Dorchester team (the agency has three CareLineLive teams). A carer with no team in CareLineLive is not planned (warning).
 
 ### 3. Run
 - Choose **New rota** or **Improve my rota**, and the week.

@@ -1,8 +1,10 @@
 "use client";
 
+import { addDays, niceDate } from "@/lib/time";
+import { nextMondays } from "@/lib/schedules";
 import { useApp } from "./AppProvider";
 import { IconLock, IconPlay, IconRerun } from "./icons";
-import { Button, Notice, PageHeader, RadioRow, Section } from "./ui";
+import { Button, Notice, PageHeader, RadioRow, Section, inputCls } from "./ui";
 
 const COSTS: { pence: number; label: string; text: string }[] = [
   { pence: 300, label: "More changes", text: "Biggest savings, longest list" },
@@ -18,7 +20,16 @@ const SEARCH = [
 
 export function RunStep() {
   const app = useApp();
-  const { mode, setMode, settings, setSettings, running, runState, runError, bookings, locks } = app;
+  const { mode, setMode, settings, setSettings, running, runState, runError, bookings, locks, source, setSource, weekStart, setWeekStart, draftFile } = app;
+  const fromSchedules = source === "schedules";
+  const sch = settings.client_schedules;
+  const scheduleCounts = {
+    confirmed: settings.clients.filter((c) => sch[c.id]?.confirmed).length,
+    unconfirmed: settings.clients.filter((c) => sch[c.id] && !sch[c.id].confirmed).length,
+    missing: settings.clients.filter((c) => !sch[c.id]).length,
+  };
+  const mondays = [...new Set([...nextMondays(8), weekStart])].sort();
+  const canRun = fromSchedules ? settings.clients.length > 0 && Boolean(weekStart) : Boolean(bookings);
   const lockCount = Object.keys(locks).length;
   const pct = Math.round((runState?.progress ?? 0) * 100);
 
@@ -30,7 +41,7 @@ export function RunStep() {
         actions={
           <>
             {app.result && !running && <Button onClick={() => app.setStep("review")}>Back to suggestions</Button>}
-            <Button variant="primary" onClick={() => void app.start()} disabled={!bookings || running}>
+            <Button variant="primary" onClick={() => void app.start()} disabled={!canRun || running}>
               {app.result ? <IconRerun aria-hidden className="h-4 w-4" /> : <IconPlay aria-hidden className="h-4 w-4" />}
               {running ? "Planning" : app.result ? "Make suggestions again" : "Make suggestions"}
             </Button>
@@ -38,7 +49,7 @@ export function RunStep() {
         }
       />
 
-      {!bookings && (
+      {!fromSchedules && !bookings && (
         <div className="mb-6">
           <Notice tone="warn" title="No bookings file yet">
             Upload the week&apos;s bookings CSV first.{" "}
@@ -49,15 +60,60 @@ export function RunStep() {
         </div>
       )}
 
+      <Section title="What do you want to plan?">
+        <fieldset className="grid gap-2 sm:grid-cols-2">
+          <legend className="sr-only">What to plan</legend>
+          <RadioRow name="source" checked={!fromSchedules} onChange={() => setSource("bookings")} title="This week's bookings" text="Upload them on the Upload screen" />
+          <RadioRow name="source" checked={fromSchedules} onChange={() => setSource("schedules")} title="A future week from client schedules (draft)" text="Plan a week CareLineLive has not generated yet" />
+        </fieldset>
+        {fromSchedules && (
+          <div className="mt-4 space-y-3">
+            <label className="block text-sm">
+              <span className="mb-1 block font-semibold">Week starting (Monday)</span>
+              <select className={`${inputCls} w-full max-w-xs`} value={weekStart} onChange={(e) => setWeekStart(e.target.value)}>
+                {mondays.map((m) => (
+                  <option key={m} value={m}>
+                    {niceDate(m)} to {niceDate(addDays(m, 6))}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="text-sm text-muted">This is a draft until CareLineLive generates the week. Plan the real bookings when they exist, and check them against this draft.</p>
+            <dl className="flex flex-wrap gap-x-8 gap-y-2">
+              <div>
+                <dt className="text-xs text-muted">Clients with confirmed schedules</dt>
+                <dd className="text-base font-semibold">{scheduleCounts.confirmed}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted">Not confirmed yet</dt>
+                <dd className="text-base font-semibold">{scheduleCounts.unconfirmed}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted">No schedule (left out)</dt>
+                <dd className="text-base font-semibold">{scheduleCounts.missing}</dd>
+              </div>
+            </dl>
+            {(scheduleCounts.unconfirmed > 0 || scheduleCounts.missing > 0) && (
+              <Notice tone="warn" title="Some schedules need attention">
+                <button type="button" className="text-brand-strong underline" onClick={() => app.setStep("schedules")}>
+                  Go to Schedules
+                </button>{" "}
+                to confirm or add them.
+              </Notice>
+            )}
+          </div>
+        )}
+      </Section>
+
       <Section title="What do you want?">
         <fieldset className="grid gap-2 sm:grid-cols-2">
           <legend className="sr-only">What to plan</legend>
-          <RadioRow name="mode" checked={mode === "new"} onChange={() => setMode("new")} title="Plan the whole week" text="Plan every booking from scratch" />
-          <RadioRow name="mode" checked={mode === "improve"} onChange={() => setMode("improve")} title="Improve my rota" text="Suggest a short list of changes to your rota" />
+          <RadioRow name="mode" checked={mode === "new"} onChange={() => setMode("new")} title="Plan the whole week" text={fromSchedules ? "A draft is always the whole week" : draftFile ? "Not available while a draft is uploaded" : "Plan every booking from scratch"} disabled={fromSchedules || Boolean(draftFile)} />
+          <RadioRow name="mode" checked={mode === "improve" && !fromSchedules} onChange={() => setMode("improve")} title="Improve my rota" text={draftFile ? "Chosen because you uploaded a draft to check against" : "Suggest a short list of changes to your rota"} disabled={fromSchedules} />
         </fieldset>
       </Section>
 
-      {mode === "improve" && (
+      {mode === "improve" && !fromSchedules && (
         <Section
           title="How many changes?"
           info="A change is only suggested if it saves enough to be worth making by hand. The options mean about £3, £5, £10 or £20 saved per change; a carer's paid time costs about 21p a minute, so £10 is roughly 48 minutes. A lower amount gives a longer list."

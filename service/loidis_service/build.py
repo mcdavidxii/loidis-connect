@@ -1,5 +1,5 @@
 """Turn the bookings, the CareLineLive data and the settings file into one engine problem per
-planning region (Leeds; Dorset = Dorchester + Weymouth by default).
+planning region (Leeds; Weymouth, which includes the Dorchester team, by default).
 
 Follows tools/shadow_trial/prepare_inputs.py and build_problem.py, with the settings file in
 place of the trial's placeholders:
@@ -66,6 +66,7 @@ class RegionBuild:
     carer_notes: dict[str, list[str]]  # carer id -> issues to show
     routing: object = None  # RoutingInfo for this region
     client_display: dict[str, str] = field(default_factory=dict)  # client id -> "Surname, I" (result only)
+    left_out_current: dict[str, list[str]] = field(default_factory=dict)  # visit id -> carers (no team) left out of planning
 
 
 @dataclass
@@ -76,6 +77,8 @@ class Build:
     seconds_per_day: int
     mode: str
     notices: list[dict] = field(default_factory=list)  # information, not warnings
+    draft: bool = False  # made from client schedules, not from generated CareLineLive bookings
+    carer_names: dict[str, str] = field(default_factory=dict)  # carer id -> display name (all candidates)
 
 
 def _pad_blocks(blocks: list[Block], critical: list, week_start: date, home: Location, mode: str) -> int:
@@ -165,7 +168,11 @@ def build(
     change_cost_pence: int,
     locks: dict[str, str],
     continuity: bytes | None,
+    schedule_info: dict | None = None,
 ) -> Build:
+    """`schedule_info` is set for a draft made from client schedules (the bookings are generated):
+    {"unconfirmed": n, "suspended": n, "clients_with_schedule": {client ids}}."""
+    draft = schedule_info is not None
     warnings: list[dict] = []
 
     def warn(code: str, message: str) -> None:
@@ -251,19 +258,26 @@ def build(
         return {region_of_team[t.lower()] for t in teams_of(cid) if t.lower() in region_of_team}
 
     candidate_ids = {c.id for c in settings.carers} | set(cur_regions)
+    # A carer with no team (in the settings file or CareLineLive) is left out of planning entirely.
+    # Visits they are on in the current rota become unallocated in the suggested rota.
+    left_out = {
+        cid for cid in candidate_ids
+        if not teams_of(cid) and ((sc0 := settings.carer(cid)) is None or sc0.active or cid in cur_regions)
+    }
+    candidate_ids -= left_out
     order_idx = {r: i for i, r in enumerate(region_order)}
     visits_of_carer_all: dict[str, dict[str, list[Booking]]] = defaultdict(lambda: defaultdict(list))
     for r, bs_ in visits_by_region.items():
         for b_ in bs_:
             for n in b_.carer_names:
-                visits_of_carer_all[matches[n]][r].append(b_)
+                if matches[n] not in left_out:
+                    visits_of_carer_all[matches[n]][r].append(b_)
     largest = max(region_order, key=lambda r: len(visits_by_region[r]))
     # A carer's home region is where they have most visits on the current rota (ties: the
     # earlier region); with no current visits, the region of their settings team. In any other
     # region where they have visits they are a guest (see the region loop).
     home_of: dict[str, str] = {}
     guest_of: dict[str, set[str]] = {}
-    no_team: list[str] = []
     for cid in sorted(candidate_ids):
         vr = visits_of_carer_all.get(cid)
         if vr:
@@ -274,17 +288,19 @@ def build(
         regs = [r for r in dict.fromkeys(
             region_of_team[t.lower()] for t in teams_of(cid) if t.lower() in region_of_team)
             if r in visits_by_region]
-        sc = settings.carer(cid)
         if regs:
             home_of[cid] = regs[0]
-        elif sc and sc.active and (sc.has_hours() or sc.available_any_time) and not teams_of(cid):
-            home_of[cid] = largest  # no team known, no visits: the busiest region
-            no_team.append(cid)
-    if no_team:
-        warn("carer_no_team",
-             f"{len(no_team)} carer(s) have no team in the settings file or CareLineLive and no "
-             f"visits this week, so they were placed in the region with the most visits "
-             f"({largest}): {_ids(no_team)}.")
+    if left_out:
+        n_visits = sum(
+            1 for bs_ in visits_by_region.values() for b_ in bs_
+            if any(matches[n] in left_out for n in b_.carer_names))
+        n = len(left_out)
+        msg = (f"{n} carers have no team in CareLineLive, so they were left out of the rota."
+               if n != 1 else "1 carer has no team in CareLineLive, so they were left out of the rota.")
+        if n_visits:
+            msg += (f" {n_visits} booking(s) they are on in the current rota are not kept with them: they are "
+                    "unallocated in the current rota, and the plan gives them to other carers where it can.")
+        warn("carer_no_team", f"{msg} Carers: {_ids(sorted(left_out))}.")
     cross = sorted(cid for cid, g in guest_of.items() if g)
     if cross:
         warn("cross_region_carers",
@@ -295,7 +311,7 @@ def build(
              "to them), so those visits are not moved.")
 
     display: dict[str, str] = {}
-    for cid in candidate_ids:
+    for cid in candidate_ids | left_out:
         sc = settings.carer(cid)
         display[cid] = (sc.name if sc and sc.name else "") or (
             api_carer[cid].display_name if cid in api_carer else "") or next(
@@ -323,7 +339,11 @@ def build(
                  f"The Continuity report had {stats['rows']} row(s) and none could be matched to "
                  "clients and carers; the current rota was used for familiar carers instead.")
             report_recent = None
-    if report_recent is None:
+    if report_recent is None and draft:
+        warn("no_continuity",
+             "No usable Continuity report was uploaded, and a draft has no current rota, so no carer is "
+             "counted as familiar to any client.")
+    elif report_recent is None:
         warn("no_continuity",
              "No usable Continuity report was uploaded, so the carers on the current rota are "
              "counted as familiar to each client. Continuity figures are only as good as that.")
@@ -389,7 +409,8 @@ def build(
         visits_of_carer: dict[str, list[Booking]] = defaultdict(list)
         for b in bs:
             for n in b.carer_names:
-                visits_of_carer[matches[n]].append(b)
+                if matches[n] not in left_out:
+                    visits_of_carer[matches[n]].append(b)
 
         # --- carers
         carers: list[Carer] = []
@@ -501,7 +522,8 @@ def build(
         current_by_client: dict[str, set[str]] = defaultdict(set)
         for b in bs:
             for n in b.carer_names:
-                current_by_client[b.client_id].add(matches[n])
+                if matches[n] not in left_out:
+                    current_by_client[b.client_id].add(matches[n])
         clients: list[Client] = []
         for cid in client_ids:
             ss = settings.client(cid)
@@ -533,11 +555,14 @@ def build(
         visits: list[Visit] = []
         meta: dict[str, VisitMeta] = {}
         current: dict[str, list[str]] = {}
+        left_cur: dict[str, list[str]] = {}
         for b in sorted(bs, key=lambda b: (b.day, b.start, b.booking_id)):
             ss = client_settings[b.client_id]
             critical = bool(ss and b.booking_type in ss.time_critical_booking_types)
-            cur = [matches[n] for n in b.carer_names]
-            cur = list(dict.fromkeys(cur))
+            cur = list(dict.fromkeys(matches[n] for n in b.carer_names))
+            if any(k in left_out for k in cur):
+                left_cur[b.booking_id] = [k for k in cur if k in left_out]
+                cur = [k for k in cur if k not in left_out]
             current[b.booking_id] = cur
             lock_to = locks.get(b.booking_id)
             locked_carers: list[str] = []
@@ -590,7 +615,9 @@ def build(
                 name=region, problem=problem, visit_meta=meta, client_ref=client_ref,
                 carer_name={c.id: display[c.id] for c in carers}, current=current, routing=rinfo,
                 not_planned=not_planned, carer_notes=notes,
-                client_display={b.client_id: short_client_name(b.client_name) for b in bs},
+                client_display={
+                    b.client_id: short_client_name(b.client_name) or (b.client_ref if b.generated else "") for b in bs},
+                left_out_current={k: [display[x] for x in v] for k, v in left_cur.items()},
             )
         )
 
@@ -646,10 +673,28 @@ def build(
             warn("routing_partial",
                  f"{off} place(s) are too far from a mapped road (outside the map area), so estimated travel "
                  "was used for trips to or from them.")
+    if draft:
+        notices.insert(0, {
+            "code": "draft_from_schedules",
+            "message": "Draft from client schedules \u2013 bookings for this week are not generated in CareLineLive yet."})
+        info = schedule_info or {}
+        if info.get("unconfirmed"):
+            warn("schedule_unconfirmed",
+                 f"{info['unconfirmed']} client schedule(s) are not confirmed yet, so those clients are left "
+                 "out of this draft.")
+        with_sched = info.get("clients_with_schedule", set())
+        missing = [c for c in api.clients if c.id not in with_sched and c.id not in info.get("suspended_ids", set())]
+        if missing:
+            warn("schedule_missing",
+                 f"{len(missing)} clients have no schedule yet, so they are not in this draft.")
+        if info.get("suspended"):
+            notices.append({
+                "code": "clients_suspended",
+                "message": f"{info['suspended']} suspended client(s) were left out of this draft."})
     any_ids = sorted(set(any_time_ids))
     if any_ids:
         notices.append({
             "code": "available_any_time",
             "message": f"{len(any_ids)} carer(s) are available any time (no working hours set), so "
                        f"their hours are chosen in the plan: {_ids(any_ids)}."})
-    return Build(week_start, regions, warnings, seconds, mode, notices)
+    return Build(week_start, regions, warnings, seconds, mode, notices, draft=draft, carer_names=display)

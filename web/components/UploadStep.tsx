@@ -182,7 +182,7 @@ export function UploadStep() {
       />
       {sampleError && <Notice tone="bad" title={sampleError} />}
 
-      <div className="mb-8 grid gap-3 md:grid-cols-3">
+      <div className="mb-8 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <DropZone
           id="bookings-file"
           title="Bookings CSV"
@@ -210,7 +210,21 @@ export function UploadStep() {
           onFile={app.setContinuity}
           onClear={() => app.setContinuity(null)}
         />
+        <DropZone
+          id="draft-file"
+          title="Draft plan from earlier (allocation.csv)"
+          hint="Upload the draft you made from schedules to check it against the real bookings."
+          accept=".csv,text/csv"
+          file={app.draftFile}
+          onFile={app.setDraftFile}
+          onClear={() => app.setDraftFile(null)}
+        />
       </div>
+      {app.draftFile && (
+        <div className="mb-6">
+          <Notice title="Checking against a draft">Improve my rota is chosen automatically, and the Suggestions screen shows what changed since the draft.</Notice>
+        </div>
+      )}
       {settingsError && (
         <div className="mb-6">
           <Notice tone="bad" title="The settings file could not be used">

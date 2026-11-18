@@ -3,7 +3,9 @@
 
 import { parseCsv, toCsv } from "../csv";
 import { toMins } from "../time";
-import type { RunResult, RunState, SettingsFile, SyncResult } from "../types";
+import type { RunResult, RunState, RunWarning, SettingsFile, SyncResult } from "../types";
+import { LEARN_WEEKS, checkDraft, learnFromFiles, sampleClientListCsv, sampleLearnBookingsCsv, suspendedFromList, visitsFromSchedules } from "./schedules";
+import { isMonday } from "../schedules";
 import { validateSettings } from "../settings";
 import { getAgency, exampleSettings, isoDate } from "./agency";
 import { runMock, sampleBookingRows } from "./engine";
@@ -74,7 +76,7 @@ function sampleBookingsCsv(): string {
   });
   // Two cancelled rows, to show the count on the Upload screen.
   const wk = getAgency().weekStart;
-  [["B19001", "C01", 2, "15:00", "15:30", "Tea Visit", "Leeds"], ["B19002", "C09", 4, "12:00", "12:30", "Lunch Visit", "Dorset"]].forEach(
+  [["B19001", "C01", 2, "15:00", "15:30", "Tea Visit", "Leeds"], ["B19002", "C09", 4, "12:00", "12:30", "Lunch Visit", "Weymouth"]].forEach(
     ([id, cid, day, s0, e0, type, team]) => {
       const c = getAgency().clients.find((x) => x.id === cid)!;
       rows.push([
@@ -108,6 +110,26 @@ export async function handleMock(req: Request, path: string[]): Promise<Response
     if (b === "settings.json") {
       return download(JSON.stringify(exampleSettings(), null, 2), "sample-settings.json", "application/json");
     }
+  }
+
+  if (a === "sample" && method === "GET") {
+    const m = /^learn-bookings-(\d)\.csv$/.exec(b ?? "");
+    if (m && Number(m[1]) >= 1 && Number(m[1]) <= LEARN_WEEKS) {
+      const f = sampleLearnBookingsCsv(Number(m[1]));
+      return download(f.csv, f.name, "text/csv");
+    }
+    if (b === "client-list.csv") return download(sampleClientListCsv(), "sample-client-list.csv", "text/csv");
+  }
+
+  if (a === "schedules" && b === "learn" && method === "POST") {
+    const form = await req.formData().catch(() => null);
+    if (!form) return json({ error: "Expected a multipart form." }, 400);
+    const files = form.getAll("bookings").filter((f): f is File => f instanceof File && f.size > 0);
+    if (files.length === 0) return json({ error: "Upload at least one bookings CSV." }, 400);
+    const list = form.get("client_list");
+    const out = await learnFromFiles(files, list instanceof File && list.size > 0 ? list : null, await readSettings(form));
+    if (typeof out === "string") return json({ error: out }, 422);
+    return json(out);
   }
 
   if (a === "sync" && method === "POST") {
@@ -144,10 +166,22 @@ export async function handleMock(req: Request, path: string[]): Promise<Response
   if (a === "runs" && !b && method === "POST") {
     const form = await req.formData().catch(() => null);
     if (!form) return json({ error: "Expected a multipart form." }, 400);
+    const source = form.get("source") === "schedules" ? "schedules" : "bookings";
     const bookings = form.get("bookings");
-    const mode = form.get("mode");
-    if (!(bookings instanceof File) || bookings.size === 0) return json({ error: "The bookings CSV is required." }, 400);
+    let mode = form.get("mode");
+    const draftFile = form.get("draft");
+    const hasDraft = draftFile instanceof File && draftFile.size > 0;
+    const weekStart = String(form.get("week_start") ?? "");
+    if (source === "bookings") {
+      if (!(bookings instanceof File) || bookings.size === 0) return json({ error: "The bookings CSV is required." }, 400);
+      if (hasDraft) mode = "improve";
+    } else {
+      if (!isMonday(weekStart)) return json({ error: "week_start must be a Monday (YYYY-MM-DD)." }, 400);
+      if (mode === "improve") return json({ error: "Improve my rota needs the bookings that are already in CareLineLive. A draft from client schedules can only make a new rota." }, 422);
+      mode = "new";
+    }
     if (mode !== "new" && mode !== "improve") return json({ error: "mode must be 'new' or 'improve'." }, 400);
+    const runMode: "new" | "improve" = mode;
     const cost = Number(form.get("change_cost_pence") ?? 1000);
     let locks: Record<string, string> = {};
     try {
@@ -159,7 +193,27 @@ export async function handleMock(req: Request, path: string[]): Promise<Response
     const id = crypto.randomUUID();
     const stored: StoredRun = { created: Date.now() };
     try {
-      stored.result = runMock({ mode, changeCostPence: Number.isFinite(cost) ? cost : 1000, settings: await readSettings(form), locks });
+      const settings = await readSettings(form);
+      const base = { mode: runMode, changeCostPence: Number.isFinite(cost) ? cost : 1000, settings, locks };
+      if (source === "schedules") {
+        if (!settings) return json({ error: "A draft needs the settings file (it holds the client schedules)." }, 422);
+        const listFile = form.get("client_list");
+        const d = visitsFromSchedules(weekStart, settings, await suspendedFromList(listFile instanceof File && listFile.size > 0 ? listFile : null));
+        if (d.visits.length === 0) return json({ error: "No confirmed client schedule has a visit in that week." }, 422);
+        const extraWarnings: RunWarning[] = [];
+        if (d.missing) extraWarnings.push({ code: "schedule_missing", message: `${d.missing} clients have no schedule yet, so they are not in this draft.` });
+        if (d.unconfirmed) extraWarnings.push({ code: "schedule_unconfirmed", message: `${d.unconfirmed} client schedule(s) are not confirmed yet, so those clients are left out of this draft.` });
+        const notices = [{ code: "draft_from_schedules", message: "Draft from client schedules – bookings for this week are not generated in CareLineLive yet." }];
+        if (d.suspended) notices.push({ code: "clients_suspended", message: `${d.suspended} suspended client(s) are left out of this draft.` });
+        stored.result = runMock({ ...base, draft: { visits: d.visits, weekStart }, extraWarnings, notices });
+      } else {
+        stored.result = runMock(base);
+        if (hasDraft) {
+          const check = await checkDraft(draftFile as File);
+          if (typeof check === "string") stored.error = check;
+          else stored.result.draft_check = check;
+        }
+      }
     } catch {
       stored.error = "Something went wrong while making suggestions.";
     }

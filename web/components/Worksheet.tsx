@@ -10,6 +10,7 @@ import { Badge, tdCls, thCls } from "./ui";
 
 function CopyId({ id }: { id: string }) {
   const [copied, setCopied] = useState(false);
+  if (!id) return <span className="text-xs text-muted">not generated yet</span>;
   return (
     <span className="inline-flex items-center gap-1">
       <code className="font-mono text-xs">{id}</code>

@@ -8,9 +8,10 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import date
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -19,10 +20,12 @@ from . import config
 from .bookings import monday_of, parse_bookings, require_valid
 from .cll import fetch_api_data
 from .continuity import parse_continuity
+from .draftcheck import parse_draft
 from .errors import ServiceError
 from .matching import match_carers
 from .result import allocation_csv, changes_csv, notes_csv
 from .runs import RunStore
+from .schedules import learn, parse_client_list, scheduled_bookings
 from .settings_file import SettingsFile
 
 log = logging.getLogger("loidis_service")
@@ -61,6 +64,20 @@ async def _file(form, name: str, required: bool = False) -> bytes | None:
             raise ServiceError(f"The {name} file is empty.", 400)
         return None
     return data
+
+
+async def _files(form, name: str) -> list[bytes]:
+    """Every uploaded file under one field name (a field may be repeated)."""
+    out = []
+    for f in form.getlist(name):
+        if isinstance(f, str):
+            continue
+        data = await f.read()
+        if len(data) > config.MAX_UPLOAD_MB * 1024 * 1024:
+            raise ServiceError(f"A {name} file is larger than {config.MAX_UPLOAD_MB:g} MB.", 413)
+        if data:
+            out.append(data)
+    return out
 
 
 def create_app(store: RunStore | None = None) -> FastAPI:
@@ -116,12 +133,36 @@ def create_app(store: RunStore | None = None) -> FastAPI:
     @app.post("/runs", status_code=201)
     async def create_run(request: Request):
         form = await _read_form(request)
-        bookings = await _file(form, "bookings", required=True)
+        source = form.get("source") or "bookings"
+        if source not in ("bookings", "schedules"):
+            raise ServiceError("source must be 'bookings' or 'schedules'.", 400)
+        schedules = source == "schedules"
+        bookings = await _file(form, "bookings", required=not schedules)
         settings = await _file(form, "settings")
         continuity = await _file(form, "continuity")
-        mode = form.get("mode")
+        client_list = await _file(form, "client_list")
+        draft = await _file(form, "draft")
+        mode = form.get("mode") or ("new" if schedules else None)
         if mode not in ("new", "improve"):
             raise ServiceError("mode must be 'new' or 'improve'.", 400)
+        week_start = None
+        if schedules:
+            if mode == "improve":
+                raise ServiceError(
+                    "Improve my rota needs the bookings that are already in CareLineLive. A draft from client "
+                    "schedules can only make a new rota.", 422)
+            if draft:
+                raise ServiceError("A draft can only be checked against the real week's bookings, not made from schedules.", 422)
+            try:
+                week_start = date.fromisoformat(str(form.get("week_start") or ""))
+            except ValueError:
+                raise ServiceError("week_start must be a Monday, as YYYY-MM-DD.", 400) from None
+            if week_start.weekday() != 0:
+                raise ServiceError("week_start must be a Monday, as YYYY-MM-DD.", 400)
+            if not settings:
+                raise ServiceError("A draft from client schedules needs the settings file (it holds the schedules).", 422)
+        elif draft:
+            mode = "improve"  # the final check starts from the draft plan, so it is an improve run
         try:
             cost = int(float(form.get("change_cost_pence") or 1000))
         except (TypeError, ValueError):
@@ -136,16 +177,36 @@ def create_app(store: RunStore | None = None) -> FastAPI:
             except ValueError:
                 raise ServiceError("locks must be a JSON object of booking ID to carer ID.", 400) from None
         # cheap checks now, so a bad file is a 4xx at once rather than a failed run later
-        require_valid(bookings)
-        if settings:
-            SettingsFile.from_json(settings)
+        if bookings and not schedules:
+            require_valid(bookings)
+        parsed = SettingsFile.from_json(settings) if settings else None
         if continuity:
             parse_continuity(continuity)
+        if draft:
+            parse_draft(draft)
+        if schedules:
+            rows = parse_client_list(client_list) if client_list else []
+            made, _ = scheduled_bookings(parsed, week_start, {r["ref"] for r in rows if r["suspended"]})
+            if not made:
+                raise ServiceError("No confirmed client schedule has a visit in that week.", 422)
         run = runs().create(
             {"bookings": bookings, "settings": settings, "continuity": continuity, "mode": mode,
-             "change_cost_pence": cost, "locks": locks}
+             "change_cost_pence": cost, "locks": locks, "source": source, "week_start": week_start,
+             "client_list": client_list, "draft": draft}
         )
         return _json({"run_id": run.id}, 201)
+
+    @app.post("/schedules/learn")
+    async def schedules_learn(request: Request):
+        """Learn client schedules from one or more bookings CSVs (any number of weeks)."""
+        form = await _read_form(request)
+        files = await _files(form, "bookings")
+        if not files:
+            raise ServiceError("The bookings file is required.", 400)
+        client_list = await _file(form, "client_list")
+        settings_raw = await _file(form, "settings")
+        settings = SettingsFile.from_json(settings_raw) if settings_raw else None
+        return _json(learn(files, client_list, settings))
 
     @app.post("/validate")
     async def validate(request: Request):
@@ -272,6 +333,21 @@ def create_app(store: RunStore | None = None) -> FastAPI:
 
         # without the nickname match, so the name-matching step has something to confirm
         return _download(json.dumps(fake_data.settings_dict(all_matches=False), indent=2), "sample-settings.json", "application/json")
+
+    @app.get("/sample/learn-bookings-{n}.csv")
+    async def sample_learn_bookings(n: int):
+        """Made-up past weeks (1-4) for the Schedules step's "Use sample files"."""
+        from . import fake_data
+
+        if not 1 <= n <= len(fake_data.SCHEDULE_WEEKS):
+            raise HTTPException(status_code=404, detail="No such sample week.")
+        return _download(fake_data.schedule_week_csv(n - 1), f"sample-bookings-week-{n}.csv", "text/csv")
+
+    @app.get("/sample/client-list.csv")
+    async def sample_client_list():
+        from . import fake_data
+
+        return _download(fake_data.client_list_csv(), "sample-client-list.csv", "text/csv")
 
     return app
 

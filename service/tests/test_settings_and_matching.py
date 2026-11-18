@@ -16,7 +16,7 @@ def test_round_trip(files):
     s = SettingsFile.from_json(files["settings"])
     again = SettingsFile.from_json(s.to_json())
     assert again.to_dict() == s.to_dict()
-    assert s.agency["team_regions"] == {"Leeds": "Leeds", "Dorchester": "Dorset", "Weymouth": "Dorset"}
+    assert s.agency["team_regions"] == {"Leeds": ["Leeds"], "Weymouth": ["Weymouth", "Dorchester"]}
     night = s.carer("K005")
     assert night.blocks(4) == [(1320, 1860)]  # Friday 22:00 to 07:00 runs into Saturday
 
@@ -25,10 +25,10 @@ def test_defaults_when_agency_is_partial():
     raw = {"version": 1, "carers": [], "clients": [], "agency": {"search_seconds_per_day": 5}}
     s = SettingsFile.from_dict(raw)
     assert s.agency["move_window_minutes"] == 30 and s.agency["search_seconds_per_day"] == 5
-    assert s.team_regions["Weymouth"] == "Dorset"
+    assert s.team_regions["Weymouth"] == "Weymouth" and s.team_regions["Dorchester"] == "Weymouth"
 
 
-@pytest.mark.parametrize("raw", [{"version": 2, "carers": [], "clients": []}, [], {"version": 1, "carers": "x", "clients": []}])
+@pytest.mark.parametrize("raw", [{"version": 3, "carers": [], "clients": []}, [], {"version": 1, "carers": "x", "clients": []}])
 def test_bad_files(raw):
     with pytest.raises(ServiceError):
         SettingsFile.from_dict(raw)
@@ -65,7 +65,7 @@ def test_regions_follow_the_team_mapping(files):
     rows, _ = parse_bookings(files["bookings"])
     s = SettingsFile.from_json(files["settings"])
     b = build(rows, fetch_api_data(), s, "new", 0, {}, None)
-    assert {r.name for r in b.regions} == {"Leeds", "Dorset"}
+    assert {r.name for r in b.regions} == {"Leeds", "Weymouth"}
     s.agency["team_regions"] = {"Leeds": "North", "Dorchester": "South", "Weymouth": "South"}
     b = build(rows, fetch_api_data(), s, "new", 0, {}, None)
     assert {r.name for r in b.regions} == {"North", "South"}
