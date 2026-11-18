@@ -536,8 +536,8 @@ export function SchedulesStep() {
                                   </span>
                                 </div>
                                 {!s && !sus && <p className="mt-1 text-xs text-warn">New client – no schedule yet</p>}
-                                {fl.map((f) => (
-                                  <p key={f.kind} className="mt-1 text-xs text-warn">
+                                {fl.map((f, i) => (
+                                  <p key={`${f.kind}-${i}`} className="mt-1 text-xs text-warn">
                                     {flagText(f)}
                                   </p>
                                 ))}
