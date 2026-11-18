@@ -59,6 +59,25 @@ published.** Prototype code: [`../engine/`](../engine/).
   carers' hours first; on the same data this cut travel 8% and filled 2 more visits)
 - Unused contracted time (paid anyway) and time beyond contract
 - Moving a visit off its booked start: `shift_pence_per_min` pence per minute of difference (default 0, so any start inside the visit's window is free). Same units as the travel and hours costs above, so 15 means a 20-minute move costs the same as 300p of travel. A double-up is charged once; sickness-cover pins are not charged
+- Changing a visit's carer: `change_pence_per_visit` pence for each carer slot filled by someone not in the visit's `current_carers` (default 0 = ignore the current allocation). Applied on the arcs into the visit's stop, the same way as the continuity penalty, so swapping one carer of a double-up costs one change. Visits with no current carers (unallocated) have no change cost.
+
+### Two modes
+
+- **New rota** (no `current_carers`, or `change_pence_per_visit` 0): plans the week from scratch.
+- **Improve my rota** (`current_carers` set from the coordinator's allocation and `change_pence_per_visit` above 0): starts from the current allocation and changes a carer only when the saving in travel, hours balance or continuity beats the change cost. The report adds per visit `current_carers`, `carer_changed`, `time_changed` and a `change_reason` hint (`fills_unallocated`, `replaces_current`), and the metrics `visits_carer_changed`, `visits_time_changed_only` and `visits_unchanged`.
+
+### Change classes (Improve my rota)
+
+Each visit with carers gets a `change_class`:
+
+- `carer`: the carers differ from `current_carers`, or the visit was unallocated. Also has `new_time_needed` (shift from the booked start beyond `arrival_tolerance_minutes`): false means "keep the booked time", true means "change the time to HH:MM".
+- `time_with_change`: same carers, start shifted beyond the tolerance, and a carer on it gains or loses another visit that day (must be applied too).
+- `time_note`: same carers, shifted beyond the tolerance, carer-day untouched (only fits the travel model).
+- `time_within_tolerance`: same carers, shifted by no more than the tolerance (a note).
+- `unchanged`.
+
+Metrics: `changes_to_apply` = `carer` + `time_with_change`; also `time_notes`, `time_within_tolerance` and `carer_changes_new_time`.
+- `arrival_tolerance_minutes` (default 0 = any shift counts): reporting only, the solver ignores it. In Improve my rota, a visit whose carer is unchanged and whose start differs from the booked start by no more than this is classed `time_within_tolerance` (a note, not a change to apply). Default value for the coordinator-facing tool is a placeholder to confirm.
 - A very large penalty for any unfilled visit, so filling visits always comes first
 
 ## Sickness cover
@@ -77,9 +96,15 @@ you approve"). The coordinator decides; the engine never books them.
 
 ## Travel times
 
-- Prototype: straight-line distance times a road factor, at typical speeds per mode.
-- Next: road routing, either Google Maps (live traffic, paid per request) or a
-  self-hosted OSRM server (free, no live traffic). Cache results between postcodes.
+- Default (the estimate): straight-line distance times a road factor (1.35), at typical speeds per mode.
+- Travel is pluggable (`loidis_rota/travel.py`): a `TravelProvider` gives minutes and miles for a pair of
+  places and a mode. `problem.travel` holds it (default `EstimateTravel`; it is not part of the Problem
+  JSON); the solver, the report and the scoring of a current rota all use it, so every plan being compared
+  uses the same figures. `solve_week(..., travel=provider)` and `cover_absence(..., travel=provider)` set it
+  for a call. `MatrixTravel(table)` holds precomputed car travel keyed by (from, to) place; a pair that is
+  not in the table, and every other mode (walking, bus), falls back to the estimate.
+- Road routing: a local OSRM server on public OpenStreetMap extracts (see `tools/routing/README.md`); the
+  service builds the table and passes a `MatrixTravel` (see `service/README.md`). Live traffic is not used.
 
 ## Open questions
 

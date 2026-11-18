@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from .models import DAYS, Problem, Visit, hhmm
 from .rules import DO_NOT_SEND, carer_rule_failure, fits_block
 from .solver import DayResult
-from .travel import travel_minutes
 
 
 def _unfilled_detail(problem: Problem, day: DayResult, visit: Visit, limit: int = 3) -> list[str]:
@@ -20,7 +19,7 @@ def _unfilled_detail(problem: Problem, day: DayResult, visit: Visit, limit: int 
             continue
         if not any(fits_block(visit, b) for b in carer.blocks_on(visit.day)):
             continue
-        candidates.append((travel_minutes(carer.home, client.location, carer.travel_mode), carer))
+        candidates.append((problem.travel.minutes(carer.home, client.location, carer.travel_mode), carer))
     candidates.sort(key=lambda x: x[0])
     for _, carer in candidates[:limit]:
         busy = [
@@ -83,11 +82,45 @@ def build_report(problem: Problem, week: list[DayResult], settings_note: str = "
             "assigned": day.assigned.get(v.id, []),
             "start": day.starts.get(v.id),
         }
+        assigned = item["assigned"]
+        item["time_changed"] = bool(assigned) and day.starts.get(v.id) != v.start
+        if v.current_carers:
+            item["current_carers"] = list(v.current_carers)
+            item["carer_changed"] = bool(assigned) and set(assigned) != set(v.current_carers)
+        elif assigned:
+            item["carer_changed"] = False
+            item["change_reason"] = "fills_unallocated"
+        if item.get("carer_changed") and v.current_carers:
+            item["change_reason"] = "replaces_current"
         if v.id in day.unfilled:
             item["unfilled_reason"] = day.unfilled[v.id]
             item["unfilled_detail"] = _unfilled_detail(problem, day, v)
             item["override_suggestions"] = _override_suggestions(problem, day, v)
         visits_out.append(item)
+
+    # improve mode: classify filled visits. A carer-day is touched when that carer gains or
+    # loses a visit compared with current_carers (unallocated visits count as gains).
+    if any(v.current_carers for v in problem.visits):
+        tol = s.arrival_tolerance_minutes
+        touched = set()
+        for item, v in zip(visits_out, problem.visits):
+            for cid in set(v.current_carers) ^ set(item["assigned"]):
+                touched.add((cid, v.day))
+        for item, v in zip(visits_out, problem.visits):
+            if not item["assigned"]:
+                continue
+            if (item.get("carer_changed") and v.current_carers) or not v.current_carers:
+                # replaces a current carer, or fills a visit the coordinator left unallocated
+                item["change_class"] = "carer"
+                item["new_time_needed"] = abs(item["start"] - v.start) > tol
+            elif item["time_changed"]:
+                if abs(item["start"] - v.start) <= tol:
+                    item["change_class"] = "time_within_tolerance"
+                    continue
+                day_touched = any((cid, v.day) in touched for cid in item["assigned"])
+                item["change_class"] = "time_with_change" if day_touched else "time_note"
+            else:
+                item["change_class"] = "unchanged"
 
     # --- per carer -----------------------------------------------------------------------
     routes_out: dict[str, dict[str, list]] = {}
@@ -204,6 +237,28 @@ def build_report(problem: Problem, week: list[DayResult], settings_note: str = "
         "visits_shifted": sum(1 for x in shifts if x),
         "mean_abs_shift_minutes": round(sum(shifts) / max(1, len(shifts)), 1),
         "max_abs_shift_minutes": max(shifts, default=0),
+        "visits_carer_changed": (
+            sum(1 for x in visits_out if x.get("change_class") == "carer")
+            if any(v.current_carers for v in problem.visits)
+            else sum(1 for x in visits_out if x.get("carer_changed") and x.get("current_carers"))
+        ),
+        "visits_time_changed_only": sum(
+            1 for x in visits_out if x["time_changed"] and not (x.get("carer_changed") and x.get("current_carers"))
+        ),
+        "visits_unchanged": sum(
+            1 for x in visits_out if x["assigned"] and not x["time_changed"] and not (x.get("carer_changed") and x.get("current_carers"))
+        ),
+        "visits_time_with_change": sum(1 for x in visits_out if x.get("change_class") == "time_with_change"),
+        "time_notes": sum(1 for x in visits_out if x.get("change_class") == "time_note"),
+        "time_within_tolerance": sum(
+            1 for x in visits_out if x.get("change_class") == "time_within_tolerance"
+        ),
+        "carer_changes_new_time": sum(
+            1 for x in visits_out if x.get("change_class") == "carer" and x.get("new_time_needed")
+        ),
+        "changes_to_apply": sum(
+            1 for x in visits_out if x.get("change_class") in ("carer", "time_with_change")
+        ),
         "clients_short": sum(1 for c in clients_out if c["gap_minutes"] > 0),
         "sleep_ins": sum(1 for v in problem.visits if v.kind == "sleep_in"),
         "sleep_ins_filled": sum(

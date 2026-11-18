@@ -70,6 +70,8 @@ class Visit:
     required_skills: list[str] = field(default_factory=list)
     locked_carers: list[str] = field(default_factory=list)
     kind: str = "care"  # "care" or "sleep_in"
+    # carers on this visit in the coordinator's current rota (improve mode); empty = unallocated
+    current_carers: list[str] = field(default_factory=list)
 
     @property
     def earliest(self) -> int:
@@ -107,7 +109,20 @@ class Settings:
     # pence per minute a visit starts away from its booked (preferred) start; 0 = moving
     # inside the visit's window is free
     shift_pence_per_min: int = 0
+    # improve mode: pence charged per carer slot filled by someone not in the visit's
+    # current_carers; 0 = ignore the current allocation (plan from scratch)
+    change_pence_per_visit: int = 0
+    # improve mode, reporting only (the solver ignores it): a visit whose carer is unchanged
+    # and whose start moves by at most this many minutes is a note, not a change to apply;
+    # 0 = any shift counts. Placeholder to confirm with the coordinator / contracts.
+    arrival_tolerance_minutes: int = 0
     unfilled_penalty: int = 10_000_000
+
+
+def _default_travel():
+    from .travel import EstimateTravel  # imported here: travel imports this module
+
+    return EstimateTravel()
 
 
 @dataclass
@@ -118,6 +133,8 @@ class Problem:
     visits: list[Visit]
     absences: list[Absence] = field(default_factory=list)
     settings: Settings = field(default_factory=Settings)
+    # travel times and distances; default is the estimate. Not saved in the Problem JSON.
+    travel: TravelProvider = field(default_factory=_default_travel, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         self.client_by_id = {c.id: c for c in self.clients}

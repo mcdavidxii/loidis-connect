@@ -37,6 +37,11 @@ continuity report (see `data/README.md`).
    - `--shift-cost` pence per minute away from the booked time (default 0)
    - `--continuity-cost` pence per visit by an unfamiliar carer (default: engine default)
    - `--continuity-file` continuity report used for recent carers
+   - `--mode new|improve` (default `new`): `new` plans from scratch; `improve` fills each
+     visit's `current_carers` from the actual allocation so the engine only changes a carer
+     when the gain beats the change cost
+   - `--change-cost` pence per changed carer slot (engine `change_pence_per_visit`, default 0;
+     only used with `--mode improve`). Mode and cost are recorded in `trial_settings`
    - `--lock-pad` minutes added around locked visits (default 90)
    - `--region leeds` / `--region dorset` (repeatable; default both)
    - `--suffix _x` added to output names, for sensitivity runs
@@ -59,6 +64,15 @@ continuity report (see `data/README.md`).
    `leeds_x_engine_report.json`, and `evaluate_actual.py` takes `leeds_x dorset_x`.
 6. `compare.py [suffix]` prints the actual-vs-engine table (counts and numbers only) and
    writes `comparison<suffix>.json` and `comparison<suffix>.md` in `data/private/trial/`.
+
+`compare.py` also reports, for the engine columns, visits with the carer changed, with only
+the time changed, unchanged, and carer-days touched (distinct carer x day pairs that gain or
+lose a visit), measured against the actual allocation.
+
+## Improve mode runs
+
+Same recommended settings plus, for example, `--mode improve --change-cost 2000 --suffix _imp2000`;
+solve, then `evaluate_actual.py leeds_imp2000 dorset_imp2000` and `compare.py _imp2000`.
 
 ## Settings of the recommended run
 

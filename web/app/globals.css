@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/*
+  Design system (single source). Soft blue-grey page, white rounded panels (12px) with a very
+  soft shadow, one calm blue accent for primary actions, selected navigation and focus,
+  semantic colours only for status as soft tints. Booking-type colours exist only inside the
+  roster. Type: system stack, 14px body, 12px meta, 16px section titles, 20px page titles,
+  weights 400 and 600 only. Spacing on a 4/8px scale, 1px borders.
+*/
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-canvas: #eef2f8;
+  --color-surface: #ffffff;
+  --color-hover: #f1f5f9;
+
+  --color-brand: #0f7b6c;
+  --color-brand-strong: #0b6457;
+  --color-brand-soft: #e6f4f1;
+
+  --color-ok: #15803d;
+  --color-ok-soft: #ecfdf3;
+  --color-warn: #a16207;
+  --color-warn-soft: #fff8e1;
+  --color-bad: #b91c1c;
+  --color-bad-soft: #fef0f0;
+  --color-info: #1d4ed8;
+  --color-info-soft: #eaf1ff;
+
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --shadow-panel: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+
+html,
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgb(15 123 108 / 0.35);
+}
+
+/* One stroke width for every icon. */
+svg.lucide {
+  stroke-width: 1.75;
+}
+
+/* ---- Roster only ---- */
+:root {
+  --bt-morning-bg: #fef3c7; --bt-morning-fg: #78350f; --bt-morning-bd: #f59e0b;
+  --bt-lunch-bg: #dcfce7;   --bt-lunch-fg: #14532d;   --bt-lunch-bd: #22c55e;
+  --bt-tea-bg: #e0f2fe;     --bt-tea-fg: #0c4a6e;     --bt-tea-bd: #38bdf8;
+  --bt-bed-bg: #ede9fe;     --bt-bed-fg: #4c1d95;     --bt-bed-bd: #8b5cf6;
+  --bt-domestic-bg: #ffe4e6; --bt-domestic-fg: #881337; --bt-domestic-bd: #fb7185;
+  --bt-respite-bg: #ccfbf1; --bt-respite-fg: #134e4a; --bt-respite-bd: #2dd4bf;
+  --bt-night-bg: #e2e8f0;   --bt-night-fg: #0f172a;   --bt-night-bd: #64748b;
+  --bt-other-bg: #f3f4f6;   --bt-other-fg: #1f2937;   --bt-other-bd: #9ca3af;
+}
+
+/* Status strips: colour plus a pattern, and always named in the legend. */
+.strip-unchanged { background: #9ca3af; }
+.strip-changed { background: #4338ca; }
+.strip-moved { background: repeating-linear-gradient(90deg, #0e7490 0 4px, transparent 4px 7px); }
+.strip-locked { background: repeating-linear-gradient(90deg, #111827 0 2px, transparent 2px 4px); }
+.strip-unallocated { background: #b45309; }
+
+.hour-line { border-left: 1px solid var(--color-line); }
+.off-hours { background: repeating-linear-gradient(135deg, #f3f4f6 0 3px, #fff 3px 8px); }
+
+/* ---- Print: the Export worksheet only, one day per page, no app chrome ---- */
+@page {
+  margin: 14mm 12mm;
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+    font-size: 10px;
+    color: #374151;
+  }
+}
+@media print {
+  html,
+  body {
+    background: #fff;
+    font-size: 11px;
+  }
+}
+
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Long lists scroll inside their panel with a sticky header. */
+.scrollbox th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-surface);
+}

@@ -56,6 +56,15 @@ def main():
     ap.add_argument("--continuity-cost", type=int, default=None,
                     help="engine setting continuity_penalty_pence (pence per visit with a carer not in recent_carers); "
                          "default: leave the engine default")
+    ap.add_argument("--mode", choices=["new", "improve"], default="new",
+                    help="new: plan from scratch; improve: start from the actual allocation (current_carers) "
+                         "and only change a carer when the gain beats --change-cost")
+    ap.add_argument("--change-cost", type=int, default=0,
+                    help="engine setting change_pence_per_visit: pence per carer slot filled by someone other "
+                         "than the current carer (used in improve mode; default 0)")
+    ap.add_argument("--arrival-tolerance", type=int, default=0,
+                    help="minutes a visit may start from its booked time (carer unchanged) and still count as a note, "
+                         "not a change (engine setting arrival_tolerance_minutes, reporting only; default 0)")
     ap.add_argument("--continuity-file", default=str(REPO / "data" / "private" / "continuity_report_2026-11-16_2026-11-22.xlsx"),
                     help="continuity report used for recent_carers (same format as the current one)")
     ap.add_argument("--region", action="append", choices=["leeds", "dorset"])
@@ -76,8 +85,11 @@ def main():
         "lock_pad_minutes": args.lock_pad,
         "equal_hours_contracted": True,
         "shift_pence_per_min": args.shift_cost,
+        "mode": args.mode,
+        "arrival_tolerance_minutes": args.arrival_tolerance,
+        "change_pence_per_visit": args.change_cost if args.mode == "improve" else 0,
         "continuity_penalty_pence": args.continuity_cost if args.continuity_cost is not None else "engine default",
-        "engine_settings": "defaults" if not (args.shift_cost or args.continuity_cost is not None) else "defaults plus overrides listed here",
+        "engine_settings": "defaults" if not (args.shift_cost or args.continuity_cost is not None or args.mode == "improve") else "defaults plus overrides listed here",
     }
 
     P = json.loads((TRIAL / "prepared.json").read_text())
@@ -156,6 +168,7 @@ def main():
                 "id": v["id"], "client_id": v["client"], "day": v["day"], "start": v["start"],
                 "window": window, "duration": v["duration"], "carers_needed": v["expected"],
                 "required_skills": [], "locked_carers": locked, "kind": "care",
+                "current_carers": list(v["carers"]) if args.mode == "improve" else [],
             })
         info["visits_partially_staffed_would_lock_left_unlocked"] = n_partial_unlocked
         info["of_which_outside_day_window_pad_blocks_kept_for_attendees"] = n_partial_outside_window
@@ -278,6 +291,9 @@ def main():
             engine_settings["shift_pence_per_min"] = args.shift_cost
         if args.continuity_cost is not None:
             engine_settings["continuity_penalty_pence"] = args.continuity_cost
+        if args.mode == "improve":
+            engine_settings["change_pence_per_visit"] = args.change_cost
+            engine_settings["arrival_tolerance_minutes"] = args.arrival_tolerance
         problem = {
             "week_start": P["week_start"], "clients": out_clients, "carers": out_carers,
             "visits": out_visits, "absences": absences,

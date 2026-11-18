@@ -42,6 +42,10 @@ CareLineLive --export/API--> Import & sync --> Database (PostgreSQL)
 Only the import & sync part talks to CareLineLive, so replacing it later does not touch
 the rest.
 
+**Next build (2026-11-17):** the Stage A rota companion, first as an **engine test (no
+database yet)**, for Loidis only. Spec: [`MVP.md`](MVP.md) (draft). The database comes
+once the engine is proven.
+
 ## Workflow
 
 - **Weekly:** import latest data -> generate next week -> review gaps and unfilled visits

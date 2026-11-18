@@ -26,7 +26,7 @@ from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 
 from .models import Block, Carer, Problem, Visit
 from .rules import carer_rule_failure, explain_unfilled, fits_block
-from .travel import MODES, miles, travel_minutes
+from .travel import MODES
 
 DAY_MINUTES = 24 * 60
 
@@ -152,13 +152,15 @@ def solve_day(
     service = [0] * n_veh + [v.duration for v, _ in stops]  # time on site
     counted = [0] * n_veh + [problem.counted_minutes(v) for v, _ in stops]  # towards hours
     client_of = [None] * n_veh + [v.client_id for v, _ in stops]
+    current_of = [None] * n_veh + [v.current_carers for v, _ in stops]
     n = len(locations)
 
+    tp = problem.travel
     travel = {
-        mode: [[travel_minutes(locations[i], locations[j], mode) for j in range(n)] for i in range(n)]
+        mode: [[tp.minutes(locations[i], locations[j], mode) for j in range(n)] for i in range(n)]
         for mode in MODES
     }
-    dist = [[miles(locations[i], locations[j]) for j in range(n)] for i in range(n)]
+    dist = [[tp.miles(locations[i], locations[j]) for j in range(n)] for i in range(n)]
 
     def build(strict_pairs: bool):
         """Build the routing model. strict_pairs adds "both carers or neither" for
@@ -258,6 +260,14 @@ def solve_day(
                 c = t[i][j] * pay_per_min + dist[i][j] * per_mile
                 if j >= n_veh and carer.id not in problem.client_by_id[client_of[j]].recent_carers:
                     c += s.continuity_penalty_pence
+                # improve mode: a carer other than the current one costs a change
+                if (
+                    s.change_pence_per_visit > 0
+                    and j >= n_veh
+                    and current_of[j]
+                    and carer.id not in current_of[j]
+                ):
+                    c += s.change_pence_per_visit
                 row.append(int(round(c)))
             rows.append(row)
         cost_matrix[carer.id] = rows
@@ -388,7 +398,11 @@ def _rest_after(problem: Problem, res: DayResult) -> dict[str, int]:
     return out
 
 
-def solve_week(problem: Problem, seconds_per_day: int = 10, progress=None) -> list[DayResult]:
+def solve_week(problem: Problem, seconds_per_day: int = 10, progress=None, travel=None) -> list[DayResult]:
+    """Plan Monday to Sunday. `travel`: an optional TravelProvider for this call (else the
+    problem's own, the estimate by default)."""
+    if travel is not None:
+        problem.travel = travel
     used: dict[str, int] = {}
     not_before: dict[str, int] = {}
     results = []
@@ -409,11 +423,14 @@ def cover_absence(
     day: int,
     absent_carer: str,
     seconds: int = 10,
+    travel=None,
 ) -> tuple[DayResult, dict]:
     """Re-plan one day after a carer drops out, keeping everyone else's visits in place.
 
     Returns the new day plan and a summary of what changed.
     """
+    if travel is not None:
+        problem.travel = travel
     before = week[day]
     used: dict[str, int] = {}
     for d in range(7):
