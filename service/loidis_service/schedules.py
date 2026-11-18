@@ -12,6 +12,7 @@ import csv
 import io
 import logging
 import re
+import statistics
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 
@@ -36,6 +37,30 @@ def _truthy(s: str) -> bool:
 def hhmm(minutes: int) -> str:
     m = minutes % 1440
     return f"{m // 60:02d}:{m % 60:02d}"
+
+
+_DAYNAME = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+SLOT_MIN = 30  # a booking belongs to a slot if its start is within this many minutes of the slot's median
+
+
+def _mode(values: list[int]) -> int:
+    """Most common value; ties go to the larger one."""
+    c: dict[int, int] = defaultdict(int)
+    for v in values:
+        c[v] += 1
+    return max(c, key=lambda v: (c[v], v))
+
+
+def _cluster(items: list[Booking]) -> list[list[Booking]]:
+    """Greedy by start time: a booking joins the current slot while its start is within SLOT_MIN of the
+    slot's median start, else it starts a new slot."""
+    out: list[list[Booking]] = []
+    for b in sorted(items, key=lambda b: (b.start, b.day)):
+        if out and abs(b.start - statistics.median([x.start for x in out[-1]])) <= SLOT_MIN:
+            out[-1].append(b)
+        else:
+            out.append([b])
+    return out
 
 
 def _uk(d: date) -> str:
@@ -111,39 +136,76 @@ def learn(files: list[bytes], client_list: bytes | None, settings: SettingsFile 
     schedules: dict[str, dict] = {}
     one_offs: list[dict] = []
     counts = {"weekly": 0, "fortnightly": 0, "visits": 0}
+    irregular = 0
+    period_changes: list[dict] = []
     display: dict[str, str] = {}
     refs: dict[str, str] = {}
 
     for cid, bs in sorted(by_client.items()):
         refs[cid] = next((b.client_ref for b in bs if b.client_ref), "")
         display[cid] = short_client_name(next((b.client_name for b in bs if b.client_name), "")) or refs[cid]
-        groups: dict[tuple, dict[date, list[date]]] = defaultdict(lambda: defaultdict(list))
-        for b in bs:
-            start = (round(b.start / ROUND_MIN) * ROUND_MIN) % 1440
-            k = (b.day.weekday(), start, b.duration, b.booking_type, b.expected)
-            groups[k][monday_of(b.day)].append(b.day)
+        base_c = {"client_id": cid, "client_ref": refs[cid], "display_name": display[cid]}
         merged: dict[tuple, dict] = {}
-        for (wd, start, dur, btype, need), present in sorted(groups.items()):
-            pw = sorted(present)
-            repeat, anchor = None, None
-            same = lambda w: (w - pw[0]).days % 14 == 0  # noqa: E731
-            # present only in alternating weeks: every week with it is a whole number of fortnights
-            # apart, and some supplied week of the other parity (without it) is evidence
-            if n_weeks >= 3 and len(pw) >= 2 and all(same(w) for w in pw) and any(not same(w) for w in weeks):
-                repeat, anchor = "fortnightly", pw[0]
-            if repeat is None and len(pw) * 2 >= n_weeks:
-                repeat = "weekly"
-            if repeat is None:
-                for w in pw:
-                    for d in present[w]:
+        by_slot: dict[tuple[int, str], list[Booking]] = defaultdict(list)
+        for b in bs:
+            by_slot[(b.day.weekday(), b.booking_type)].append(b)
+        for (wd, btype), items in sorted(by_slot.items()):
+            slots = _cluster(items)
+            infos = []
+            for sl in slots:
+                present: dict[date, list[date]] = defaultdict(list)
+                for b in sl:
+                    present[monday_of(b.day)].append(b.day)
+                starts = sorted(b.start for b in sl)
+                med = statistics.median(starts)
+                start = (int(round(med / ROUND_MIN)) * ROUND_MIN) % 1440
+                dur = _mode([b.duration for b in sl])
+                need = _mode([b.expected for b in sl])
+                infos.append((sl, present, start, dur, need))
+            # a slot that moved by more than 30 minutes inside the period: its earlier and later
+            # clusters share no week (counts only; the flag text has times, not names)
+            for i, (_, pa, sa, *_r) in enumerate(infos):
+                for _, pb, sb, *_r2 in infos[i + 1:]:
+                    if max(pa) < min(pb) or max(pb) < min(pa):
+                        (ea, sa_), (la, sb_) = ((pa, sa), (pb, sb)) if max(pa) < min(pb) else ((pb, sb), (pa, sa))
+                        if len(la) >= 2:
+                            text = (f"{_DAYNAME[wd]} {btype}: the usual time moved from {hhmm(sa_)} to "
+                                    f"{hhmm(sb_)} during the weeks supplied – check their visits")
+                        else:
+                            wk0 = min(la)
+                            text = (f"{_DAYNAME[wd]} {btype}: at {hhmm(sb_)} instead of the usual {hhmm(sa_)} in the "
+                                    f"week of {wk0.strftime('%d/%m')} – a one-off or a new time? Check their visits")
+                        period_changes.append({**base_c, "kind": "changed_in_period", "detail": text})
+            for i, (sl, present, start, dur, need) in enumerate(infos):
+                pw = sorted(present)
+                # a later slot that shares no week with this one replaced it (a time change inside the
+                # period): keep only the later slot, and drop this one without listing it as irregular
+                # (only if the later slot is in 2 or more weeks; a single later week is a one-off)
+                if any(min(q[1]) > max(present) and len(q[1]) >= 2 for q in infos if q is not infos[i]):
+                    continue
+                earlier = any(max(q[1]) < min(present) for q in infos if q is not infos[i])
+                replaced = earlier and len(pw) >= 2
+                single_later = earlier and len(pw) < 2
+                # a slot that replaced an earlier one is judged on the weeks since it started
+                wk = [w for w in weeks if w >= pw[0]] if replaced else weeks
+                repeat, anchor = None, None
+                # fortnightly: 4+ weeks counted, in 2+ weeks all the same parity and none of the other
+                if single_later:
+                    pass  # one week at a new time after a regular one: listed, not added
+                elif (len(wk) >= 4 and len(pw) >= 2 and all((w - pw[0]).days % 14 == 0 for w in pw)):
+                    repeat, anchor = "fortnightly", pw[0]
+                elif len(pw) * 2 >= len(wk):  # at least half the weeks counted (rounded up)
+                    repeat = "weekly"
+                if repeat is None:
+                    irregular += 1
+                    for b in sorted(sl, key=lambda b: (b.day, b.start)):
                         one_offs.append({
-                            "client_id": cid, "client_ref": refs[cid], "display_name": display[cid],
-                            "date": d.isoformat(), "start": hhmm(start), "duration_min": dur,
-                            "booking_type": btype})
-                continue
-            mk = (start, dur, btype, need, repeat, anchor)
-            m = merged.setdefault(mk, {"days": set()})
-            m["days"].add(wd)
+                            **base_c, "date": b.day.isoformat(), "start": hhmm(round(b.start / ROUND_MIN) * ROUND_MIN),
+                            "duration_min": b.duration, "booking_type": btype,
+                            "detail": "Happened in fewer than half of the weeks supplied, so it was not added."})
+                    continue
+                m = merged.setdefault((start, dur, btype, need, repeat, anchor), {"days": set()})
+                m["days"].add(wd)
         visits: list[ScheduleVisit] = []
         for i, ((start, dur, btype, need, repeat, anchor), m) in enumerate(
                 sorted(merged.items(), key=lambda kv: (min(kv[1]["days"]), kv[0][0], kv[0][2])), 1):
@@ -158,7 +220,7 @@ def learn(files: list[bytes], client_list: bytes | None, settings: SettingsFile 
             counts["visits"] += len(visits)
     one_offs.sort(key=lambda o: (o["date"], o["start"], o["client_id"]))
 
-    flags: list[dict] = []
+    flags: list[dict] = list(period_changes)
     if client_list:
         ref_to_id = {r: c for c, r in refs.items() if r}
         if settings:
@@ -179,8 +241,8 @@ def learn(files: list[bytes], client_list: bytes | None, settings: SettingsFile 
             if row["last_update"] and row["last_update"] > weeks[0]:
                 flags.append({**base, "kind": "changed",
                               "detail": f"Schedule changed in CareLineLive on {_uk(row['last_update'])} – check their visits"})
-    log.info("learn weeks=%d bookings=%d schedules=%d one_offs=%d flags=%d",
-             n_weeks, len(live), len(schedules), len(one_offs), len(flags))
+    log.info("learn weeks=%d bookings=%d schedules=%d irregular=%d changed_in_period=%d flags=%d",
+             n_weeks, len(live), len(schedules), irregular, len(period_changes), len(flags))
     return {
         "weeks": [w.isoformat() for w in weeks],
         "schedules": schedules,
@@ -189,7 +251,8 @@ def learn(files: list[bytes], client_list: bytes | None, settings: SettingsFile 
         "counts": {
             "weeks": n_weeks, "bookings": len(live), "clients": len(by_client), "schedules": len(schedules),
             "visits": counts["visits"], "weekly": counts["weekly"], "fortnightly": counts["fortnightly"],
-            "one_offs": len(one_offs), "flags": len(flags),
+            "one_offs": len(one_offs), "irregular": irregular, "changed_in_period": len(period_changes),
+            "flags": len(flags),
         },
     }
 

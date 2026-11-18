@@ -141,14 +141,22 @@ bookings, the coordinator **confirms** them, and they live in the settings file
 `multipart/form-data`: `bookings` (one or more optimised bookings CSVs, repeat the field; any number of weeks, a
 file may hold several weeks; each is validated as for `POST /runs` and a bad one is refused with `422` naming the
 file number), optional `client_list` (CSV as above), optional `settings` (used to find a client's id from its
-reference code). Nothing is stored. Cancelled bookings are ignored. Per client, bookings are grouped by
-(weekday, start rounded to 5 min, duration, booking type, carers needed):
+reference code). Nothing is stored. Cancelled bookings are ignored. Per client, per weekday and booking type,
+bookings are clustered into **slots**: greedy by start time, a booking joins the slot while its start is within 30 min
+of the slot's median start (duration and carers needed never split a slot). A slot's start is its median start rounded
+to 5 min, its duration the most common (ties: longer) and its carers needed the most common (ties: higher). Then:
 
-- present only in alternating weeks (every week it appears a whole number of fortnights apart, across at least 2
-  weeks, with at least 3 weeks supplied and a supplied week of the other parity without it): **fortnightly**,
-  `fortnight_anchor` = the first week it appears;
-- else in at least half of the weeks supplied: **weekly**;
-- otherwise a **one-off**: listed in `one_offs`, not added to the schedule.
+- slot present in 2 or more weeks that are all the same parity (a whole number of fortnights apart), with at least 4
+  weeks supplied and so a supplied week of the other parity without it: **fortnightly**, `fortnight_anchor` = the first
+  week it appears (checked first, otherwise two of four weeks would count as weekly);
+- else present in at least half of the weeks supplied (rounded up): **weekly**;
+- otherwise **irregular**: its bookings are listed in `one_offs` ("Happened in fewer than half of the weeks supplied, so
+  it was not added.") and not added to the schedule. `counts.irregular` is the number of irregular slots and
+  `counts.one_offs` the bookings listed.
+
+A slot whose usual time moved by more than 30 min inside the period (an earlier and a later slot on the same weekday
+and type that share no week) gives a `changed_in_period` flag ("<Day> <type>: the usual time moved from HH:MM to HH:MM
+during the weeks supplied – check their visits"); `counts.changed_in_period`. Only the **later** slot stays in the schedule when it appears in 2 or more weeks (the earlier one is dropped, not listed as irregular), and it is judged weekly or fortnightly on the weeks from its first appearance onwards. If the later slot is in only 1 week, the earlier slot stays as the regular visit, the single booking is listed as irregular, and the flag reads "<Day> <type>: at HH:MM instead of the usual HH:MM in the week of dd/mm – a one-off or a new time? Check their visits". The logs hold counts only.
 
 Groups with the same start, duration, type, carers needed and repeat are merged into one visit with several `days`.
 Returns:
@@ -164,9 +172,9 @@ Returns:
   "one_offs": [ { "client_id": "...", "client_ref": "CL-009", "display_name": "Smith, J", "date": "2026-11-06",
                   "start": "14:00", "duration_min": 30, "booking_type": "Tea Visit" } ],
   "flags": [ { "client_id": "...", "client_ref": "CL-006", "display_name": "Smith, J",
-               "kind": "changed | suspended | no_bookings_in_period", "detail": "..." } ],
+               "kind": "changed | changed_in_period | suspended | no_bookings_in_period", "detail": "..." } ],
   "counts": { "weeks": 4, "bookings": 87, "clients": 9, "schedules": 8, "visits": 9, "weekly": 8,
-              "fortnightly": 1, "one_offs": 1, "flags": 13 }
+              "fortnightly": 1, "one_offs": 1, "irregular": 1, "changed_in_period": 0, "flags": 13 }
 }
 ```
 `schedules` is keyed by CareLineLive client id (the bookings' `ClientId`); `display_name` is **not** part of the

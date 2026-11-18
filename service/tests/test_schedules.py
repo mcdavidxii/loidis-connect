@@ -360,3 +360,79 @@ def test_dorchester_is_planned_with_weymouth_and_dorset_is_an_old_name(files):
     assert {"K007", "K010"} <= set(region.problem.carer_by_id)
     teams_in = {t for b_ in rows for t in b_.teams if b_.client_id in region.client_ref}
     assert teams_in == {"Dorchester", "Weymouth"}
+
+
+# --------------------------------------------------------------------------- tolerant learning
+def _rows(client_id, week_days, start=8 * 60, dur=30, typ="Morning Visit", need=1):
+    """week_days: [(week index, weekday, start offset in minutes)] for one fake client."""
+    return [{"client": client_id, "date": fake_data.SCHEDULE_WEEKS[w] + timedelta(days=d), "start": start + off,
+             "duration": dur, "type": typ, "need": need, "cancelled": False} for w, d, off in week_days]
+
+
+def _learn_rows(client, rows_by_week):
+    files = [fake_data.rows_csv(r).encode() for r in rows_by_week]
+    return learn(client, files=files, client_list=None).json()
+
+
+def test_a_visit_moved_ten_to_fifteen_minutes_stays_weekly(client):
+    wk = [_rows("C01", [(i, 0, off)]) for i, off in enumerate([0, 15, -10])]
+    out = _learn_rows(client, wk)
+    v = out["schedules"]["api-C01"]["visits"]
+    assert len(v) == 1 and v[0]["repeat"] == "weekly" and v[0]["start"] == "08:00" and out["one_offs"] == []
+    assert out["counts"]["irregular"] == 0
+
+
+def test_slot_values_are_median_start_most_common_duration_and_carers(client):
+    rows = [
+        _rows("C01", [(0, 0, 20)], dur=30, need=1), _rows("C01", [(1, 0, 0)], dur=45, need=2),
+        _rows("C01", [(2, 0, 25)], dur=45, need=1), _rows("C01", [(3, 0, 0)], dur=30, need=2)]
+    v = _learn_rows(client, rows)["schedules"]["api-C01"]["visits"][0]
+    assert v["start"] == "08:10" and v["duration_min"] == 45 and v["carers_needed"] == 2  # ties: longer, higher
+
+
+def test_slot_missing_in_one_of_three_weeks_is_weekly_and_fortnightly_needs_four_weeks(client):
+    three = [_rows("C01", [(0, 1, 0)]), [], _rows("C01", [(2, 1, 0)])]
+    three[1] = _rows("C02", [(1, 1, 0)])  # a week with other bookings only
+    out = _learn_rows(client, three)
+    assert out["schedules"]["api-C01"]["visits"][0]["repeat"] == "weekly"
+    four = [_rows("C01", [(0, 1, 0)]), _rows("C02", [(1, 1, 0)]), _rows("C01", [(2, 1, 0)]), _rows("C02", [(3, 1, 0)])]
+    v = _learn_rows(client, four)["schedules"]["api-C01"]["visits"][0]
+    assert v["repeat"] == "fortnightly" and v["fortnight_anchor"] == "2026-10-26"
+
+
+def test_irregular_slots_are_counted_and_listed_with_plain_text(client):
+    wk = [_rows("C01", [(0, 0, 0), (0, 3, 0)]) + _rows("C04", [(0, 0, 0)]), _rows("C01", [(1, 0, 0)]) + _rows("C04", [(1, 0, 0)]),
+          _rows("C01", [(2, 0, 0)]) + _rows("C04", [(2, 0, 0)]), _rows("C01", [(3, 0, 0)]) + _rows("C04", [(3, 0, 0)])]
+    out = _learn_rows(client, wk)
+    assert out["counts"]["irregular"] == 1 and out["counts"]["one_offs"] == 1  # the Thursday visit, once in four weeks
+    assert out["one_offs"][0]["date"] == "2026-10-29"
+    assert "fewer than half of the weeks" in out["one_offs"][0]["detail"]
+    assert out["schedules"]["api-C01"]["visits"][0]["days"] == ["mon"]
+
+
+def test_slot_that_moves_more_than_thirty_minutes_is_flagged_changed_in_period(client, logs):
+    wk = [_rows("C01", [(0, 0, 0)]), _rows("C01", [(1, 0, 0)]), _rows("C01", [(2, 0, 90)]), _rows("C01", [(3, 0, 90)])]
+    out = _learn_rows(client, wk)
+    f = [x for x in out["flags"] if x["kind"] == "changed_in_period"]
+    assert len(f) == 1 and "08:00 to 09:30" in f[0]["detail"] and f[0]["client_ref"] == "CL-001"
+    assert out["counts"]["changed_in_period"] == 1
+    v = out["schedules"]["api-C01"]["visits"]
+    assert [x["start"] for x in v] == ["09:30"] and v[0]["repeat"] == "weekly"  # only the later time is kept
+    assert out["one_offs"] == [] and out["counts"]["irregular"] == 0  # the old time is not listed as irregular
+    # a later slot in 2 weeks of 3 (weeks 2 and 3 at 09:30) replaces the earlier one
+    wk2 = [_rows("C01", [(0, 0, 0)]), _rows("C01", [(1, 0, 90)]), _rows("C01", [(2, 0, 90)])]
+    v2 = _learn_rows(client, wk2)["schedules"]["api-C01"]["visits"]
+    assert [x["start"] for x in v2] == ["09:30"] and v2[0]["repeat"] == "weekly"
+
+
+def test_a_single_later_week_at_a_new_time_is_a_one_off_not_a_replacement(client):
+    wk = [_rows("C01", [(0, 0, 0)]), _rows("C01", [(1, 0, 0)]), _rows("C01", [(2, 0, 0)]), _rows("C01", [(3, 0, 90)])]
+    out = _learn_rows(client, wk)
+    v = out["schedules"]["api-C01"]["visits"]
+    assert [x["start"] for x in v] == ["08:00"] and v[0]["repeat"] == "weekly"  # the earlier slot stays
+    assert [(o["date"], o["start"]) for o in out["one_offs"]] == [("2026-11-16", "09:30")]
+    assert out["counts"]["irregular"] == 1
+    f = [x for x in out["flags"] if x["kind"] == "changed_in_period"]
+    assert len(f) == 1 and f[0]["detail"] == (
+        "Monday Morning Visit: at 09:30 instead of the usual 08:00 in the week of 16/11 – "
+        "a one-off or a new time? Check their visits")

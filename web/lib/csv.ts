@@ -122,6 +122,8 @@ export function summariseBookings(text: string): BookingsInfo {
       info.cancelled++;
       continue;
     }
+    // Bookings with no client at all (e.g. "Office" time) are not client visits; skip them.
+    if (!cell(r, "ClientId") && !cell(r, "ClientReferenceCode") && !cell(r, "ClientName")) continue;
     const id = cell(r, "BookingId");
     if (!id) missingId++;
     else if (seenIds.has(id)) duplicateIds++;

@@ -238,10 +238,18 @@ def parse_bookings(data: bytes, allow_many_weeks: bool = False) -> tuple[list[Bo
     if bad_expected:
         info.notes.append(f"{bad_expected} row(s) have no usable ExpectedCarers; 1 was assumed.")
 
-    live = [b for b in out if not b.cancelled]
-    no_client = sum(1 for b in live if not b.client_id)
+    # Bookings with no client at all (e.g. "Office" time) are not client visits: leave them out
+    # with a note rather than refusing the file.
+    no_client = sum(1 for b in out if not b.client_id and not b.client_ref and not b.client_name)
     if no_client:
-        info.problems.append(f"{no_client} row(s) have no ClientId.")
+        out = [b for b in out if b.client_id or b.client_ref or b.client_name]
+        info.notes.append(
+            f"{no_client} booking(s) without a client (for example office time) were left out."
+        )
+    live = [b for b in out if not b.cancelled]
+    unmatched_client = sum(1 for b in live if not b.client_id)
+    if unmatched_client:
+        info.problems.append(f"{unmatched_client} row(s) name a client but have no ClientId.")
     info.cancelled = sum(1 for b in out if b.cancelled)
     info.visits = len(live)
     info.clients = len({b.client_id for b in live})

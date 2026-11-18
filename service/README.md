@@ -166,8 +166,9 @@ coordinator confirms them; they live in the settings file (`client_schedules`, s
 
 - `POST /schedules/learn` takes one or more bookings CSVs (any number of weeks), optionally the CareLineLive client list
   CSV and the settings file, and returns learned schedules (`confirmed: false`), one-off visits and flags (schedule
-  changed after the first week, suspended, no bookings). Weekly if a visit is in at least half the weeks; fortnightly
-  (with an anchor Monday) if it is only in alternating weeks across at least 3 weeks supplied.
+  changed after the first week, suspended, no bookings). Bookings are clustered into slots (same client, weekday and type, starts within 30 minutes); a slot in at least half
+  the weeks is weekly, one only in alternating weeks (4+ weeks supplied) is fortnightly (anchor Monday), the rest are irregular
+  and only listed.
 - `POST /runs` with `source=schedules` and a Monday `week_start` makes a **draft** from the confirmed schedules before
   the week's bookings exist (new rota only; unconfirmed schedules, clients with no schedule and suspended clients are
   left out with a warning or notice). Visits have no booking id (`not generated yet` in the export).
